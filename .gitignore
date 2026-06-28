@@ -1,0 +1,9 @@
+# Exclude subdirectories
+Backup/
+old/
+
+# macOS metadata
+.DS_Store
+
+# Temporary log files
+gemini_log_update.tmp

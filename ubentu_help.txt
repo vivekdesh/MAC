@@ -1,0 +1,476 @@
+-sUbentu GOOGLE PROJECT:
+
+SSH on MAC:
+gcloud auth login
+gcloud projects list            # (optional) see your projects
+gcloud config set project composed-night-352914   # use YOUR project id
+gcloud config set compute/region us-east1
+gcloud config set compute/zone us-east1-c
+vivek@Viveks-MacBook-Air icici_direct % gcloud compute instances list
+
+NAME                      ZONE        MACHINE_TYPE  PREEMPTIBLE  INTERNAL_IP  EXTERNAL_IP     STATUS
+instance-20251009-150038  us-east1-c  e2-micro                   10.142.0.2   35.231.255.150  RUNNING
+-------
+
+cat ~/.ssh/gcp_key.pub | \
+gcloud compute instances add-metadata instance-20251009-150038 \
+  --zone=us-east1-c \
+  --metadata ssh-keys="deshpande_vivek:$(cat ~/.ssh/gcp_key.pub)"
+
+
+-----
+Now always u need:
+
+ssh -o ServerAliveInterval=60 -i ~/.ssh/gcp_key deshpande_vivek@35.237.249.135
+
+
+OR
+
+Optional: Simplify with ~/.ssh/config
+
+Edit:
+
+nano ~/.ssh/config
+
+
+Add:
+
+Host gcp-breeze
+    HostName 35.237.249.135
+    User deshpande_vivek
+    IdentityFile ~/.ssh/gcp_key
+    ServerAliveInterval 60
+
+
+Then connect with simply:
+
+ssh gcp-breeze
+
+
+
+
+
+
+
+
+
+
+pgrep -f "vivek" | grep -v "tmux" | xargs kill -9
+
+Let's break down what this new command does:
+
+pgrep -f "vivek": This finds the process IDs (PIDs) of all processes with "vivek" in their full command line. This is similar to your original command, but it only prints the PIDs, it doesn't kill anything yet.
+
+grep -v "tmux": This part of the command is the key to solving your problem. It filters the list of PIDs from the previous step and removes any lines that contain the word "tmux". This ensures that the tmux sessions are safely ignored.
+
+xargs kill -9: Finally, xargs takes the filtered list of PIDs and passes them as arguments to the kill -9 command, which forcefully terminates those specific processes.
+
+To see all proceeds:
+ ps aux | grep python
+
+
+
+
+Suresh:
+
+ssh -i "C:\Users\1087135\AWS\soch12.pem" ubuntu@16.171.172.182
+ssh -i "C:\Users\Developer\AWS\soch12.pem" ubuntu@16.171.172.182
+
+
+Vivek:
+
+ssh -i "C:\Users\1087135\AWS\vivek.pem" ubuntu@3.107.179.177
+ssh -i "C:\Users\Developer\AWS\vivek.pem" ubuntu@3.107.179.177
+
+Priya MAC:
+
+ssh -i "/Users/priyadeshpande/Desktop/ICICI_Direct/Key/vivek.pem" ubuntu@13.55.94.0
+ssh -i "/Users/priyadeshpande/Desktop/ICICI_Direct/Key/soch12.pem" ubuntu@16.171.172.182
+
+Vivek MAC:
+ssh -i "/Users/vivek/ICICI_Direct/Key/vivek.pem" ubuntu@52.63.40.205
+ssh -o ServerAliveInterval=60 -i "/Users/vivek/ICICI_Direct/Key/vivek.pem" ubuntu@52.63.40.205
+ssh -i "/Users/vivek/ICICI_Direct/Key/soch12.pem" ubuntu@16.171.172.182
+
+/vivek.pem" ubuntu@3.27.146.97
+
+cd /Users/vivek/ICICI_Direct/
+source vivekmac/bin/activate
+
+
+file transfer from MAC to ubentu:
+scp -i "/Users/priyadeshpande/Desktop/ICICI_Direct/Key/vivek.pem" "/Users/priyadeshpande/Desktop/ICICI_Direct/webhook/*.py" ubuntu@54.206.20.57:/home/ubuntu/webhook
+
+scp -i "/Users/priyadeshpande/Desktop/ICICI_Direct/Key/vivek.pem" "/Users/priyadeshpande/Desktop/ICICI_Direct/webhook/*.json" ubuntu@54.206.20.57:/home/ubuntu/webhook
+
+Excel and json sheet transfer
+
+scp -i "/Users/vivek/ICICI_Direct/Key/vivek.pem" /Users/vivek/ICICI_Direct/Ubentu/webhook/symbol*.json ubuntu@54.206.20.57:/home/ubuntu/webhook/
+scp -i "/Users/vivek/ICICI_Direct/Key/vivek.pem" /Users/vivek/ICICI_Direct/Ubentu/webhook/*.xlsx ubuntu@54.206.20.57:/home/ubuntu/webhook/
+
+
+
+sudo /home/ubuntu/myenv/bin/python3 webhook.py
+sudo /home/ubuntu/myenv/bin/python3 webhook.py
+
+-------------------------------------------------------
+
+
+reboot AWS:
+sudo reboot
+
+update / upgrade:
+
+sudo apt update 
+sleep 3
+sudo apt upgrade 
+
+-------------------------------------------------------
+
+
+truncate file:
+> filename.txt
+
+view files:
+less very_large_log.txt
+more very_large_log.txt
+cat very_large_log.txt
+
+
+
+Environment:
+source myenv/bin/activate
+
+-------------------------------------------------------
+
+TMUX
+
+
+New Tmux seesion:
+tmux new -s session_name 
+
+Kill TMUX session:
+tmux kill-session -t session_name
+
+
+tmux attach:
+attaches to the last detached session)
+
+tmux attach -t vivek 
+(attaches to a specific session)
+
+Tmux Session capture and store in file:
+CTRL+B and then :
+capture-pane -S -
+
+Tmux from SSH:
+ps aux | grep webhook_receiver.py
+
+tmux new -s ngrok
+ngrok http 3000
+tmux new -s WhatsApp
+source myenv/bin/activate
+cd whatsapp
+python app.py
+
+
+
+tmux send-keys -t webhook "cd ~" Enter
+sleep 3
+tmux send-keys -t webhook "source myenv/bin/activate" Enter
+sleep 3
+tmux send-keys -t webhook "cd webhook" Enter
+sleep 3
+tmux send-keys -t webhook "./receiver.sh" Enter
+sleep 3
+
+tmux send-keys -t multi "cd ~" Enter
+sleep 3
+tmux send-keys -t multi "source myenv/bin/activate" Enter
+sleep 3
+tmux send-keys -t multi "cd webhook" Enter
+sleep 3
+tmux send-keys -t multi "python multi_process.py" Enter
+
+
+tmux send-keys -t vivek2 "cd ~" Enter
+sleep 3
+tmux send-keys -t vivek2 "source myenv/bin/activate" Enter
+sleep 3
+tmux send-keys -t vivek2 "cd webhook" Enter
+sleep 3
+tmux send-keys -t vivek2
+
+
+
+tmux attach -t vivek2
+tmux attach -t webhook
+
+
+
+ps aux | grep webhook
+ps aux | grep BDTS_webhook
+
+
+
+Paper_trade:
+ps -ef | grep "paper" | grep -v "tmux" | grep -v "grep" | awk '{print $2}' | xargs -r kill -9
+
+tmux new -s pap
+
+tmux -vv new -s vivek //for use withlogging, but do not use
+
+sleep3
+tmux send-keys -t pap "cd ~" Enter
+sleep 3
+tmux send-keys -t pap "source myenv/bin/activate" Enter
+sleep 3
+tmux send-keys -t pap "cd Algo_1" Enter
+sleep 3
+tmux send-keys -t pap "python vivek_paper.py" Enter
+sleep 3
+
+
+Single Leg trader:
+ps -ef | grep "single" | grep -v "tmux" | grep -v "grep" | awk '{print $2}' | xargs -r kill -9
+
+tmux new -s sin
+sleep3
+tmux send-keys -t sin "cd ~" Enter
+sleep 3
+tmux send-keys -t sin "source myenv/bin/activate" Enter
+sleep 3
+tmux send-keys -t sin "cd Algo_1" Enter
+sleep 3
+tmux send-keys -t sin "python vivek_single.py" Enter
+sleep 3
+
+tmux new -s rsi_trade
+sleep3
+tmux send-keys -t rsi_trade "cd ~" Enter
+sleep 3
+tmux send-keys -t rsi_trade "source myenv/bin/activate" Enter
+sleep 3
+tmux send-keys -t rsi_trade "cd mod_rsi" Enter
+sleep 3
+tmux send-keys -t rsi_trade "python vivek_RSI.py" Enter
+sleep 3
+
+
+tmux new -s rsi_sin
+
+sleep3
+tmux send-keys -t rsi_sin "cd ~" Enter
+sleep 3
+tmux send-keys -t rsi_sin "source myenv/bin/activate" Enter
+sleep 3
+tmux send-keys -t rsi_sin "cd mod_rsi" Enter
+sleep 3
+tmux send-keys -t rsi_sin "python vivek_RSI_single.py" Enter
+sleep 3
+
+
+
+TO KILL PROCESSES (Like single - All processes vivek_single.py and single_leg_trader.py will be killed at once):
+pkill -f single
+
+Reliable 
+
+ps aux | grep single | grep -v grep | awk '{print $2}' | xargs -r kill -9
+
+From MAC (single):
+ssh -i "/Users/vivek/ICICI_Direct/Key/vivek.pem" ubuntu@54.206.20.57 'ps aux | grep single | grep -v grep | awk '\''{print $2}'\'' | xargs -r kill -9'
+
+ssh -i "/Users/vivek/ICICI_Direct/Key/vivek.pem" ubuntu@54.206.20.57 'tmux send-keys -t single "python vivek_single.py" Enter'
+
+ssh -i "/Users/vivek/ICICI_Direct/Key/vivek.pem" ubuntu@54.206.20.57 'pgrep -af single'
+
+From MAC (paper trade):
+ssh -i "/Users/vivek/ICICI_Direct/Key/vivek.pem" ubuntu@54.206.20.57 'ps aux | grep paper | grep -v grep | awk '\''{print $2}'\'' | xargs -r kill -9'
+
+ssh -i "/Users/vivek/ICICI_Direct/Key/vivek.pem" ubuntu@54.206.20.57 'tmux send-keys -t vivek "python vivek_paper.py" Enter'
+
+ssh -i "/Users/vivek/ICICI_Direct/Key/vivek.pem" ubuntu@54.206.20.57 'pgrep -af paper'
+
+
+preview first (dry run):
+
+pgrep -af single
+
+So for paper_trade 
+pkill -f paper
+
+Reliable 
+
+ps aux | grep paper | grep -v grep | awk '{print $2}' | xargs -r kill -9
+
+
+
+
+tmux attach -t vivek 
+ps aux | grep vivek_trade
+ps aux | grep paper_trade
+
+tmux ls
+
+TMUX CTRL-C SEND:
+tmux send-keys -t single C-c
+
+
+To see processes: 
+ps aux | grep paper_trade
+
+kill 98987
+kill -9 78787
+
+
+One-liner (safe and effective):
+
+pkill -f paper_trade
+pkill -f matches the full command line.
+
+It will kill all processes with "paper_trade" in the command.
+
+🧪 If you want to see PIDs first and confirm manually, run:
+
+ps aux | grep vivek_trade | grep -v grep
+Then kill manually using:
+kill -9 <PID>
+
+⚠️ If you still prefer the full ps | grep | kill pipeline:
+❌ DANGEROUS version (kills blindly):
+ps aux | grep paper_trade | grep -v grep | awk '{print $2}' | xargs -r kill -9
+
+awk '{print $2}' extracts the PID column.
+
+xargs -r kill -9 kills those PIDs.
+
+
+Rename Python file:
+
+mv paper_trade.py paper_trade_v2.py
+
+
+
+------------------------------------------
+Read time stamp of file in seconds:
+stat -c '%n %y' param*.json
+
+
+
+
+
+
+
+ubuntu@ip-172-31-4-28:~$ tmux ls
+multi: 1 windows (created Fri May  2 14:40:11 2025)
+vivek: 1 windows (created Tue Apr 29 07:51:19 2025)
+vivek2: 1 windows (created Mon Apr 28 03:23:48 2025)
+webhook: 1 windows (created Sun Apr 27 20:33:45 2025)
+
+
+
+
+
+=========================================================
+🧾  BASH HISTORY COMMANDS — QUICK REFERENCE GUIDE
+=========================================================
+
+📘 PURPOSE:
+-----------
+This document explains how to view, clear, back up, edit, and restore 
+your Bash command history in Ubuntu or any Linux terminal.
+
+=========================================================
+🔹 VIEW HISTORY
+=========================================================
+
+# Show all previously executed commands with line numbers
+history
+
+# Show only the last 20 commands
+history 20
+
+=========================================================
+🔹 CLEAR CURRENT SESSION HISTORY
+=========================================================
+
+# Clear history for the current terminal session (temporary)
+history -c
+
+# Note: This clears only the in-memory history.
+#       The saved file (~/.bash_history) is still kept.
+
+=========================================================
+🔹 CLEAR PERMANENT HISTORY
+=========================================================
+
+# Delete the saved Bash history file
+rm ~/.bash_history
+
+# Clear in-memory history as well
+history -c
+
+# Verify: open a new terminal and type 'history'
+# It should now be empty.
+
+=========================================================
+🔹 BACK UP HISTORY TO A LOG FILE
+=========================================================
+
+# Save your full command history to a file (overwrite existing)
+history > ~/command_history.log
+
+# Append your current session history to the same file (no overwrite)
+history >> ~/command_history.log
+
+# Tip: Use this to archive commands before clearing them.
+
+=========================================================
+🔹 RESTORE HISTORY FROM A LOG FILE
+=========================================================
+
+# Copy the saved log file back to your Bash history
+cp ~/command_history.log ~/.bash_history
+
+# Reload updated history into memory
+history -r
+
+# Check: use 'history' again to confirm your new history is active.
+
+=========================================================
+🔹 EXTRA USEFUL COMMANDS
+=========================================================
+
+# Delete a specific entry by line number
+history -d <number>
+
+# Remove duplicates automatically
+export HISTCONTROL=ignoredups:erasedups
+
+# Prevent saving empty or repeated commands
+export HISTIGNORE="&:[ ]*:exit"
+
+# Disable saving history permanently (optional)
+unset HISTFILE
+
+=========================================================
+✅ SUMMARY
+=========================================================
+
+| Action | Command |
+|---------|----------|
+| View history | history |
+| Clear session | history -c |
+| Delete saved history | rm ~/.bash_history |
+| Backup history | history > ~/command_history.log |
+| Append to backup | history >> ~/command_history.log |
+| Restore history | cp ~/command_history.log ~/.bash_history |
+| Reload new history | history -r |
+
+=========================================================
+📚 END OF FILE
+=========================================================
+
+
+
