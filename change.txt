@@ -1,3 +1,15 @@
+Date: 2026-06-29 12:26:00
+
+Query:
+/Users/vivek/ICICI_Direct/MAC/ohlcv_resampling_standard.md
+give me good pompt along with this documanet so as all re-sample cases of BOTs can be resolvd!
+
+Logic and Explanation:
+Created a standardized refactoring prompt template to guide AI coding assistants in finding and migrating different bots' sparse OHLCV resampling logic to use the robust gap-filling and resampling algorithm defined in ohlcv_resampling_standard.md. WhatsApp bot was noted as excluded since it does not process market data.
+
+Final Changes:
+- Created /Users/vivek/ICICI_Direct/MAC/resampling_prompt_template.md containing the comprehensive step-by-step migration instruction prompt.
+
 Date: 2026-06-28 21:45:00
 
 Query: Batch the 4 individual kill_*.sh rsync calls for vivek into one rsync call to save time during all.u / v.u uploads.
