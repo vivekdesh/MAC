@@ -1,3 +1,16 @@
+Date: 2026-06-29 12:44:00
+Query: find out unnecessary files being uploaded and delete it?
+Logic: Exclude bot runtime/state JSON files (like parameters_cache.json, *state*.json, option_chain_cache.json, calculated_greeks*.json) and IDE metadata folders (.claude/) from uploads in sync_master.sh. This prevents local/Mac state files from overwriting live trading bot states on virtual machines during upload syncs. Deleted the unnecessary local state JSON files from project folders.
+Code Change:
+Modified /Users/vivek/ICICI_Direct/MAC/sync_master.sh:
+- Updated UPLOAD_OPTS to include explicit exclude patterns for parameters_cache.json, *state*.json, option_chain_cache.json, calculated_greeks*.json, .claude/, __pycache__/, and .git/ before the general *.json include rule.
+Deleted local files:
+- /Users/vivek/ICICI_Direct/nifty/parameters_cache.json
+- /Users/vivek/ICICI_Direct/nifty/dry_state_nifty_ema34.json
+- /Users/vivek/ICICI_Direct/selling/parameters_cache.json
+- /Users/vivek/ICICI_Direct/selling_1/parameters_cache.json
+
+
 Date: 2026-06-29 12:26:00
 
 Query:

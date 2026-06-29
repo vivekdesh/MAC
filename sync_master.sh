@@ -12,7 +12,7 @@ KEY_BASE_PATH="$LOCAL_ROOT/Key/"
 
 # --- 📝 File Type Globals ---
 # Uploads are restrictive (Code + Config only)
-UPLOAD_OPTS="--exclude=FONSEScripMaster.csv --include=*.py --include=*.json --include=*.sh --include=*.csv --include=requirements.txt --exclude=*"
+UPLOAD_OPTS="--exclude=FONSEScripMaster.csv --exclude=parameters_cache.json --exclude=*state*.json --exclude=calculated_greeks*.json --exclude=option_chain_cache.json --exclude=.claude/ --exclude=__pycache__/ --exclude=.git/ --include=*.py --include=*.json --include=*.sh --include=*.csv --include=requirements.txt --exclude=*"
 
 # Downloads are permissive (Get everything except junk)
 # We exclude .git and __pycache__ to keep it clean, but get all logs/txt/etc.
@@ -323,7 +323,11 @@ run_sync() {
     if [ "$target" == "vivek" ] && [ "$direction" == "up" ]; then
         echo "  📤 UPLOADING: MAC/kill_*.sh -> /home/deshpande_vivek/ (batched)"
         rsync -avz -e "ssh -i $KEY_FILE" \
-            --include='kill_*.sh' --exclude='*' \
+            --include='kill_retire_google.sh' \
+            --include='kill_selling_google.sh' \
+            --include='kill_whatsapp_google.sh' \
+            --include='kill_nifty_google.sh' \
+            --exclude='*' \
             "$LOCAL_ROOT/MAC/" "$remote_user_host:/home/deshpande_vivek/"
     fi
 
