@@ -278,3 +278,91 @@ alias o.r.y='o.rsi.y && o.sell_1.y && o.sen.y'
  # Upload:
 
 # rsync -avz -e "ssh -i $HOME/.ssh/gcp_key" --exclude=FONSEScripMaster.csv --include='*.py' --include='*.json' --include='*.sh' --include='*.csv' --exclude='*' $HOME/ICICI_Direct/whatsapp/ deshpande_vivek@35.237.249.135:/home/deshpande_vivek/whatsapp/
+
+# --- CODEX MODEL SWITCHERS (VERSIONED BACKUP + VALIDATE + AUTO-RESTART) ---
+_codex_switch_model() {
+  emulate -L zsh
+
+  local to="$1"
+  local model="$2"
+  local provider="$3"
+  local effort="$4"
+  local preset="$5"
+  local display_name="$6"
+  local cfg="/Users/vivek/.codex/config.toml"
+  local backup_dir="/Users/vivek/.codex/config-backups"
+  local cli="/Applications/Codex.app/Contents/Resources/codex"
+  local current_model from stamp backup top
+
+  if [[ ! -r "$cfg" ]]; then
+    echo "Switch failed: cannot read $cfg"
+    return 1
+  fi
+
+  current_model="$(sed -n '1,/^\[/s/^model = "\(.*\)"$/\1/p' "$cfg")"
+  case "$current_model" in
+    "gpt-5.5") from="codex" ;;
+    "z-ai/glm-5.2") from="glm" ;;
+    "moonshotai/kimi-k2.7-code") from="kimi" ;;
+    "anthropic/claude-sonnet-4.6") from="claude" ;;
+    *) from="unknown" ;;
+  esac
+
+  stamp="$(LC_ALL=C date +%d%b%y_%H%M | tr '[:upper:]' '[:lower:]')"
+
+  if ! mkdir -p "$backup_dir"; then
+    echo "Switch failed: cannot create $backup_dir"
+    return 1
+  fi
+
+  backup="$(mktemp "$backup_dir/config.toml.${from}_${to}_${stamp}.XXXXXX")" || {
+    echo "Switch failed: cannot create versioned backup"
+    return 1
+  }
+
+  if ! cp -p "$cfg" "$backup"; then
+    rm -f "$backup"
+    echo "Switch failed: cannot copy config backup"
+    return 1
+  fi
+
+  if ! sed -i "" \
+    -e '1,/^\[/s/^model = /# model = /' \
+    -e '1,/^\[/s/^model_provider = /# model_provider = /' \
+    -e '1,/^\[/s/^model_reasoning_effort = /# model_reasoning_effort = /' \
+    -e "/^# PRESET: ${preset}$/,/^$/s/^# model = /model = /" \
+    -e "/^# PRESET: ${preset}$/,/^$/s/^# model_provider = /model_provider = /" \
+    -e "/^# PRESET: ${preset}$/,/^$/s/^# model_reasoning_effort = /model_reasoning_effort = /" \
+    "$cfg"
+  then
+    cp -p "$backup" "$cfg"
+    echo "Switch failed; config restored from $backup"
+    return 1
+  fi
+
+  top="$(sed -n '1,/^\[/p' "$cfg")"
+
+  if [[ "$(printf '%s\n' "$top" | grep -c '^model = ')" -ne 1 ]] ||
+     [[ "$(printf '%s\n' "$top" | grep -c '^model_provider = ')" -ne 1 ]] ||
+     [[ "$(printf '%s\n' "$top" | grep -c '^model_reasoning_effort = ')" -ne 1 ]] ||
+     ! grep -Fqx "model = \"$model\"" "$cfg" ||
+     ! grep -Fqx "model_provider = \"$provider\"" "$cfg" ||
+     ! grep -Fqx "model_reasoning_effort = \"$effort\"" "$cfg" ||
+     ! "$cli" features list >/dev/null
+  then
+    cp -p "$backup" "$cfg"
+    echo "Switch validation failed; config restored from $backup"
+    return 1
+  fi
+
+  echo "Backup: $backup"
+  echo "Switched from $from to $display_name. Restarting Codex..."
+  killall Codex 2>/dev/null || true
+  sleep 1
+  open -a Codex
+}
+
+alias use-codex='_codex_switch_model codex "gpt-5.5" "openai" "medium" "Codex GPT-5.5" "Codex GPT-5.5"'
+alias use-glm='_codex_switch_model glm "z-ai/glm-5.2" "zenmux" "high" "ZenMux GLM 5.2" "GLM 5.2"'
+alias use-kimi='_codex_switch_model kimi "moonshotai/kimi-k2.7-code" "zenmux" "high" "ZenMux Kimi K2.7 Code" "Kimi K2.7 Code"'
+alias use-claude='_codex_switch_model claude "anthropic/claude-sonnet-4.6" "zenmux" "high" "ZenMux Claude Sonnet 4.6" "Claude Sonnet 4.6"'

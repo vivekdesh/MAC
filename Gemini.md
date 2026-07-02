@@ -19,16 +19,15 @@
 
 ## C. `change.txt` Logging Procedure
 This procedure is for logging final, successfully implemented, and verified code changes only. Intermediate versions or failed attempts will not be logged.
-1.  **Prepare Content:** Prepare the full content for the new log entry. This must include:
+1.  **Prepare Content & Ask for Approval:** Save the full content for the new log entry directly to a temporary file (`gemini_log_update.tmp`) with exactly **two newlines at the end**. This must include:
     *   A timestamp line at the very top (e.g., `Date: YYYY-MM-DD HH:MM:SS`).
     *   The original user `query`.
     *   The `logic` and `explanation` of the change.
     *   A description of the `final code change`.
-    Get user approval for this log message content first.
-2.  **Two-Step Prepending Process:**
-    *   **Step 1: Write Content (1st Approval):** Use a file write tool to save the approved log content to a temporary file (`gemini_log_update.tmp`). Add exactly **two newlines to the end of the content** to ensure proper spacing between log entries.
-    *   **Step 2: Prepend Content (2nd Approval):** Use a simple and safe shell command (`cat` and `mv`) to atomically prepend the temporary content to the final `change.txt` file, creating it if it doesn't exist. Do not delete `gemini_log_update.tmp`.
-    *   **Step 3: Git Commit & Push:** Immediately after updating `change.txt`, you MUST run `git add .`, followed by a `git commit` using a nice, clear heading and the full contents of the newly added `change.txt` entry as the commit body, and finally `git push`.
+    After writing to the tmp file, ask the user for their "ok" on this file.
+2.  **Automated Prepending & Git Push Process:**
+    *   As soon as the user gives "ok" on the tmp file, **automatically** (without asking for further approval) use a shell command (`cat` and `mv`) to prepend the temporary content to `change.txt`.
+    *   Immediately after, **automatically** run `git add .`, `git commit` (using the log entry as the body), and `git push`. Do not ask for further permissions.
 
 ## D. Critical Operating Procedures
 - **DO NOT DEVIATE:** Certain tasks have specific, multi-step procedures outlined in instructions (e.g., logging to `change.txt`, deployments). These procedures must be followed exactly as described, without substitution or simplification.

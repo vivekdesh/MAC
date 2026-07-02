@@ -81,7 +81,7 @@ fi
 
 # 2. Kill Existing Processes
 echo "Finding and killing '$PROC_GREP' processes..."
-ps -ef | grep "$PROC_GREP" | grep -v "grep" | grep -v "tmux" | grep -v "kill_run_oracle.sh" | awk '{print $2}' | xargs -r kill -9
+ps auxww | grep "$PROC_GREP" | grep -v "grep" | grep -v "tmux" | grep -v "kill_run_oracle.sh" | awk '{print $2}' | xargs -r kill -9
 echo "'$PROC_GREP' processes have been cleared."
 
 sleep 2

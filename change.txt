@@ -1,3 +1,8 @@
+Date: 2026-07-02 15:50:48
+Query: "sir do for all BOTs now its 3:38"
+Logic & Explanation: Fixed the process truncation bug in the kill script by replacing `ps -ef` with `ps auxww`. This prevents the Program_restart agent from truncating long process names (which previously caused orphaned child processes like the single leg generators).
+Final Code Change: Replaced `ps -ef` with `ps auxww` across all kill scripts in this repository.
+
 Date: 2026-07-02 15:45:00
 Query: i wish to change workflow to simplify, change all gemini.md, agents.md, etc etc so as soon as i give tmp file ok, chnage.txt, git push to be done automatically!!
 Logic and Explanation: The user requested a streamlined workflow where approving the temporary log file (gemini_log_update.tmp) automatically triggers appending the log to change.txt, followed immediately by a git commit and push, without requiring a second manual confirmation. This reduces manual steps.
