@@ -1,3 +1,14 @@
+Date: 2026-07-02 15:45:00
+Query: i wish to change workflow to simplify, change all gemini.md, agents.md, etc etc so as soon as i give tmp file ok, chnage.txt, git push to be done automatically!!
+Logic and Explanation: The user requested a streamlined workflow where approving the temporary log file (gemini_log_update.tmp) automatically triggers appending the log to change.txt, followed immediately by a git commit and push, without requiring a second manual confirmation. This reduces manual steps.
+Final Code Change: Updated all GEMINI.md and AGENTS.md files across all bot subdirectories to enforce this automated one-step commit and push behavior upon log approval.
+
+
+Date: 2026-07-02 15:45:00
+Query: i wish to change workflow to simplify, change all gemini.md, agents.md, etc etc so as soon as i give tmp file ok, chnage.txt, git push to be done automatically!!
+Logic and Explanation: The user requested a streamlined workflow where approving the temporary log file (`gemini_log_update.tmp`) automatically triggers appending the log to `change.txt`, followed immediately by a git commit and push, without requiring a second manual confirmation. This reduces manual steps.
+Final Code Change: Updated all `GEMINI.md` and `AGENTS.md` files (including the one in `MAC`) to explicitly state that once the user says "ok" to the temporary log file, the agent must automatically append the log, commit, and push in one go.
+
 Date: 2026-06-29 12:44:00
 Query: find out unnecessary files being uploaded and delete it?
 Logic: Exclude bot runtime/state JSON files (like parameters_cache.json, *state*.json, option_chain_cache.json, calculated_greeks*.json) and IDE metadata folders (.claude/) from uploads in sync_master.sh. This prevents local/Mac state files from overwriting live trading bot states on virtual machines during upload syncs. Deleted the unnecessary local state JSON files from project folders.

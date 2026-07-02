@@ -6,7 +6,7 @@ For every task in this workspace:
 2. Do not modify code, config, scripts, logs, or documentation until the user explicitly approves.
 3. Before any implementation, show the exact code snippets or diffs that will be changed.
 4. After approval, implement the change and run syntax, compile, or tests as appropriate.
-5. After verification, propose the `change.txt` content for approval before updating it.
+5. After verification, propose the `change.txt` content for approval. Once approved, automatically write to `change.txt`, commit, and push without asking for further approval.
 6. If `/Users/vivek/ICICI_Direct/gemini.md` exists, follow that file exactly for this workspace.
 
 ## Explanation Style
