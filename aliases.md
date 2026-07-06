@@ -366,3 +366,12 @@ alias use-codex='_codex_switch_model codex "gpt-5.5" "openai" "medium" "Codex GP
 alias use-glm='_codex_switch_model glm "z-ai/glm-5.2" "zenmux" "high" "ZenMux GLM 5.2" "GLM 5.2"'
 alias use-kimi='_codex_switch_model kimi "moonshotai/kimi-k2.7-code" "zenmux" "high" "ZenMux Kimi K2.7 Code" "Kimi K2.7 Code"'
 alias use-claude='_codex_switch_model claude "anthropic/claude-sonnet-4.6" "zenmux" "high" "ZenMux Claude Sonnet 4.6" "Claude Sonnet 4.6"'
+
+# === 🧹 LOG CLEANUP ===
+# Moves .log files older than a specified number of days to the Trash.
+# Usage: clean_logs [days] (Defaults to 5 days)
+clean_logs() {
+  local days="${1:-5}"
+  find /Users/vivek/ICICI_Direct/Google -name "*.log" -type f -mtime +"$days" -exec mv {} ~/.Trash/ \;
+  echo "Moved logs older than $days days to Trash."
+}

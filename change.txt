@@ -1,3 +1,8 @@
+Date: 2026-07-06 14:32:15
+Query: add alias in alias.md for add alias in MAC for "find /Users/vivek/ICICI_Direct/Google -name "*.log" -type f -mtime +3 -exec mv {} ~/.Trash/ \;" only numer of days if not specified it will be 5 days
+Logic & Explanation: Since an alias in bash/zsh cannot accept arguments natively, a shell function `clean_logs` was added to `aliases.md`. It accepts a single argument for the number of days, defaulting to 5 (`${1:-5}`). The `mtime` argument takes `+$days` to select files modified more than that many days ago and moves them to the Trash.
+Final Code Change: Appended the `clean_logs` function to `/Users/vivek/ICICI_Direct/MAC/aliases.md`.
+
 Date: 2026-07-02 15:50:48
 Query: "sir do for all BOTs now its 3:38"
 Logic & Explanation: Fixed the process truncation bug in the kill script by replacing `ps -ef` with `ps auxww`. This prevents the Program_restart agent from truncating long process names (which previously caused orphaned child processes like the single leg generators).
