@@ -840,6 +840,14 @@ tmux send-keys -t rsi_sin "python vivek_RSI_single.py" Enter
 
 ### System Maintenance
 
+# One-liner for regular maintenance
+
+sudo apt update && sudo apt full-upgrade -y && sudo apt autoremove -y && sudo apt autoclean
+
+# Reboot
+
+sudo reboot
+
 *   **Reboot the server:**
     ```bash
     sudo reboot
@@ -963,9 +971,10 @@ delete *.log files in /Users/vivek/ICICI_Direct/Google which age is more than 3 
 find /Users/vivek/ICICI_Direct/Google -name "*.log" -type f -mtime +3
 
 ## Step 2: Execute the Deletion
-This will delete files permeantly:
+## This will delete files permeantly:
 find /Users/vivek/ICICI_Direct/Google -name "*.log" -type f -mtime +3 -delete
-This will Move to Trash
+
+## This will Move to Trash
 find /Users/vivek/ICICI_Direct/Google -name "*.log" -type f -mtime +3 -exec mv {} ~/.Trash/ \;
 
 

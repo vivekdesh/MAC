@@ -372,6 +372,10 @@ alias use-claude='_codex_switch_model claude "anthropic/claude-sonnet-4.6" "zenm
 # Usage: clean_logs [days] (Defaults to 5 days)
 clean_logs() {
   local days="${1:-5}"
-  find /Users/vivek/ICICI_Direct/Google -name "*.log" -type f -mtime +"$days" -exec mv {} ~/.Trash/ \;
+  find /Users/vivek/ICICI_Direct/Google /Users/vivek/ICICI_Direct/Ubentu -name "*.log" -type f -mtime +"$days" -exec mv {} ~/.Trash/ \;
   echo "Moved logs older than $days days to Trash."
 }
+
+# === 📈 MARKET DATA BOT ===
+alias md.nb='bash /Users/vivek/Documents/nifty/market_data_bot/run_market_data_bot_background.sh'
+alias md.yb='bash /Users/vivek/Documents/nifty/market_data_bot/run_market_data_bot_foreground.sh'

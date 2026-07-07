@@ -80,9 +80,29 @@ else
 fi
 
 # 2. Kill Existing Processes
-echo "Finding and killing '$PROC_GREP' processes..."
-ps auxww | grep "$PROC_GREP" | grep -v "grep" | grep -v "tmux" | grep -v "kill_run_oracle.sh" | awk '{print $2}' | xargs -r kill -9
-echo "'$PROC_GREP' processes have been cleared."
+case "$PROJECT" in
+    "mod_rsi")
+        KILL_PATTERN="mod_rsi|vivek_RSI.py|vivek_RSI_single.py|RSI_trade.py|RSI_single_leg.py"
+        ;;
+    "retire")
+        KILL_PATTERN="retire|retire_vivek_trade.py|retire_vivek_single.py|retire_trade.py|retire_single_leg.py"
+        ;;
+    "selling_1")
+        KILL_PATTERN="selling|selling_vivek_trade.py|selling_vivek_single.py|selling_trade.py|selling_single_leg.py"
+        ;;
+    "sensex")
+        KILL_PATTERN="sensex|vivek_sensex.py|vivek_sensex_single.py|sensex_trade.py|sensex_single_leg.py"
+        ;;
+    *)
+        KILL_PATTERN="$PROC_GREP"
+        ;;
+esac
+
+echo "Finding and killing '$PROJECT' processes matching '$KILL_PATTERN'..."
+# Original command:
+# ps auxww | grep "$PROC_GREP" | grep -v "grep" | grep -v "tmux" | grep -v "kill_run_oracle.sh" | awk '{print $2}' | xargs -r kill -9
+ps auxww | grep -E "$KILL_PATTERN" | grep -v "grep" | grep -v "tmux" | grep -v "kill_run_oracle.sh" | awk '{print $2}' | xargs -r kill -9
+echo "'$PROC_GREP' processes matching '$KILL_PATTERN' have been cleared."
 
 sleep 2
 

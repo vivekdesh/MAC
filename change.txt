@@ -1,3 +1,9 @@
+Date: 2026-07-07 16:25:00
+Query: we need fix? issue!! if required for all!!
+Logic & Explanation: Fixed a process escape bug in the bot restart/cleanup scripts where running processes started with relative paths (e.g., `python vivek_RSI.py` or relative `RSI_trade.py`) were not matched by directory-name-only grep filters (`grep "mod_rsi"`), leading to zombie or duplicate trading loops. Updated the grep matching patterns in the restart scripts to perform a regex-based `grep -E` match covering the specific wrapper and daemon script names in addition to folder names. Kept the original process-killing commands commented out for safety and easy restoration.
+Final Code Change:
+- Modified `/Users/vivek/ICICI_Direct/MAC/kill_run_oracle.sh`: Added project-specific `KILL_PATTERN` regex matching wrapper and daemon script names, using `grep -E` for robust process termination while retaining original command commented out.
+
 Date: 2026-07-06 14:32:15
 Query: add alias in alias.md for add alias in MAC for "find /Users/vivek/ICICI_Direct/Google -name "*.log" -type f -mtime +3 -exec mv {} ~/.Trash/ \;" only numer of days if not specified it will be 5 days
 Logic & Explanation: Since an alias in bash/zsh cannot accept arguments natively, a shell function `clean_logs` was added to `aliases.md`. It accepts a single argument for the number of days, defaulting to 5 (`${1:-5}`). The `mtime` argument takes `+$days` to select files modified more than that many days ago and moves them to the Trash.
