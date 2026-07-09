@@ -12,7 +12,7 @@ KEY_BASE_PATH="$LOCAL_ROOT/Key/"
 
 # --- 📝 File Type Globals ---
 # Uploads are restrictive (Code + Config only)
-UPLOAD_OPTS="--exclude=FONSEScripMaster.csv --exclude=parameters_cache.json --exclude=*state*.json --exclude=calculated_greeks*.json --exclude=option_chain_cache.json --exclude=.claude/ --exclude=__pycache__/ --exclude=.git/ --include=*.py --include=*.json --include=*.sh --include=*.csv --include=requirements.txt --exclude=*"
+UPLOAD_OPTS="--exclude=backtest_ha_ema34/ --exclude=backtest_ha_ema34_selling/ --exclude=FONSEScripMaster.csv --exclude=parameters_cache.json --exclude=*state*.json --exclude=calculated_greeks*.json --exclude=option_chain_cache.json --exclude=.claude/ --exclude=__pycache__/ --exclude=.git/ --include=*.py --include=*.json --include=*.sh --include=*.csv --include=requirements.txt --exclude=*"
 
 # Downloads are permissive (Get everything except junk)
 # We exclude .git and __pycache__ to keep it clean, but get all logs/txt/etc.
