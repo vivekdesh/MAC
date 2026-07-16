@@ -358,7 +358,7 @@ ACTION=$2
 case "$COMMAND" in
     "all")
         echo "🌐 MASTER BATCH: Doing EVERYTHING (Down first, then Up for ALL)..."
-        for t in "vivek" "suresh" "oracle_binance"; do
+        for t in "vivek" "suresh" "oracle_binance" "oracle2"; do
             echo "---------------------------------------------------"
             run_sync "$t" "down"
             run_sync "$t" "up"
@@ -367,14 +367,14 @@ case "$COMMAND" in
     "all_u")
         echo "🌐 MASTER BATCH: Uploading to ALL..."
         copy_sensex_to_sensex_suresh
-        for t in "vivek" "suresh" "oracle_binance"; do
+        for t in "vivek" "suresh" "oracle_binance" "oracle2"; do
             echo "---------------------------------------------------"
             run_sync "$t" "up"
         done
         ;;
     "all_d")
         echo "🌐 MASTER BATCH: Downloading from ALL..."
-        for t in "vivek" "suresh" "oracle_binance"; do
+        for t in "vivek" "suresh" "oracle_binance" "oracle2"; do
             echo "---------------------------------------------------"
             run_sync "$t" "down"
         done
