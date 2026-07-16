@@ -1,3 +1,11 @@
+Date: 2026-07-16 16:22:00
+Query: setup from 18 google_vm setup Y 0 created tmux session for ngrok, whatsapp and rokde!! not needed!!
+Logic: Created a custom create_TMS_oracle2.sh setup script for Oracle 2 VM that sets up whatsapp, rokde, and ngrok. Changed sync_master.sh to map and upload this custom script instead of create_TMS_google_root.sh for oracle2 target.
+Final Code Change:
+- Added /Users/vivek/ICICI_Direct/MAC/create_TMS_oracle2.sh.
+- In /Users/vivek/ICICI_Direct/MAC/sync_master.sh, updated oracle2 FOLDER_LIST to map create_TMS_oracle2.sh:create_TMS.sh.
+
+
 Date: 2026-07-16 15:20:00
 Query: whatsapp to o2? No O2?
 Logic: Replaced the hardcoded VM list in the ~/.zshrc aliases all.u and all.d with the centralized batch sync commands all_u and all_d to dynamically include oracle2_vm.
