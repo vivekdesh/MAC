@@ -191,6 +191,13 @@ alias o.sen.y='bash "$SCRIPT_DIR/remote_oracle.sh" restart sensex y'
 alias o.r='o.rsi && o.sell_1 && o.sen'
 alias o.r.y='o.rsi.y && o.sell_1.y && o.sen.y'
 
+# --- ORACLE 2 (GCP) ---
+alias o2.st='bash "$SCRIPT_DIR/remote_oracle2.sh" status'
+alias o2.wa='bash "$SCRIPT_DIR/remote_oracle2.sh" restart wa'
+alias o2.wa.y='bash "$SCRIPT_DIR/remote_oracle2.sh" restart wa y'
+alias o2.u='bash "$SCRIPT_DIR/sync_master.sh" oracle2 up'
+alias o2.d='bash "$SCRIPT_DIR/sync_master.sh" oracle2 down'
+
 # === 📦 MANUAL INDIVIDUAL BOT SYNC COMMANDS ===
 # Use these when you want to sync only one bot, without changing existing aliases like `v.d`.
 
@@ -379,3 +386,4 @@ clean_logs() {
 # === 📈 MARKET DATA BOT ===
 alias md.nb='bash /Users/vivek/Documents/nifty/market_data_bot/run_market_data_bot_background.sh'
 alias md.yb='bash /Users/vivek/Documents/nifty/market_data_bot/run_market_data_bot_foreground.sh'
+alias md.stop='pkill -f "/Users/vivek/Documents/nifty/market_data_bot/market_data_bot.py"'

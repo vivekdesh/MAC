@@ -39,7 +39,7 @@ get_target_config() {
         "vivek")
             REMOTE_CONN="deshpande_vivek@35.237.249.135:/home/deshpande_vivek"
             KEY_FILE="$HOME/.ssh/gcp_key"
-            FOLDER_LIST="retire:retire whatsapp:whatsapp selling:selling nifty:nifty Program_restart:Program_restart MAC/create_TMS_google_root.sh:create_TMS.sh"
+            FOLDER_LIST="retire:retire selling:selling nifty:nifty Program_restart:Program_restart MAC/create_TMS_google_root.sh:create_TMS.sh"
             DL_BASE="$HOME/ICICI_Direct/Google"
             ;;
         "suresh")
@@ -70,6 +70,12 @@ get_target_config() {
             REMOTE_CONN="ubuntu@80.225.215.187:/home/ubuntu"
             KEY_FILE="$LOCAL_ROOT/Key/oracle/ssh-key-2026-02-11.key"
             FOLDER_LIST="binance:binance mod_rsi:mod_rsi selling_1:selling_1 sensex:sensex nifty:nifty Program_restart:Program_restart MAC/kill_run_oracle.sh:kill_run_oracle.sh mod_rsi/create_TMS_oracle.sh:create_TMS_oracle.sh"
+            DL_BASE="$LOCAL_ROOT/Google"
+            ;;
+        "oracle2")
+            REMOTE_CONN="ubuntu@155.248.244.211:/home/ubuntu"
+            KEY_FILE="$LOCAL_ROOT/Key/oracle2/ssh-key-2026-02-11.key"
+            FOLDER_LIST="whatsapp:whatsapp Program_restart:Program_restart MAC/create_TMS_google_root.sh:create_TMS.sh"
             DL_BASE="$LOCAL_ROOT/Google"
             ;;
         *)
@@ -319,16 +325,24 @@ run_sync() {
         fi
     done
 
-    # Batch upload all kill_*.sh scripts for vivek in one rsync call (was 4 separate calls)
-    if [ "$target" == "vivek" ] && [ "$direction" == "up" ]; then
-        echo "  📤 UPLOADING: MAC/kill_*.sh -> /home/deshpande_vivek/ (batched)"
-        rsync -avz -e "ssh -i $KEY_FILE" \
-            --include='kill_retire_google.sh' \
-            --include='kill_selling_google.sh' \
-            --include='kill_whatsapp_google.sh' \
-            --include='kill_nifty_google.sh' \
-            --exclude='*' \
-            "$LOCAL_ROOT/MAC/" "$remote_user_host:/home/deshpande_vivek/"
+    # Batch upload all kill_*.sh scripts for vivek/oracle2 in one rsync call
+    if [ "$direction" == "up" ]; then
+        if [ "$target" == "vivek" ]; then
+            echo "  📤 UPLOADING: MAC/kill_*.sh -> /home/deshpande_vivek/ (batched)"
+            rsync -avz -e "ssh -i $KEY_FILE" \
+                --include='kill_retire_google.sh' \
+                --include='kill_selling_google.sh' \
+                --include='kill_whatsapp_google.sh' \
+                --include='kill_nifty_google.sh' \
+                --exclude='*' \
+                "$LOCAL_ROOT/MAC/" "$remote_user_host:/home/deshpande_vivek/"
+        elif [ "$target" == "oracle2" ]; then
+            echo "  📤 UPLOADING: MAC/kill_*.sh -> /home/ubuntu/ (batched)"
+            rsync -avz -e "ssh -i $KEY_FILE" \
+                --include='kill_whatsapp_google.sh' \
+                --exclude='*' \
+                "$LOCAL_ROOT/MAC/" "$remote_user_host:/home/ubuntu/"
+        fi
     fi
 
     echo "✅ Operation complete."

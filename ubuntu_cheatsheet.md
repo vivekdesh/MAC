@@ -1054,3 +1054,8 @@ find /Users/vivek/ICICI_Direct/Google \
 ! -newermt "2026-05-13 12:35:00" \
 -delete
 ```
+
+
+
+## see alias lets say 1 to8:
+alias | grep "^alias [1-8]="

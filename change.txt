@@ -1,3 +1,14 @@
+Date: 2026-07-16 11:05:00
+Query: i wish to trasnfer whatsapp BOT from vivek ssh to ssh_o2?
+Logic: Configured the new Oracle 2 VM (ssh_o2) target in the MAC remote control and sync system. Made the whatsapp kill scripts dynamically resolve home directories rather than using hardcoded /home/deshpande_vivek/ so that they execute correctly on both Google (GCP) and Oracle VMs. Mapped new shortcuts (aliases) like o2.st, o2.wa to allow easy status and restart management of the bot on the new VM.
+Final Code Change:
+- In /Users/vivek/ICICI_Direct/MAC/sync_master.sh, added the oracle2 VM configuration, removed whatsapp from vivek's folder list, and updated the batch scripts upload block to deploy to /home/ubuntu/ on oracle2.
+- In /Users/vivek/ICICI_Direct/MAC/kill_whatsapp_google.sh, dynamically resolved user home.
+- In /Users/vivek/ICICI_Direct/whatsapp/kill_whatsapp_google.sh, dynamically resolved SCRIPT_DIR and PYTHON_EXEC.
+- Created /Users/vivek/ICICI_Direct/MAC/remote_oracle2.sh to check status (o2.st) and restart the whatsapp bot (o2.wa).
+- In /Users/vivek/ICICI_Direct/MAC/aliases.md, added shortcuts o2.st, o2.wa, o2.wa.y, o2.u, and o2.d.
+
+
 Date: 2026-07-07 16:25:00
 Query: we need fix? issue!! if required for all!!
 Logic & Explanation: Fixed a process escape bug in the bot restart/cleanup scripts where running processes started with relative paths (e.g., `python vivek_RSI.py` or relative `RSI_trade.py`) were not matched by directory-name-only grep filters (`grep "mod_rsi"`), leading to zombie or duplicate trading loops. Updated the grep matching patterns in the restart scripts to perform a regex-based `grep -E` match covering the specific wrapper and daemon script names in addition to folder names. Kept the original process-killing commands commented out for safety and easy restoration.
