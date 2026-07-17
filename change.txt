@@ -1,3 +1,12 @@
+Date: 2026-07-17 11:20:43
+Query: Oracle 2 VM keeps crashing / becoming unresponsive. Investigate and fix.
+Logic: OS syslog showed OOM (Out of Memory) killer events killing Python processes because Oracle 2 VM had 956 MB RAM and zero swap. All 5 Python processes (executor.py, whatsapp_scanner.py, app.py, vivek_whatsapp.py, vivek_rokde.py) together consume ~620 MB, leaving no headroom. During rsync upload the system ran out of memory and the kernel killed restart_agent.py, making the VM appear frozen. Oracle 1 VM (ssh_o) had a 2GB swapfile already configured which is why it remained stable.
+Also fixed: create_TMS_oracle2.sh used bare 'ngrok' command which is not on PATH in non-login tmux sessions. Changed to full path /snap/bin/ngrok.
+Final Code Changes:
+1. Oracle 2 VM: Added 2GB swapfile (/swapfile) — sudo fallocate -l 2G, mkswap, swapon, added to /etc/fstab for persistence across reboots.
+2. /Users/vivek/ICICI_Direct/MAC/create_TMS_oracle2.sh line 28: changed 'ngrok http 3000' to '/snap/bin/ngrok http 3000'.
+
+
 Date: 2026-07-16 16:22:00
 Query: setup from 18 google_vm setup Y 0 created tmux session for ngrok, whatsapp and rokde!! not needed!!
 Logic: Created a custom create_TMS_oracle2.sh setup script for Oracle 2 VM that sets up whatsapp, rokde, and ngrok. Changed sync_master.sh to map and upload this custom script instead of create_TMS_google_root.sh for oracle2 target.

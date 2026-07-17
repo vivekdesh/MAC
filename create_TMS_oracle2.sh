@@ -25,7 +25,7 @@ setup_ngrok_session() {
     if ! tmux has-session -t "$session_name" 2>/dev/null; then
         tmux new-session -d -s "$session_name"
         echo "Created tmux session: $session_name"
-        tmux send-keys -t "$session_name" "ngrok http 3000" Enter
+        tmux send-keys -t "$session_name" "/snap/bin/ngrok http 3000" Enter
         echo "Started 'ngrok http 3000' in session '$session_name'."
     else
         echo "Session '$session_name' already exists. Doing nothing."
