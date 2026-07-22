@@ -37,7 +37,7 @@ get_target_config() {
 
     case "$target" in
         "vivek")
-            REMOTE_CONN="deshpande_vivek@35.237.249.135:/home/deshpande_vivek"
+            REMOTE_CONN="deshpande_vivek@34.26.75.26:/home/deshpande_vivek"
             KEY_FILE="$HOME/.ssh/gcp_key"
             FOLDER_LIST="retire:retire selling:selling nifty:nifty Program_restart:Program_restart MAC/create_TMS_google_root.sh:create_TMS.sh"
             DL_BASE="$HOME/ICICI_Direct/Google"
@@ -75,7 +75,7 @@ get_target_config() {
         "oracle2")
             REMOTE_CONN="ubuntu@155.248.244.211:/home/ubuntu"
             KEY_FILE="$LOCAL_ROOT/Key/oracle2/ssh-key-2026-02-11.key"
-            FOLDER_LIST="whatsapp:whatsapp Program_restart:Program_restart MAC/create_TMS_oracle2.sh:create_TMS.sh"
+            FOLDER_LIST="whatsapp:whatsapp Program_restart:Program_restart MAC/create_TMS_oracle2.sh:create_TMS.sh selling:selling retire:retire nifty:nifty"
             DL_BASE="$LOCAL_ROOT/Google"
             ;;
         *)

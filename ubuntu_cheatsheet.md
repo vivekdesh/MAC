@@ -93,7 +93,7 @@ These commands are for setting up and connecting to a GCP instance via the `gclo
 
 5.  **Connect to the instance:**
     ```bash
-    ssh -o ServerAliveInterval=60 -i ~/.ssh/gcp_key deshpande_vivek@35.237.249.135
+    ssh -o ServerAliveInterval=60 -i ~/.ssh/gcp_key deshpande_vivek@34.26.75.26
     ```
 
 ### Amazon Web Services (AWS) & Other SSH Connections
@@ -144,7 +144,7 @@ ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCUuTdy8IiCdC/wP/9WG3mq7smUCmCZqvgX9xJJPsJd
 2.  **Add a host entry:**
     ```
     Host vivek     
-    HostName 35.237.249.135
+    HostName 34.26.75.26
     User deshpande_vivek
     IdentityFile ~/.ssh/gcp_key
     ServerAliveInterval 60
@@ -201,7 +201,7 @@ Set these once in the terminal before running the commands below:
 
 ```bash
 KEY_GCP="$HOME/.ssh/gcp_key"
-GCP="deshpande_vivek@35.237.249.135:/home/deshpande_vivek"
+GCP="deshpande_vivek@34.26.75.26:/home/deshpande_vivek"
 
 KEY_SUR="$HOME/ICICI_Direct/Key/suresh_oracle/ssh_suresh_oracle.key"
 SUR="ubuntu@80.225.197.254:/home/ubuntu"
@@ -401,7 +401,7 @@ Run once manually before enabling `systemd`.
 Google VM:
 
 ```bash
-ssh -i "$HOME/.ssh/gcp_key" deshpande_vivek@35.237.249.135
+ssh -i "$HOME/.ssh/gcp_key" deshpande_vivek@34.26.75.26
 cd /home/deshpande_vivek
 /home/deshpande_vivek/myenv/bin/python /home/deshpande_vivek/Program_restart/restart_agent.py --vm google_vm --once
 ```
@@ -568,8 +568,8 @@ ssh -i "$HOME/ICICI_Direct/Key/suresh_oracle/ssh_suresh_oracle.key" ubuntu@80.22
 Google VM:
 
 ```bash
-ssh -i "$HOME/.ssh/gcp_key" deshpande_vivek@35.237.249.135 'systemctl status program-restart-google.service --no-pager -l'
-ssh -i "$HOME/.ssh/gcp_key" deshpande_vivek@35.237.249.135 'journalctl -u program-restart-google.service -n 50 --no-pager'
+ssh -i "$HOME/.ssh/gcp_key" deshpande_vivek@34.26.75.26 'systemctl status program-restart-google.service --no-pager -l'
+ssh -i "$HOME/.ssh/gcp_key" deshpande_vivek@34.26.75.26 'journalctl -u program-restart-google.service -n 50 --no-pager'
 ```
 
 Oracle VM:
@@ -589,7 +589,7 @@ Purpose:
 Google VM:
 
 ```bash
-ssh -i "$HOME/.ssh/gcp_key" deshpande_vivek@35.237.249.135 'sudo systemctl restart program-restart-google.service'
+ssh -i "$HOME/.ssh/gcp_key" deshpande_vivek@34.26.75.26 'sudo systemctl restart program-restart-google.service'
 ```
 
 Oracle VM:

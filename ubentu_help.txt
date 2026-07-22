@@ -21,7 +21,7 @@ gcloud compute instances add-metadata instance-20251009-150038 \
 -----
 Now always u need:
 
-ssh -o ServerAliveInterval=60 -i ~/.ssh/gcp_key deshpande_vivek@35.237.249.135
+ssh -o ServerAliveInterval=60 -i ~/.ssh/gcp_key deshpande_vivek@34.26.75.26
 
 
 OR
@@ -36,7 +36,7 @@ nano ~/.ssh/config
 Add:
 
 Host gcp-breeze
-    HostName 35.237.249.135
+    HostName 34.26.75.26
     User deshpande_vivek
     IdentityFile ~/.ssh/gcp_key
     ServerAliveInterval 60

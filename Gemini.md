@@ -90,7 +90,7 @@ You have access to 4 remote virtual machines managed by scripts in `/Users/vivek
 ---
 
 ## 1. Vivek VM (GCP)
-- **Connection:** `deshpande_vivek@35.237.249.135`
+- **Connection:** `deshpande_vivek@34.26.75.26`
 - **SSH Key:** `~/.ssh/gcp_key`
 - **Remote Base:** `/home/deshpande_vivek`
 - **Local Download Destination:** `/Users/vivek/ICICI_Direct/Google/`

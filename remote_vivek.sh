@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # --- Configuration for Vivek (GCP) ---
-REMOTE_CONN="deshpande_vivek@35.237.249.135"
+REMOTE_CONN="deshpande_vivek@34.26.75.26"
 KEY_FILE="$HOME/.ssh/gcp_key"
 
 # Remote Paths

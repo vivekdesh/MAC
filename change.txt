@@ -1,3 +1,8 @@
+Date: 2026-07-22 10:48:00
+Query: Transfer bots to Oracle2, making paths universal.
+Logic & Explanation: Hardcoded `/home/deshpande_vivek` paths failed on Oracle2 which uses the `ubuntu` user. We need dynamic user path resolution.
+Final Code Change: In `/Users/vivek/ICICI_Direct/MAC/create_TMS.sh`, replaced `/home/deshpande_vivek` with `$HOME`.
+
 Date: 2026-07-17 11:20:43
 Query: Oracle 2 VM keeps crashing / becoming unresponsive. Investigate and fix.
 Logic: OS syslog showed OOM (Out of Memory) killer events killing Python processes because Oracle 2 VM had 956 MB RAM and zero swap. All 5 Python processes (executor.py, whatsapp_scanner.py, app.py, vivek_whatsapp.py, vivek_rokde.py) together consume ~620 MB, leaving no headroom. During rsync upload the system ran out of memory and the kernel killed restart_agent.py, making the VM appear frozen. Oracle 1 VM (ssh_o) had a 2GB swapfile already configured which is why it remained stable.
@@ -108,7 +113,7 @@ File: /Users/vivek/ICICI_Direct/MAC/sync_master.sh
 File: /Users/vivek/.ssh/config
 1. Added ControlMaster auto + ControlPath + ControlPersist 10m to existing
    named host entries (vivek, oracle, suresh_oracle).
-2. Added new IP-based Host entries (35.237.249.135, 80.225.215.187,
+2. Added new IP-based Host entries (34.26.75.26, 80.225.215.187,
    140.245.15.195) with ControlMaster so rsync (which uses raw IPs) actually
    triggers multiplexing.
 

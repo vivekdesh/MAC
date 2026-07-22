@@ -3,7 +3,7 @@
 # === 🧭 Google Cloud VM Settings ===
 userDir="/Users/vivek/ICICI_Direct"
 privateKeyPath="$HOME/.ssh/gcp_key"    # Path to your GCP private key
-remoteHost="deshpande_vivek@35.237.249.135"   # <-- your GCP static IP + username
+remoteHost="deshpande_vivek@34.26.75.26"   # <-- your GCP static IP + username
 remoteBaseDir="/home/deshpande_vivek/"        # GCP default home dir
 
 # === 📂 Function to transfer files ===

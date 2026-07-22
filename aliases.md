@@ -66,14 +66,14 @@ alias v.nifty.y='bash "$SCRIPT_DIR/remote_vivek.sh" restart nifty y'
 alias v.all.y='bash "$SCRIPT_DIR/remote_vivek.sh" restart all y'
 
 # Vivek Single Bot Sync
-alias v.ret.u='rsync -avz -e "ssh -i $HOME/.ssh/gcp_key" --exclude=FONSEScripMaster.csv --include="*.py" --include="*.json" --include="*.sh" --include="*.csv" --include="requirements.txt" --exclude="*" $HOME/ICICI_Direct/retire/ deshpande_vivek@35.237.249.135:/home/deshpande_vivek/retire/'
-alias v.ret.d='rsync -avz -e "ssh -i $HOME/.ssh/gcp_key" --exclude=.git --exclude=__pycache__ --exclude=.DS_Store deshpande_vivek@35.237.249.135:/home/deshpande_vivek/retire/ $HOME/ICICI_Direct/Google/retire/'
-alias v.sell.u='rsync -avz -e "ssh -i $HOME/.ssh/gcp_key" --exclude=FONSEScripMaster.csv --include="*.py" --include="*.json" --include="*.sh" --include="*.csv" --include="requirements.txt" --exclude="*" $HOME/ICICI_Direct/selling/ deshpande_vivek@35.237.249.135:/home/deshpande_vivek/selling/'
-alias v.sell.d='rsync -avz -e "ssh -i $HOME/.ssh/gcp_key" --exclude=.git --exclude=__pycache__ --exclude=.DS_Store deshpande_vivek@35.237.249.135:/home/deshpande_vivek/selling/ $HOME/ICICI_Direct/Google/selling/'
-alias v.wa.u='rsync -avz -e "ssh -i $HOME/.ssh/gcp_key" --exclude=FONSEScripMaster.csv --include="*.py" --include="*.json" --include="*.sh" --include="*.csv" --include="requirements.txt" --exclude="*" $HOME/ICICI_Direct/whatsapp/ deshpande_vivek@35.237.249.135:/home/deshpande_vivek/whatsapp/'
-alias v.wa.d='rsync -avz -e "ssh -i $HOME/.ssh/gcp_key" --exclude=.git --exclude=__pycache__ --exclude=.DS_Store deshpande_vivek@35.237.249.135:/home/deshpande_vivek/whatsapp/ $HOME/ICICI_Direct/Google/whatsapp/'
-alias v.nifty.u='rsync -avz -e "ssh -i $HOME/.ssh/gcp_key" --exclude=FONSEScripMaster.csv --include="*.py" --include="*.json" --include="*.sh" --include="*.csv" --exclude="*" $HOME/ICICI_Direct/nifty/ deshpande_vivek@35.237.249.135:/home/deshpande_vivek/nifty/'
-alias v.nifty.d='rsync -avz -e "ssh -i $HOME/.ssh/gcp_key" --exclude=.git --exclude=__pycache__ --exclude=.DS_Store deshpande_vivek@35.237.249.135:/home/deshpande_vivek/nifty/ $HOME/ICICI_Direct/Google/nifty/'
+alias v.ret.u='rsync -avz -e "ssh -i $HOME/.ssh/gcp_key" --exclude=FONSEScripMaster.csv --include="*.py" --include="*.json" --include="*.sh" --include="*.csv" --include="requirements.txt" --exclude="*" $HOME/ICICI_Direct/retire/ deshpande_vivek@34.26.75.26:/home/deshpande_vivek/retire/'
+alias v.ret.d='rsync -avz -e "ssh -i $HOME/.ssh/gcp_key" --exclude=.git --exclude=__pycache__ --exclude=.DS_Store deshpande_vivek@34.26.75.26:/home/deshpande_vivek/retire/ $HOME/ICICI_Direct/Google/retire/'
+alias v.sell.u='rsync -avz -e "ssh -i $HOME/.ssh/gcp_key" --exclude=FONSEScripMaster.csv --include="*.py" --include="*.json" --include="*.sh" --include="*.csv" --include="requirements.txt" --exclude="*" $HOME/ICICI_Direct/selling/ deshpande_vivek@34.26.75.26:/home/deshpande_vivek/selling/'
+alias v.sell.d='rsync -avz -e "ssh -i $HOME/.ssh/gcp_key" --exclude=.git --exclude=__pycache__ --exclude=.DS_Store deshpande_vivek@34.26.75.26:/home/deshpande_vivek/selling/ $HOME/ICICI_Direct/Google/selling/'
+alias v.wa.u='rsync -avz -e "ssh -i $HOME/.ssh/gcp_key" --exclude=FONSEScripMaster.csv --include="*.py" --include="*.json" --include="*.sh" --include="*.csv" --include="requirements.txt" --exclude="*" $HOME/ICICI_Direct/whatsapp/ deshpande_vivek@34.26.75.26:/home/deshpande_vivek/whatsapp/'
+alias v.wa.d='rsync -avz -e "ssh -i $HOME/.ssh/gcp_key" --exclude=.git --exclude=__pycache__ --exclude=.DS_Store deshpande_vivek@34.26.75.26:/home/deshpande_vivek/whatsapp/ $HOME/ICICI_Direct/Google/whatsapp/'
+alias v.nifty.u='rsync -avz -e "ssh -i $HOME/.ssh/gcp_key" --exclude=FONSEScripMaster.csv --include="*.py" --include="*.json" --include="*.sh" --include="*.csv" --exclude="*" $HOME/ICICI_Direct/nifty/ deshpande_vivek@34.26.75.26:/home/deshpande_vivek/nifty/'
+alias v.nifty.d='rsync -avz -e "ssh -i $HOME/.ssh/gcp_key" --exclude=.git --exclude=__pycache__ --exclude=.DS_Store deshpande_vivek@34.26.75.26:/home/deshpande_vivek/nifty/ $HOME/ICICI_Direct/Google/nifty/'
 
 # Upload then restart only if upload succeeds
 alias v.ret.ur='v.ret.u && v.ret'
@@ -205,7 +205,7 @@ alias o2.d='bash "$SCRIPT_DIR/sync_master.sh" oracle2 down'
 # Download only RETIRE
 # rsync -avz -e "ssh -i $HOME/.ssh/gcp_key" \
 #   --exclude=.git --exclude=__pycache__ --exclude=.DS_Store \
-#   deshpande_vivek@35.237.249.135:/home/deshpande_vivek/retire/ \
+#   deshpande_vivek@34.26.75.26:/home/deshpande_vivek/retire/ \
 #   $HOME/ICICI_Direct/Google/retire/
 
 # Upload only RETIRE
@@ -214,7 +214,7 @@ alias o2.d='bash "$SCRIPT_DIR/sync_master.sh" oracle2 down'
 #   --include='*.py' --include='*.json' --include='*.sh' --include='*.csv' \
 #   --exclude='*' \
 #   $HOME/ICICI_Direct/retire/ \
-#   deshpande_vivek@35.237.249.135:/home/deshpande_vivek/retire/
+#   deshpande_vivek@34.26.75.26:/home/deshpande_vivek/retire/
 
 # --- Suresh Oracle: mod_rsi only ---
 # Download only mod_rsi
@@ -280,11 +280,11 @@ alias o2.d='bash "$SCRIPT_DIR/sync_master.sh" oracle2 down'
 
 # Download:
 
-# rsync -avz -e "ssh -i $HOME/.ssh/gcp_key" --exclude=.git --exclude=__pycache__ --exclude=.DS_Store deshpande_vivek@35.237.249.135:/home/deshpande_vivek/whatsapp/ $HOME/ICICI_Direct/Google/whatsapp/
+# rsync -avz -e "ssh -i $HOME/.ssh/gcp_key" --exclude=.git --exclude=__pycache__ --exclude=.DS_Store deshpande_vivek@34.26.75.26:/home/deshpande_vivek/whatsapp/ $HOME/ICICI_Direct/Google/whatsapp/
 
  # Upload:
 
-# rsync -avz -e "ssh -i $HOME/.ssh/gcp_key" --exclude=FONSEScripMaster.csv --include='*.py' --include='*.json' --include='*.sh' --include='*.csv' --exclude='*' $HOME/ICICI_Direct/whatsapp/ deshpande_vivek@35.237.249.135:/home/deshpande_vivek/whatsapp/
+# rsync -avz -e "ssh -i $HOME/.ssh/gcp_key" --exclude=FONSEScripMaster.csv --include='*.py' --include='*.json' --include='*.sh' --include='*.csv' --exclude='*' $HOME/ICICI_Direct/whatsapp/ deshpande_vivek@34.26.75.26:/home/deshpande_vivek/whatsapp/
 
 # --- CODEX MODEL SWITCHERS (VERSIONED BACKUP + VALIDATE + AUTO-RESTART) ---
 _codex_switch_model() {

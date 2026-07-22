@@ -3,7 +3,7 @@
 # --- 🧭 Configuration (Google Cloud) ---
 PKEY="$HOME/.ssh/gcp_key"               # ✅ Your GCP private key
 REMOTE_USER="deshpande_vivek"           # ✅ GCP default user
-REMOTE_HOST="35.237.249.135"           # ✅ Your GCP static IP
+REMOTE_HOST="34.26.75.26"           # ✅ Your GCP static IP
 
 # --- Parallel arrays for directories to sync ---
 NAMES=("mod_rsi" "whatsapp" "selling")
