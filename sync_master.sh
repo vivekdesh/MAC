@@ -301,8 +301,14 @@ run_sync() {
 
                 echo "  📥 DOWNLOADING: $remote_path -> $dl_final_path"
 
+                # First, download all non-log files without --append so JSON files overwrite cleanly
+                rsync -avz -e "ssh -i $KEY_FILE" \
+                    $DOWNLOAD_OPTS --exclude="*.log" \
+                    "$remote_user_host:$remote_path/" "$dl_final_path/"
+
+                # Second, download ONLY .log files WITH --append for incremental transfers
                 rsync -avz --append -e "ssh -i $KEY_FILE" \
-                    $DOWNLOAD_OPTS \
+                    $DOWNLOAD_OPTS --include="*.log" --exclude="*" \
                     "$remote_user_host:$remote_path/" "$dl_final_path/"
 
                 # Rename rolling logs to include today's date (app.log → app_23Jun26.log)
@@ -318,8 +324,12 @@ run_sync() {
 
                 echo "  📥 DOWNLOADING: $remote_path -> $DL_BASE/$local_sub"
 
+                rsync -avz -e "ssh -i $KEY_FILE" \
+                    $DOWNLOAD_OPTS --exclude="*.log" \
+                    "$remote_user_host:$remote_path" "$DL_BASE/$local_sub"
+
                 rsync -avz --append -e "ssh -i $KEY_FILE" \
-                    $DOWNLOAD_OPTS \
+                    $DOWNLOAD_OPTS --include="*.log" --exclude="*" \
                     "$remote_user_host:$remote_path" "$DL_BASE/$local_sub"
             fi
         fi

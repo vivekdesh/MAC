@@ -1,3 +1,8 @@
+Date: 2026-07-23 12:25:00
+Query: it should pull out all json files sir change it!!
+Logic & Explanation: The sync_master.sh script was downloading ALL files using the `--append` flag (even though the comments claimed it was only for log files). The `--append` flag works great for appending to rolling .log files incrementally, but it completely corrupts .json files (like index_daily_ha_bias_cache.json) because Python overwrites/truncates them, making the new JSON file potentially smaller or just different, which `--append` messes up by just pasting extra bytes at the end. I modified the download logic to split the rsync into two commands: one without `--append` for non-log files (so JSON overwrites safely), and a second one with `--append` exclusively for `*.log` files.
+Final Code Change: Modified lines 304 and 321 in `/Users/vivek/ICICI_Direct/MAC/sync_master.sh` to run standard `rsync` with `--exclude="*.log"` for normal files, and a second `rsync --append` with `--include="*.log" --exclude="*"` specifically for the log files.
+
 Date: 2026-07-22 10:48:00
 Query: Transfer bots to Oracle2, making paths universal.
 Logic & Explanation: Hardcoded `/home/deshpande_vivek` paths failed on Oracle2 which uses the `ubuntu` user. We need dynamic user path resolution.
