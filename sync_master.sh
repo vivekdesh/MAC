@@ -12,7 +12,7 @@ KEY_BASE_PATH="$LOCAL_ROOT/Key/"
 
 # --- 📝 File Type Globals ---
 # Uploads are restrictive (Code + Config only)
-UPLOAD_OPTS="--exclude=backtest_ha_ema34/ --exclude=backtest_ha_ema34_selling/ --exclude=FONSEScripMaster.csv --exclude=parameters_cache.json --exclude=*state*.json --exclude=calculated_greeks*.json --exclude=option_chain_cache.json --exclude=.claude/ --exclude=__pycache__/ --exclude=.git/ --include=*.py --include=*.json --include=*.sh --include=*.csv --include=requirements.txt --exclude=*"
+UPLOAD_OPTS="--exclude=backtest_ha_ema34/ --exclude=backtest_ha_ema34_selling/ --exclude=FONSEScripMaster.csv --exclude=parameters_cache.json --exclude=index_daily_ha_bias_cache.json --exclude=*state*.json --exclude=calculated_greeks*.json --exclude=option_chain_cache.json --exclude=.claude/ --exclude=__pycache__/ --exclude=.git/ --include=*.py --include=*.json --include=*.sh --include=*.csv --include=requirements.txt --exclude=*"
 
 # Downloads are permissive (Get everything except junk)
 # We exclude .git and __pycache__ to keep it clean, but get all logs/txt/etc.
@@ -75,7 +75,7 @@ get_target_config() {
         "oracle2")
             REMOTE_CONN="ubuntu@155.248.244.211:/home/ubuntu"
             KEY_FILE="$LOCAL_ROOT/Key/oracle2/ssh-key-2026-02-11.key"
-            FOLDER_LIST="whatsapp:whatsapp Program_restart:Program_restart MAC/create_TMS_oracle2.sh:create_TMS.sh selling:selling retire:retire nifty:nifty"
+            FOLDER_LIST="whatsapp:whatsapp ngrok:ngrok Program_restart:Program_restart MAC/create_TMS_oracle2.sh:create_TMS.sh"
             DL_BASE="$LOCAL_ROOT/Google"
             ;;
         *)

@@ -29,7 +29,7 @@ sir, yesterdays data is avialble. all options from 9:15 to 3:30 are available in
 6. Latest Logs are downloded in respective google folder, please refer the same for analysis!
 
 
-Please refer general guidline for interactivess ness, documentation, AI token optimisation, smoke tests and its details , Git push, commit etc etc 
+Please refer general guidline for interactivess ness, documentation, AI token optimisation, smoke tests and its details , Git push, commit etc etc. interactiveness most imp!!
 
 /Users/vivek/Documents/MASTER_PROMPT_TEMPLATE.md 
 

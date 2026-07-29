@@ -1,3 +1,14 @@
+Date: 2026-07-29 10:33:00
+Query: setup loop reconnect for ngrok with 20 seconds sleep and limit of 5 consecutive quick crashes. Download logs to local Google folder under 'ngrok'
+Logic & Explanation:
+1. Updated create_TMS_oracle2.sh to run Ngrok inside a while loop. If Ngrok fails within 60 seconds of start, failure count is incremented. If it hits 5 consecutive crashes, it exits the loop to prevent infinite loops. Added 20-second cooldown sleep between attempts.
+2. Redirected Ngrok output to ~/ngrok/ngrok.log on the VM.
+3. Updated sync_master.sh to sync the remote ngrok directory to local Google/ngrok folder so the logs can be downloaded and inspected on Mac.
+
+Final Code Change:
+- In /Users/vivek/ICICI_Direct/MAC/create_TMS_oracle2.sh, updated setup_ngrok_session to implement retry loop with 5 max failures and 20-second sleep.
+- In /Users/vivek/ICICI_Direct/MAC/sync_master.sh, added ngrok:ngrok to synced folders list for oracle2 VM.
+
 Date: 2026-07-23 12:25:00
 Query: it should pull out all json files sir change it!!
 Logic & Explanation: The sync_master.sh script was downloading ALL files using the `--append` flag (even though the comments claimed it was only for log files). The `--append` flag works great for appending to rolling .log files incrementally, but it completely corrupts .json files (like index_daily_ha_bias_cache.json) because Python overwrites/truncates them, making the new JSON file potentially smaller or just different, which `--append` messes up by just pasting extra bytes at the end. I modified the download logic to split the rsync into two commands: one without `--append` for non-log files (so JSON overwrites safely), and a second one with `--append` exclusively for `*.log` files.

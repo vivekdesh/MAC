@@ -66,13 +66,13 @@ alias v.nifty.y='bash "$SCRIPT_DIR/remote_vivek.sh" restart nifty y'
 alias v.all.y='bash "$SCRIPT_DIR/remote_vivek.sh" restart all y'
 
 # Vivek Single Bot Sync
-alias v.ret.u='rsync -avz -e "ssh -i $HOME/.ssh/gcp_key" --exclude=FONSEScripMaster.csv --include="*.py" --include="*.json" --include="*.sh" --include="*.csv" --include="requirements.txt" --exclude="*" $HOME/ICICI_Direct/retire/ deshpande_vivek@34.26.75.26:/home/deshpande_vivek/retire/'
+alias v.ret.u="rsync -avz -e \"ssh -i \$HOME/.ssh/gcp_key\" --exclude=FONSEScripMaster.csv --exclude=parameters_cache.json --exclude=index_daily_ha_bias_cache.json --exclude='*state*.json' --exclude='calculated_greeks*.json' --exclude=option_chain_cache.json --include='*.py' --include='*.json' --include='*.sh' --include='*.csv' --include=requirements.txt --exclude='*' \$HOME/ICICI_Direct/retire/ deshpande_vivek@34.26.75.26:/home/deshpande_vivek/retire/"
 alias v.ret.d='rsync -avz -e "ssh -i $HOME/.ssh/gcp_key" --exclude=.git --exclude=__pycache__ --exclude=.DS_Store deshpande_vivek@34.26.75.26:/home/deshpande_vivek/retire/ $HOME/ICICI_Direct/Google/retire/'
-alias v.sell.u='rsync -avz -e "ssh -i $HOME/.ssh/gcp_key" --exclude=FONSEScripMaster.csv --include="*.py" --include="*.json" --include="*.sh" --include="*.csv" --include="requirements.txt" --exclude="*" $HOME/ICICI_Direct/selling/ deshpande_vivek@34.26.75.26:/home/deshpande_vivek/selling/'
+alias v.sell.u="rsync -avz -e \"ssh -i \$HOME/.ssh/gcp_key\" --exclude=FONSEScripMaster.csv --exclude=parameters_cache.json --exclude=index_daily_ha_bias_cache.json --exclude='*state*.json' --exclude='calculated_greeks*.json' --exclude=option_chain_cache.json --include='*.py' --include='*.json' --include='*.sh' --include='*.csv' --include=requirements.txt --exclude='*' \$HOME/ICICI_Direct/selling/ deshpande_vivek@34.26.75.26:/home/deshpande_vivek/selling/"
 alias v.sell.d='rsync -avz -e "ssh -i $HOME/.ssh/gcp_key" --exclude=.git --exclude=__pycache__ --exclude=.DS_Store deshpande_vivek@34.26.75.26:/home/deshpande_vivek/selling/ $HOME/ICICI_Direct/Google/selling/'
-alias v.wa.u='rsync -avz -e "ssh -i $HOME/.ssh/gcp_key" --exclude=FONSEScripMaster.csv --include="*.py" --include="*.json" --include="*.sh" --include="*.csv" --include="requirements.txt" --exclude="*" $HOME/ICICI_Direct/whatsapp/ deshpande_vivek@34.26.75.26:/home/deshpande_vivek/whatsapp/'
+alias v.wa.u="rsync -avz -e \"ssh -i \$HOME/.ssh/gcp_key\" --exclude=FONSEScripMaster.csv --exclude=parameters_cache.json --exclude=index_daily_ha_bias_cache.json --exclude='*state*.json' --exclude='calculated_greeks*.json' --exclude=option_chain_cache.json --include='*.py' --include='*.json' --include='*.sh' --include='*.csv' --include=requirements.txt --exclude='*' \$HOME/ICICI_Direct/whatsapp/ deshpande_vivek@34.26.75.26:/home/deshpande_vivek/whatsapp/"
 alias v.wa.d='rsync -avz -e "ssh -i $HOME/.ssh/gcp_key" --exclude=.git --exclude=__pycache__ --exclude=.DS_Store deshpande_vivek@34.26.75.26:/home/deshpande_vivek/whatsapp/ $HOME/ICICI_Direct/Google/whatsapp/'
-alias v.nifty.u='rsync -avz -e "ssh -i $HOME/.ssh/gcp_key" --exclude=FONSEScripMaster.csv --include="*.py" --include="*.json" --include="*.sh" --include="*.csv" --exclude="*" $HOME/ICICI_Direct/nifty/ deshpande_vivek@34.26.75.26:/home/deshpande_vivek/nifty/'
+alias v.nifty.u="rsync -avz -e \"ssh -i \$HOME/.ssh/gcp_key\" --exclude=FONSEScripMaster.csv --exclude=parameters_cache.json --exclude=index_daily_ha_bias_cache.json --exclude='*state*.json' --exclude='calculated_greeks*.json' --exclude=option_chain_cache.json --include='*.py' --include='*.json' --include='*.sh' --include='*.csv' --exclude='*' \$HOME/ICICI_Direct/nifty/ deshpande_vivek@34.26.75.26:/home/deshpande_vivek/nifty/"
 alias v.nifty.d='rsync -avz -e "ssh -i $HOME/.ssh/gcp_key" --exclude=.git --exclude=__pycache__ --exclude=.DS_Store deshpande_vivek@34.26.75.26:/home/deshpande_vivek/nifty/ $HOME/ICICI_Direct/Google/nifty/'
 
 # Upload then restart only if upload succeeds
@@ -97,19 +97,19 @@ alias s.sen.y='bash "$SCRIPT_DIR/remote_suresh.sh" restart sensex y'
 alias s.setup='bash "$SCRIPT_DIR/remote_suresh.sh" setup'
 
 # Suresh Single Bot Sync
-alias s.rsi.u='rsync -avz -e "ssh -i $HOME/ICICI_Direct/Key/suresh_oracle/ssh_suresh_oracle.key" --exclude=FONSEScripMaster.csv --include="*.py" --include="*.json" --include="*.sh" --include="*.csv" --include="requirements.txt" --exclude="*" $HOME/ICICI_Direct/mod_rsi/ ubuntu@140.245.15.195:/home/ubuntu/mod_rsi/'
+alias s.rsi.u="rsync -avz -e \"ssh -i \$HOME/ICICI_Direct/Key/suresh_oracle/ssh_suresh_oracle.key\" --exclude=FONSEScripMaster.csv --include='*.py' --exclude='*' \$HOME/ICICI_Direct/mod_rsi/ ubuntu@140.245.15.195:/home/ubuntu/mod_rsi/"
 alias s.rsi.d='rsync -avz -e "ssh -i $HOME/ICICI_Direct/Key/suresh_oracle/ssh_suresh_oracle.key" --exclude=.git --exclude=__pycache__ --exclude=.DS_Store ubuntu@140.245.15.195:/home/ubuntu/mod_rsi/ $HOME/ICICI_Direct/Ubentu/suresh/algo_suresh/'
-alias s.sen.u='rsync -avz -e "ssh -i $HOME/ICICI_Direct/Key/suresh_oracle/ssh_suresh_oracle.key" --exclude=FONSEScripMaster.csv --include="*.py" --include="*.json" --include="*.sh" --include="*.csv" --include="requirements.txt" --exclude="*" $HOME/ICICI_Direct/sensex_suresh/ ubuntu@140.245.15.195:/home/ubuntu/sensex_suresh/'
+alias s.sen.u="rsync -avz -e \"ssh -i \$HOME/ICICI_Direct/Key/suresh_oracle/ssh_suresh_oracle.key\" --exclude=FONSEScripMaster.csv --exclude=parameters_cache.json --exclude=index_daily_ha_bias_cache.json --exclude='*state*.json' --exclude='calculated_greeks*.json' --exclude=option_chain_cache.json --include='*.py' --include='*.json' --include='*.sh' --include='*.csv' --include=requirements.txt --exclude='*' \$HOME/ICICI_Direct/sensex_suresh/ ubuntu@140.245.15.195:/home/ubuntu/sensex_suresh/"
 alias s.sen.d='rsync -avz -e "ssh -i $HOME/ICICI_Direct/Key/suresh_oracle/ssh_suresh_oracle.key" --exclude=.git --exclude=__pycache__ --exclude=.DS_Store ubuntu@140.245.15.195:/home/ubuntu/sensex_suresh/ $HOME/ICICI_Direct/Ubentu/suresh/sensex_suresh/'
 
 # Oracle Single Bot Sync
-alias o.bin.u='rsync -avz -e "ssh -i $HOME/ICICI_Direct/Key/oracle/ssh-key-2026-02-11.key" --exclude=FONSEScripMaster.csv --include="*.py" --include="*.json" --include="*.sh" --include="*.csv" --include="requirements.txt" --exclude="*" $HOME/ICICI_Direct/binance/ ubuntu@80.225.215.187:/home/ubuntu/binance/'
+alias o.bin.u="rsync -avz -e \"ssh -i \$HOME/ICICI_Direct/Key/oracle/ssh-key-2026-02-11.key\" --exclude=FONSEScripMaster.csv --exclude=parameters_cache.json --exclude=index_daily_ha_bias_cache.json --exclude='*state*.json' --exclude='calculated_greeks*.json' --exclude=option_chain_cache.json --include='*.py' --include='*.json' --include='*.sh' --include='*.csv' --include=requirements.txt --exclude='*' \$HOME/ICICI_Direct/binance/ ubuntu@80.225.215.187:/home/ubuntu/binance/"
 alias o.bin.d='rsync -avz -e "ssh -i $HOME/ICICI_Direct/Key/oracle/ssh-key-2026-02-11.key" --exclude=.git --exclude=__pycache__ --exclude=.DS_Store ubuntu@80.225.215.187:/home/ubuntu/binance/ $HOME/ICICI_Direct/Google/binance/'
-alias o.rsi.u='rsync -avz -e "ssh -i $HOME/ICICI_Direct/Key/oracle/ssh-key-2026-02-11.key" --exclude=FONSEScripMaster.csv --include="*.py" --include="*.json" --include="*.sh" --include="*.csv" --include="requirements.txt" --exclude="*" $HOME/ICICI_Direct/mod_rsi/ ubuntu@80.225.215.187:/home/ubuntu/mod_rsi/'
+alias o.rsi.u="rsync -avz -e \"ssh -i \$HOME/ICICI_Direct/Key/oracle/ssh-key-2026-02-11.key\" --exclude=FONSEScripMaster.csv --include='*.py' --exclude='*' \$HOME/ICICI_Direct/mod_rsi/ ubuntu@80.225.215.187:/home/ubuntu/mod_rsi/"
 alias o.rsi.d='rsync -avz -e "ssh -i $HOME/ICICI_Direct/Key/oracle/ssh-key-2026-02-11.key" --exclude=.git --exclude=__pycache__ --exclude=.DS_Store ubuntu@80.225.215.187:/home/ubuntu/mod_rsi/ $HOME/ICICI_Direct/Google/mod_rsi/'
-alias o.sell_1.u='rsync -avz -e "ssh -i $HOME/ICICI_Direct/Key/oracle/ssh-key-2026-02-11.key" --exclude=FONSEScripMaster.csv --include="*.py" --include="*.json" --include="*.sh" --include="*.csv" --include="requirements.txt" --exclude="*" $HOME/ICICI_Direct/selling_1/ ubuntu@80.225.215.187:/home/ubuntu/selling_1/'
+alias o.sell_1.u="rsync -avz -e \"ssh -i \$HOME/ICICI_Direct/Key/oracle/ssh-key-2026-02-11.key\" --exclude=FONSEScripMaster.csv --exclude=parameters_cache.json --exclude=index_daily_ha_bias_cache.json --exclude='*state*.json' --exclude='calculated_greeks*.json' --exclude=option_chain_cache.json --include='*.py' --include='*.json' --include='*.sh' --include='*.csv' --include=requirements.txt --exclude='*' \$HOME/ICICI_Direct/selling_1/ ubuntu@80.225.215.187:/home/ubuntu/selling_1/"
 alias o.sell_1.d='rsync -avz -e "ssh -i $HOME/ICICI_Direct/Key/oracle/ssh-key-2026-02-11.key" --exclude=.git --exclude=__pycache__ --exclude=.DS_Store ubuntu@80.225.215.187:/home/ubuntu/selling_1/ $HOME/ICICI_Direct/Google/selling_1/'
-alias o.sen.u='rsync -avz -e "ssh -i $HOME/ICICI_Direct/Key/oracle/ssh-key-2026-02-11.key" --exclude=FONSEScripMaster.csv --include="*.py" --include="*.json" --include="*.sh" --include="*.csv" --include="requirements.txt" --exclude="*" $HOME/ICICI_Direct/sensex/ ubuntu@80.225.215.187:/home/ubuntu/sensex/'
+alias o.sen.u="rsync -avz -e \"ssh -i \$HOME/ICICI_Direct/Key/oracle/ssh-key-2026-02-11.key\" --exclude=FONSEScripMaster.csv --exclude=parameters_cache.json --exclude=index_daily_ha_bias_cache.json --exclude='*state*.json' --exclude='calculated_greeks*.json' --exclude=option_chain_cache.json --include='*.py' --include='*.json' --include='*.sh' --include='*.csv' --include=requirements.txt --exclude='*' \$HOME/ICICI_Direct/sensex/ ubuntu@80.225.215.187:/home/ubuntu/sensex/"
 alias o.sen.d='rsync -avz -e "ssh -i $HOME/ICICI_Direct/Key/oracle/ssh-key-2026-02-11.key" --exclude=.git --exclude=__pycache__ --exclude=.DS_Store ubuntu@80.225.215.187:/home/ubuntu/sensex/ $HOME/ICICI_Direct/Google/sensex/'
 
 # --- BANDU (GCP) ---
@@ -298,7 +298,7 @@ _codex_switch_model() {
   local display_name="$6"
   local cfg="/Users/vivek/.codex/config.toml"
   local backup_dir="/Users/vivek/.codex/config-backups"
-  local cli="/Applications/Codex.app/Contents/Resources/codex"
+  local cli="/Applications/ChatGPT.app/Contents/Resources/codex"
   local current_model from stamp backup top
 
   if [[ ! -r "$cfg" ]]; then
@@ -369,7 +369,7 @@ _codex_switch_model() {
   open -a Codex
 }
 
-alias use-codex='_codex_switch_model codex "gpt-5.5" "openai" "medium" "Codex GPT-5.5" "Codex GPT-5.5"'
+alias use-codex='_codex_switch_model codex "gpt-5.5" "openai" "medium" "ChatGPT GPT-5.5" "ChatGPT GPT-5.5"'
 alias use-glm='_codex_switch_model glm "z-ai/glm-5.2" "zenmux" "high" "ZenMux GLM 5.2" "GLM 5.2"'
 alias use-kimi='_codex_switch_model kimi "moonshotai/kimi-k2.7-code" "zenmux" "high" "ZenMux Kimi K2.7 Code" "Kimi K2.7 Code"'
 alias use-claude='_codex_switch_model claude "anthropic/claude-sonnet-4.6" "zenmux" "high" "ZenMux Claude Sonnet 4.6" "Claude Sonnet 4.6"'

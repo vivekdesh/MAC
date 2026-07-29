@@ -579,6 +579,13 @@ ssh -i "$HOME/ICICI_Direct/Key/oracle/ssh-key-2026-02-11.key" ubuntu@80.225.215.
 ssh -i "$HOME/ICICI_Direct/Key/oracle/ssh-key-2026-02-11.key" ubuntu@80.225.215.187 'journalctl -u program-restart-oracle.service -n 50 --no-pager'
 ```
 
+Oracle2 VM! 
+
+```bash
+ssh -i "$HOME/ICICI_Direct/Key/oracle2/ssh-key-2026-02-11.key" ubuntu@155.248.244.211 'systemctl status program-restart-oracle2.service --no-pager -l'
+ssh -i "$HOME/ICICI_Direct/Key/oracle2/ssh-key-2026-02-11.key" ubuntu@155.248.244.211 'journalctl -u program-restart-oracle2.service -n 50 --no-pager'
+```
+
 ### Remote Restart From Mac
 
 Purpose:
