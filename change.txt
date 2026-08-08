@@ -1,3 +1,10 @@
+Date: 2026-08-08 18:02:00
+Query: Update sync_master.sh to automate fast-param deployment
+Logic & Explanation: When fast_parameter_handler.py or fast_param_subscriber.py change, they must be copied to the home directory on the target VM and the subscriber service restarted. Previously this required manual intervention. The sync_master.sh has been updated to automate this.
+Final Code Change:
+- File: /Users/vivek/ICICI_Direct/MAC/sync_master.sh
+- Added a POST-SYNC block to the `run_sync` function for the "up" direction.
+- If the uploaded FOLDER_LIST contains "Program_restart", the script connects to the target VM, copies fast_parameter_handler.py and fast_param_subscriber.py from ~/Program_restart/ to ~/, and runs `sudo systemctl restart icici-fast-param-subscriber.service`.
 Date: 2026-08-08 14:37:00
 Query: Fix ngrok loop script log overwrite
 Logic: 

@@ -353,6 +353,14 @@ run_sync() {
                 --exclude='*' \
                 "$LOCAL_ROOT/MAC/" "$remote_user_host:/home/ubuntu/"
         fi
+
+        # If we uploaded Program_restart, automatically apply it to the home directory
+        # and restart the subscriber service.
+        if [[ "$FOLDER_LIST" == *"Program_restart"* ]]; then
+            echo "  🔄 POST-SYNC: Updating fast-param-subscriber on $target..."
+            ssh -i "$KEY_FILE" -o ConnectTimeout=8 "$remote_user_host" \
+              "cp ~/Program_restart/fast_parameter_handler.py ~/ 2>/dev/null; cp ~/Program_restart/fast_param_subscriber.py ~/ 2>/dev/null; sudo systemctl restart icici-fast-param-subscriber.service"
+        fi
     fi
 
     echo "✅ Operation complete."
