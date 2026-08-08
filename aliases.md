@@ -387,3 +387,32 @@ clean_logs() {
 alias md.nb='bash /Users/vivek/Documents/nifty/market_data_bot/run_market_data_bot_background.sh'
 alias md.yb='bash /Users/vivek/Documents/nifty/market_data_bot/run_market_data_bot_foreground.sh'
 alias md.stop='pkill -f "/Users/vivek/Documents/nifty/market_data_bot/market_data_bot.py"'
+
+# === 📊 OPTION DATA EXTRACTION (extract_option_data.py) ===
+# Pulls Log_backup + log_single for mod_rsi, sensex, selling; appends new
+# rows to data_extraction/output/<bot>_quotes.csv. No date args = auto-detect
+# gap since the last saved row (dd-mm-yy format for from/to).
+#
+# | Alias        | Usage                                   | Backup first? |
+# | :---         | :---                                    | :---          |
+# | fetchopt     | fetchopt [bot] [from] [to]              | No            |
+# | fetchopt_bk  | fetchopt_bk [bot] [from] [to]           | Yes           |
+#
+# Examples:
+#   fetchopt                                # all 3 bots, auto-detect gap
+#   fetchopt mod_rsi 15-07-26 20-07-26      # one bot, explicit range
+#   fetchopt_bk selling                     # backup selling's CSV, then append
+fetchopt() {
+  bot="${1:-mod_rsi,sensex,selling}"
+  args=(--bot "$bot")
+  [ -n "$2" ] && args+=(--from "$2")
+  [ -n "$3" ] && args+=(--to "$3")
+  python3 "$HOME/ICICI_Direct/data_extraction/extract_option_data.py" "${args[@]}"
+}
+fetchopt_bk() {
+  bot="${1:-mod_rsi,sensex,selling}"
+  args=(--bot "$bot" --backup)
+  [ -n "$2" ] && args+=(--from "$2")
+  [ -n "$3" ] && args+=(--to "$3")
+  python3 "$HOME/ICICI_Direct/data_extraction/extract_option_data.py" "${args[@]}"
+}

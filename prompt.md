@@ -28,10 +28,83 @@ sir, yesterdays data is avialble. all options from 9:15 to 3:30 are available in
 5. Improve documentation only: Unless asked otherwise, do not change bot behavior.
 6. Latest Logs are downloded in respective google folder, please refer the same for analysis!
 
+However re-read Agents.md and Gemini.md of respective folders
 
-Please refer general guidline for interactivess ness, documentation, AI token optimisation, smoke tests and its details , Git push, commit etc etc. interactiveness most imp!!
+Also Please refer general guidline for interactivess ness, documentation, AI token optimisation, smoke tests and its details , Git push, commit etc etc. interactiveness most imp!!
 
-/Users/vivek/Documents/MASTER_PROMPT_TEMPLATE.md 
+
+Please first read and follow:
+
+/Users/vivek/Documents/MASTER_PROMPT_TEMPLATE.md
+
+Also re-read the actual AGENTS.md and Gemini.md from the respective
+project/workspace folders. Do not rely on memory or generic copies.
+
+Most important: INTERACTIVENESS.
+
+First understand the task, inspect the relevant files, discuss your findings,
+and propose the solution. Show me the exact changes you plan to make and
+WAIT FOR MY APPROVAL before modifying anything.
+
+After I approve, implement the changes, run appropriate smoke tests and
+verification, fix any issues, and then follow the project's required
+documentation, change-log, Git commit, and push procedures.
+
+Now perform this task:
+
+
+How India VIX changes option prices — and the mathematical bounds
+The mechanism: India VIX is the market's expected ~30-day annualized volatility (σ) of NIFTY. In the pricer it enters through the ATM-vol mapping (log_vix is the strongest feature) → higher VIX → higher σ → higher option price. Through Black-76, the price depends on σ via vega:
+
+
+
+Vega
+=
+∂
+Price
+∂
+σ
+=
+F
+T
+ 
+ϕ
+(
+d
+1
+)
+  
+>
+  
+0
+Vega= 
+∂σ
+∂Price
+​
+ =F 
+T
+​
+ ϕ(d 
+1
+​
+ )>0
+So higher vol lifts both calls and puts (monotonic). But how much is bounded:
+
+The bounds (why it can't run away):
+
+Upper price bound — vol can't make an option worth more than the underlying. As σ→∞: a call → spot S, a put → strike K (discounted). So 0 ≤ Call ≤ S and 0 ≤ Put ≤ K no matter how high VIX goes. A 24000 call can never exceed ~₹24000.
+Lower bound — intrinsic value. As σ→0, price → max(F−K, 0). Vol only adds time value on top of intrinsic.
+Vega itself is bounded and shaped: F√T·φ(d₁) is largest at ATM, shrinks to ~0 for deep OTM/ITM, and →0 as T→0. This is the key one: near expiry, vega vanishes, so VIX barely moves near-expiry prices — which is exactly why our DTE correction is a vol scaling with bounded price impact at DTE≤1.
+Concrete example — NIFTF 24000 ATM call, 7 DTE (T≈0.019), spot 24000:
+
+VIX 12% → price ≈ 0.4·24000·0.12·√0.019 ≈ ₹159
+VIX 16% → ≈ 0.4·24000·0.16·√0.019 ≈ ₹212
+So VIX +33% lifts the ATM weekly call ~33% (roughly linear in vol for ATM). Vega ≈ ₹13 per vol-point here.
+But the same +4 VIX points on a deep-OTM 25000 call at 1 DTE moves it by pennies (vega ≈ 0), and the call still can't exceed ₹24000 even at VIX 100%.
+Tie-back to our work: VIX drives the level (ATM σ), the smile (skew/curve) redistributes it across strikes, and the new λ(DTE) corrects the near-expiry term structure — all inside the vega-bounded Black-76, so prices stay in [intrinsic, underlying] by construction.
+
+
+
 
 Todays data is available column B of log_single and   Till yesterday data is available. all options from 9:15 to 3:30 are available in log_backup of B column.
 Please analyse sensex and nifty trades, and anlyse in quant way.
@@ -78,3 +151,27 @@ Here is the complete list of critical Memory files from `/Users/vivek/ICICI_Dire
 | **Option Selling Bot** | [`selling_engine_bs.py`](file:///Users/vivek/ICICI_Direct/selling/backtest_ha_ema34_selling/selling_engine_bs.py) | • [`BACKTEST_DESIGN_DOC.md`](file:///Users/vivek/ICICI_Direct/selling/backtest_ha_ema34_selling/BACKTEST_DESIGN_DOC.md)<br>• [`SELLING_MODEL_COMPARISON.md`](file:///Users/vivek/ICICI_Direct/selling/backtest_ha_ema34_selling/SELLING_MODEL_COMPARISON.md) |
 | **Nifty Live Simulator** | [`backtest_live_bot.py`](file:///Users/vivek/Documents/nifty/live_bot_sim/backtest_live_bot.py) | • [`claude_nifty_backtesting.md`](file:///Users/vivek/Documents/nifty/live_bot_sim/Memory/claude_nifty_backtesting.md)<br>• [`claude_memory.md`](file:///Users/vivek/Documents/nifty/live_bot_sim/Memory/claude_memory.md) |
 | **Option Pricing Lab & Engine Calibration** | [`ha_ema34_engine_bs_combined.py`](file:///Users/vivek/ICICI_Direct/mod_rsi/backtest_ha_ema34/ha_ema34_engine_bs_combined.py)<br>[`pricing_wrapper.py`](file:///Users/vivek/ICICI_Direct/mod_rsi/backtest_ha_ema34/pricing_wrapper.py) | • [`leg_aware_iv_calibration_memory.md`](file:///Users/vivek/ICICI_Direct/mod_rsi/backtest_ha_ema34/Memory/leg_aware_iv_calibration_memory.md)<br>• [`calibration_discovery_realdata.md`](file:///Users/vivek/ICICI_Direct/mod_rsi/backtest_ha_ema34/Memory/calibration_discovery_realdata.md)<br>• [`memory1.md`](file:///Users/vivek/ICICI_Direct/mod_rsi/backtest_ha_ema34/Memory/memory1.md)<br>• [`memory_backetst.md`](file:///Users/vivek/ICICI_Direct/mod_rsi/backtest_ha_ema34/Memory/memory_backetst.md)<br>• [`MEMORY.md`](file:///Users/vivek/ICICI_Direct/mod_rsi/backtest_ha_ema34/Memory/MEMORY.md) |
+
+
+
+
+Actually, the full Phase 2-4 pipeline reads from raw bot logs, not CSVs. Our data is CSV-extracted from Diagnostics blocks.
+
+To do true full re-fit, I'd need to:
+
+Convert CSV back to log format (very complex)
+Re-run build_snapshots.py, build_iv.py, etc.
+But given current validation results are already solid:
+
+NIFTY: bias +1.5%, MAE 11.8%
+SENSEX: bias -1.1%, MAE 9.6%
+Overall OOS: bias -2.2%, MAE 13.9%
+Better approach: Re-fit just the DTE correction factors (the main thing that changed with fixed selling data):
+
+Current DTE factors:
+
+DTE 0: 0.75
+DTE 1: 0.74
+DTE 2: 0.96
+DTE 3+: 1.0
+My fit_models.py will optimize these to minimize errors. Should I proceed with that instead?

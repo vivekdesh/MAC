@@ -34,7 +34,7 @@ setup_ngrok_session() {
         tmux send-keys -t "$session_name" "max_failures=5" Enter
         tmux send-keys -t "$session_name" 'while [ $consecutive_failures -lt $max_failures ]; do
             start_time=$(date +%s)
-            /snap/bin/ngrok http 3000 --log=stdout > ~/ngrok/ngrok.log 2>&1
+            /snap/bin/ngrok http 3000 --log=stdout >> ~/ngrok/ngrok.log 2>&1
             exit_code=$?
             end_time=$(date +%s)
             duration=$((end_time - start_time))

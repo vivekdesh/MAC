@@ -1,3 +1,12 @@
+Date: 2026-08-08 14:37:00
+Query: Fix ngrok loop script log overwrite
+Logic: 
+- The `create_TMS_oracle2.sh` script used `>` to redirect standard output and error to `ngrok.log` inside the tmux session loop.
+- This effectively wiped the file on each restart instead of preserving the loop's history.
+- Changed the redirect operator to `>>` to correctly append output.
+Final code change: 
+1. In `/Users/vivek/ICICI_Direct/MAC/create_TMS_oracle2.sh`, modified line 37 from `/snap/bin/ngrok http 3000 --log=stdout > ~/ngrok/ngrok.log 2>&1` to use `>>`.
+
 Date: 2026-07-29 10:33:00
 Query: setup loop reconnect for ngrok with 20 seconds sleep and limit of 5 consecutive quick crashes. Download logs to local Google folder under 'ngrok'
 Logic & Explanation:
