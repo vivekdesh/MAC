@@ -27,16 +27,17 @@ def check_cache_and_logs():
     vm_order = ["Vivek VM (GCP)", "Oracle VM (GCP)", "Oracle 2 VM (GCP)", "Suresh VM (AWS)", "Unknown VM"]
 
     # =========================================================================
-    # PART 1: CACHE STATUS
+    # PARSE ALL DATA FIRST
     # =========================================================================
+    
+    # 1. Parse Cache Files
     files = []
     for p in search_paths:
         for f in glob.glob(p + "/parameters_cache.json"):
-            if "Bandu" not in f:  # Explicitly ignore Bandu completely
+            if "Bandu" not in f:
                 files.append(f)
 
     cache_data = {vm: [] for vm in vm_order}
-
     for f in files:
         try:
             with open(f, "r") as json_file:
@@ -57,21 +58,7 @@ def check_cache_and_logs():
         except Exception:
             pass
 
-    print("\n🚀 [TASK 1] FAST PARAMETER LIVE CACHE STATUS (Grouped by VM) 🚀")
-    print("=" * 95)
-    print("{:<25} | {:<15} | {:<15} | {:<20}".format("Bot", "Program_stop", "Executor", "Last Downloaded"))
-    print("=" * 95)
-
-    for vm in vm_order:
-        if cache_data.get(vm):
-            print(f"\n🖥️  {vm}")
-            print("-" * 95)
-            for bot, p_stop, p_exec, time_str in sorted(cache_data[vm]):
-                print("{:<25} | {:<15} | {:<15} | {:<20}".format(bot, p_stop, p_exec, time_str))
-            
-    print("=" * 95 + "\n")
-    
-    # Collect Logs
+    # 2. Parse Log Files
     log_files = []
     for p in search_paths:
         for f in glob.glob(p + "/*.log"):
@@ -120,32 +107,13 @@ def check_cache_and_logs():
             pass
 
     # =========================================================================
-    # PART 2: QUOTA ERRORS TODAY
+    # PRINT RESULTS IN REVERSE ORDER (3, 2, 1)
     # =========================================================================
-    print("🔎 [TASK 2] CHECKING FOR GOOGLE API QUOTA ERRORS TODAY 🔎")
-    print("=" * 95)
-    
-    total_quota = sum(len(errs) for errs in quota_errors.values())
-    
-    if total_quota == 0:
-        print("✅ NO QUOTA ERRORS FOUND TODAY! Fast Parameter system is saving API calls.")
-    else:
-        print(f"⚠️ FOUND {total_quota} QUOTA ERRORS TODAY:")
-        for vm in vm_order:
-            if quota_errors.get(vm):
-                print(f"\n🖥️  {vm} ({len(quota_errors[vm])} errors)")
-                print("-" * 95)
-                for bot, fname, err in quota_errors[vm]:
-                    if len(err) > 110:
-                        err = err[:107] + "..."
-                    print(f"  [{bot}] -> {err}")
-            
-    print("=" * 95 + "\n")
 
     # =========================================================================
-    # PART 3: GENERAL ERRORS TODAY (Max 5 per bot)
+    # TASK 3: GENERAL ERRORS TODAY (Max 5 per bot)
     # =========================================================================
-    print("🔎 [TASK 3] CHECKING FOR OTHER ERRORS TODAY (Excluding Quota) 🔎")
+    print("\n🔎 [TASK 3] CHECKING FOR OTHER ERRORS TODAY (Excluding Quota) 🔎")
     print("=" * 95)
     
     total_general = sum(sum(len(errs) for errs in bots.values()) for bots in general_errors.values())
@@ -171,6 +139,46 @@ def check_cache_and_logs():
                                 err = err[:107] + "..."
                             print(f"    -> {err}")
                         print()
+            
+    print("=" * 95 + "\n")
+
+    # =========================================================================
+    # TASK 2: QUOTA ERRORS TODAY
+    # =========================================================================
+    print("🔎 [TASK 2] CHECKING FOR GOOGLE API QUOTA ERRORS TODAY 🔎")
+    print("=" * 95)
+    
+    total_quota = sum(len(errs) for errs in quota_errors.values())
+    
+    if total_quota == 0:
+        print("✅ NO QUOTA ERRORS FOUND TODAY! Fast Parameter system is saving API calls.")
+    else:
+        print(f"⚠️ FOUND {total_quota} QUOTA ERRORS TODAY:")
+        for vm in vm_order:
+            if quota_errors.get(vm):
+                print(f"\n🖥️  {vm} ({len(quota_errors[vm])} errors)")
+                print("-" * 95)
+                for bot, fname, err in quota_errors[vm]:
+                    if len(err) > 110:
+                        err = err[:107] + "..."
+                    print(f"  [{bot}] -> {err}")
+            
+    print("=" * 95 + "\n")
+
+    # =========================================================================
+    # TASK 1: CACHE STATUS
+    # =========================================================================
+    print("🚀 [TASK 1] FAST PARAMETER LIVE CACHE STATUS (Grouped by VM) 🚀")
+    print("=" * 95)
+    print("{:<25} | {:<15} | {:<15} | {:<20}".format("Bot", "Program_stop", "Executor", "Last Downloaded"))
+    print("=" * 95)
+
+    for vm in vm_order:
+        if cache_data.get(vm):
+            print(f"\n🖥️  {vm}")
+            print("-" * 95)
+            for bot, p_stop, p_exec, time_str in sorted(cache_data[vm]):
+                print("{:<25} | {:<15} | {:<15} | {:<20}".format(bot, p_stop, p_exec, time_str))
             
     print("=" * 95 + "\n")
 
