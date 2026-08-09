@@ -26,31 +26,37 @@ setup_ngrok_session() {
         tmux new-session -d -s "$session_name"
         echo "Created tmux session: $session_name"
         
-        # Create log directory
+        # Create log directory and the script file
         mkdir -p ~/ngrok
         
-        # Start ngrok in a loop that stops after 5 consecutive quick crashes
-        tmux send-keys -t "$session_name" "consecutive_failures=0" Enter
-        tmux send-keys -t "$session_name" "max_failures=5" Enter
-        tmux send-keys -t "$session_name" 'while [ $consecutive_failures -lt $max_failures ]; do
-            start_time=$(date +%s)
-            /snap/bin/ngrok http 3000 --log=stdout >> ~/ngrok/ngrok.log 2>&1
-            exit_code=$?
-            end_time=$(date +%s)
-            duration=$((end_time - start_time))
-            echo "$(date) - Ngrok exited with code $exit_code after $duration seconds." >> ~/ngrok/ngrok.log
-            if [ $duration -gt 60 ]; then
-                consecutive_failures=0
-            else
-                consecutive_failures=$((consecutive_failures + 1))
-                echo "$(date) - Ngrok crashed quickly. Failure count: $consecutive_failures/$max_failures" >> ~/ngrok/ngrok.log
-            fi
-            if [ $consecutive_failures -ge $max_failures ]; then
-                echo "$(date) - Ngrok crashed $max_failures times consecutively. Exiting loop." >> ~/ngrok/ngrok.log
-                break
-            fi
-            sleep 20
-        done' Enter
+        cat << 'EOF' > ~/ngrok/run_ngrok.sh
+#!/bin/bash
+consecutive_failures=0
+max_failures=5
+while [ $consecutive_failures -lt $max_failures ]; do
+    start_time=$(date +%s)
+    /snap/bin/ngrok http 3000 --log=stdout >> ~/ngrok/ngrok.log 2>&1
+    exit_code=$?
+    end_time=$(date +%s)
+    duration=$((end_time - start_time))
+    echo "$(date) - Ngrok exited with code $exit_code after $duration seconds." >> ~/ngrok/ngrok.log
+    if [ $duration -gt 60 ]; then
+        consecutive_failures=0
+    else
+        consecutive_failures=$((consecutive_failures + 1))
+        echo "$(date) - Ngrok crashed quickly. Failure count: $consecutive_failures/$max_failures" >> ~/ngrok/ngrok.log
+    fi
+    if [ $consecutive_failures -ge $max_failures ]; then
+        echo "$(date) - Ngrok crashed $max_failures times consecutively. Exiting loop." >> ~/ngrok/ngrok.log
+        break
+    fi
+    sleep 20
+done
+EOF
+        chmod +x ~/ngrok/run_ngrok.sh
+        
+        # Start ngrok script safely
+        tmux send-keys -t "$session_name" "~/ngrok/run_ngrok.sh" Enter
         echo "Started loop-wrapped Ngrok in session '$session_name'."
     else
         echo "Session '$session_name' already exists. Doing nothing."

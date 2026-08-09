@@ -374,7 +374,15 @@ alias use-glm='_codex_switch_model glm "z-ai/glm-5.2" "zenmux" "high" "ZenMux GL
 alias use-kimi='_codex_switch_model kimi "moonshotai/kimi-k2.7-code" "zenmux" "high" "ZenMux Kimi K2.7 Code" "Kimi K2.7 Code"'
 alias use-claude='_codex_switch_model claude "anthropic/claude-sonnet-4.6" "zenmux" "high" "ZenMux Claude Sonnet 4.6" "Claude Sonnet 4.6"'
 
+# === 🚨 DIAGNOSTICS & SYSTEM CHECKS ===
+alias check_log='python3 "$HOME/ICICI_Direct/MAC/check_cache.py"'
+
 # === 🧹 LOG CLEANUP ===
+alias wipe.r='bash "$HOME/ICICI_Direct/MAC/wipe_restart_logs.sh"'
+
+# run news routine
+alias news='python3 "/Users/vivek/Documents/files/news_agent_mac_ready/run_morning_pipeline.py"'
+
 # Moves .log files older than a specified number of days to the Trash.
 # Usage: clean_logs [days] (Defaults to 5 days)
 clean_logs() {

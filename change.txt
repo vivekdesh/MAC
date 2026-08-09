@@ -1,3 +1,15 @@
+Date: 2026-08-09 11:38:00
+Query: Create a unified script to monitor Fast Parameter Cache Status, track Google API Quota errors, and catch general runtime errors. Wipe all old restart_agent logs safely via SSH and add terminal aliases for ease of use.
+Logic and Explanation:
+1. Created a robust diagnostic tool (`check_cache.py`) that executes three distinct tasks cleanly grouped by VM (Vivek, Oracle, Oracle 2, Suresh), entirely excluding retired servers like Bandu. It prints the latest cache statuses and strictly separates API Quota [429] issues from generic code Exceptions/Errors (showing a maximum of 5 recent errors to prevent screen clutter).
+2. Deployed `wipe_restart_logs.sh` to safely truncate bloated, un-rotated `restart_agent*.log` files directly on all VMs using SSH, and move local Mac copies to the Trash, providing a clean slate for future error monitoring without crashing live processes.
+3. Registered both commands in `aliases.md` (`check_cache` and `wipe.r`) to allow immediate, shorthand execution from the local terminal.
+Final Code Change:
+- [NEW] `/Users/vivek/ICICI_Direct/MAC/check_cache.py`: Python script to aggregate `parameters_cache.json` state and parse today's `.log` files for 'ERROR', 'Exception', 'Traceback', and 'Quota'.
+- [NEW] `/Users/vivek/ICICI_Direct/MAC/wipe_restart_logs.sh`: Bash script containing direct SSH `truncate` commands for all 4 live VMs and local Mac `mv` cleanups.
+- [MODIFIED] `/Users/vivek/ICICI_Direct/MAC/aliases.md`: Inserted alias definitions for `check_cache` and `wipe.r` into the Diagnostics & Log Cleanup section.
+
+
 Date: 2026-08-08 18:02:00
 Query: Update sync_master.sh to automate fast-param deployment
 Logic & Explanation: When fast_parameter_handler.py or fast_param_subscriber.py change, they must be copied to the home directory on the target VM and the subscriber service restarted. Previously this required manual intervention. The sync_master.sh has been updated to automate this.

@@ -611,6 +611,45 @@ Suresh VM:
 ssh -i "$HOME/ICICI_Direct/Key/suresh_oracle/ssh_suresh_oracle.key" ubuntu@80.225.197.254 'sudo systemctl restart program-restart-suresh.service'
 ```
 
+
+Because the Pub/Sub listener is running as a systemd background service (and not inside the tmux sessions where your main trading bots live), you can restart it anytime using sudo systemctl restart without interrupting the bots.
+
+1. Google VM (Selling / Retire / Nifty) (Note: Replace the IP below with your current Google VM IP if it changes).
+
+bash
+
+
+ssh -i ~/.ssh/gcp_key deshpande_vivek@34.26.75.26 'sudo systemctl restart icici-fast-param-subscriber'
+
+2. Suresh VM (AWS - Suresh Mod RSI / Sensex)
+
+bash
+
+
+ssh -i /Users/vivek/ICICI_Direct/Key/suresh_oracle/ssh_suresh_oracle.key ubuntu@140.245.15.195 'sudo systemctl restart icici-fast-param-subscriber'
+3. Oracle VM (Mod RSI / Sensex / Selling 1)
+
+bash
+
+
+ssh -i /Users/vivek/ICICI_Direct/Key/oracle/ssh-key-2026-02-11.key ubuntu@80.225.215.187 'sudo systemctl restart icici-fast-param-subscriber'
+
+Cheatbook Addition (Oracle2 - Whatsapp)
+Since whatsapp lives on oracle2, here are the specific cheatbook commands to manage its subscriber if you ever face parameter freezes in the future (this doesn't require killing tmux either!):
+
+bash
+
+
+# 1. SSH into Oracle2
+ssh -i /Users/vivek/ICICI_Direct/Key/oracle2/ssh-key-2026-02-11.key ubuntu@155.248.244.211
+# 2. Restart the Fast Parameter Service
+sudo systemctl restart icici-fast-param-subscriber.service
+# 3. Check Live Logs (Press Ctrl+C to exit)
+sudo journalctl -u icici-fast-param-subscriber.service -f
+
+
+You can run these commands from your local Mac terminal anytime you push changes to fast_parameter_handler.py or want to clear out a stuck Pub/Sub queue!
+
 Google Sheet test rows:
 - `17` = `google_vm status` = equivalent to `v.st`
 - `18` = `google_vm setup` = equivalent to `v.setup`
