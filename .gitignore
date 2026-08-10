@@ -1,9 +1,15 @@
 # Exclude subdirectories
 Backup/
 old/
+.claude/
 
 # macOS metadata
 .DS_Store
 
-# Temporary log files
+# Archives
+*.tar.gz
+
+# Temporary and log files
+*.tmp
+*.log
 gemini_log_update.tmp
