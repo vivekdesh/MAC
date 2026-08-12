@@ -1,3 +1,8 @@
+Date: 2026-08-12 10:27:00
+Query: add comments !!
+Logic: Add comments explaining the target files and actions for remote and local log cleanup in wipe_restart_logs.sh.
+Final Code Change: Added explanatory comments to each of the 5 wiping sections inside `/Users/vivek/ICICI_Direct/MAC/wipe_restart_logs.sh`.
+
 Date: 2026-08-09 11:38:00
 Query: Create a unified script to monitor Fast Parameter Cache Status, track Google API Quota errors, and catch general runtime errors. Wipe all old restart_agent logs safely via SSH and add terminal aliases for ease of use.
 Logic and Explanation:
