@@ -391,10 +391,15 @@ clean_logs() {
   echo "Moved logs older than $days days to Trash."
 }
 
-# === 📈 MARKET DATA BOT ===
+# === 📈 MARKET DATA BOT (NIFTY & INDICES) ===
 alias md.nb='bash /Users/vivek/Documents/nifty/market_data_bot/run_market_data_bot_background.sh'
 alias md.yb='bash /Users/vivek/Documents/nifty/market_data_bot/run_market_data_bot_foreground.sh'
 alias md.stop='pkill -f "/Users/vivek/Documents/nifty/market_data_bot/market_data_bot.py"'
+
+# === 📈 MARKET DATA BOT (BINANCE CRYPTO: BTC & ETH) ===
+alias md.bb='bash /Users/vivek/ICICI_Direct/binance/market_data_bot/run_binance_market_data_bot_background.sh'
+alias md.by='bash /Users/vivek/ICICI_Direct/binance/market_data_bot/run_binance_market_data_bot_foreground.sh'
+alias md.bstop='pkill -f "/Users/vivek/ICICI_Direct/binance/market_data_bot/binance_market_data_bot.py"'
 
 # === 📊 OPTION DATA EXTRACTION (extract_option_data.py) ===
 # Pulls Log_backup + log_single for mod_rsi, sensex, selling; appends new
