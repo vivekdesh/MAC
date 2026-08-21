@@ -121,7 +121,7 @@ def check_cache_and_logs():
     if total_general == 0:
         print("✅ NO OTHER ERRORS FOUND TODAY! All bots are running smoothly.")
     else:
-        print(f"⚠️ FOUND OTHER ERRORS TODAY (Showing max 5 latest per bot):")
+        print(f"⚠️ FOUND OTHER ERRORS TODAY (Showing max 7 latest per bot):")
         
         for vm in vm_order:
             vm_has_errors = sum(len(errs) for errs in general_errors.get(vm, {}).values()) > 0
@@ -131,7 +131,7 @@ def check_cache_and_logs():
                 
                 for bot, errs in general_errors[vm].items():
                     if len(errs) > 0:
-                        latest_errs = errs[-5:]
+                        latest_errs = errs[-7:]
                         print(f"  [{bot}] - {len(errs)} total errors today (showing latest {len(latest_errs)}):")
                         print("  " + "-" * 93)
                         for fname, err in latest_errs:
@@ -165,22 +165,22 @@ def check_cache_and_logs():
             
     print("=" * 95 + "\n")
 
-    # =========================================================================
-    # TASK 1: CACHE STATUS
-    # =========================================================================
-    print("🚀 [TASK 1] FAST PARAMETER LIVE CACHE STATUS (Grouped by VM) 🚀")
-    print("=" * 95)
-    print("{:<25} | {:<15} | {:<15} | {:<20}".format("Bot", "Program_stop", "Executor", "Last Downloaded"))
-    print("=" * 95)
+    # # =========================================================================
+    # # TASK 1: CACHE STATUS
+    # # =========================================================================
+    # print("🚀 [TASK 1] FAST PARAMETER LIVE CACHE STATUS (Grouped by VM) 🚀")
+    # print("=" * 95)
+    # print("{:<25} | {:<15} | {:<15} | {:<20}".format("Bot", "Program_stop", "Executor", "Last Downloaded"))
+    # print("=" * 95)
 
-    for vm in vm_order:
-        if cache_data.get(vm):
-            print(f"\n🖥️  {vm}")
-            print("-" * 95)
-            for bot, p_stop, p_exec, time_str in sorted(cache_data[vm]):
-                print("{:<25} | {:<15} | {:<15} | {:<20}".format(bot, p_stop, p_exec, time_str))
+    # for vm in vm_order:
+    #     if cache_data.get(vm):
+    #         print(f"\n🖥️  {vm}")
+    #         print("-" * 95)
+    #         for bot, p_stop, p_exec, time_str in sorted(cache_data[vm]):
+    #             print("{:<25} | {:<15} | {:<15} | {:<20}".format(bot, p_stop, p_exec, time_str))
             
-    print("=" * 95 + "\n")
+    # print("=" * 95 + "\n")
 
 if __name__ == "__main__":
     check_cache_and_logs()

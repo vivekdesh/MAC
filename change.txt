@@ -1,3 +1,17 @@
+Date: 2026-08-21 15:57:30
+Query: still selling BOT has has buyed what it does not own? buy 24300 PE 130 qty extra? some serious issue!! see logs which are downloaded!! but in Results sheet it has not written?
+Logic & Explanation:
+1. When Selling bot initiated Force Buy-Back (FBB) at 15:29:40 for 260 lots, it placed order 9169. When the REST verification hit ICICI's daily API rate limit error ('Limit exceed: API call per day:'), the bot aborted settlement, leaving the trade in 'LIVE' status in the Data sheet and omitting the record from the Results sheet.
+2. Because Selling's slice was not immediately cleared in the Account Book upon placing the exit order, reconcile_single_bot_contract() saw Tracked=520 > Broker=260 and applied a 50% proportional reduction, shrinking Retire to -130 and Selling to -130.
+3. At 15:30:15, Selling's EOD square-off routine saw the halved slice (-130) and placed a duplicate buy order 9175 for 130 lots, eating into Retire's position.
+Final Code Change:
+1. In /Users/vivek/ICICI_Direct/selling/account_book.py and /Users/vivek/ICICI_Direct/retire/account_book.py: Replaced blind proportional capping with priority exit attribution in reconcile_single_bot_contract(). When broker quantity drops, excess tracked quantity is deducted from exiting/closed bot slices first, preserving active bot slices (e.g. Retire -260) at full size.
+2. In /Users/vivek/ICICI_Direct/selling/selling_trade.py:
+   - In execute_force_buy_back(): Immediately marks leg_state as 'EXIT_ORDER_PLACED' and clears Selling's Account Book slice upon order placement. If verification times out or hits broker API limits, proceeds with settle_and_reset_trade() using limit price / LTP, ensuring trades are marked closed in Data sheet and archived to Results sheet.
+   - In _close_account_book_positions_for_eod(): Added leg_state guard to skip contracts whose exit is already placed, exiting, or closed, preventing duplicate EOD orders.
+3. In /Users/vivek/ICICI_Direct/MAC/sync_master.sh: Added check to skip download-only shared_state folder during uploads (all_u).
+
+
 Date: 2026-08-12 10:27:00
 Query: add comments !!
 Logic: Add comments explaining the target files and actions for remote and local log cleanup in wipe_restart_logs.sh.

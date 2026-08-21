@@ -39,13 +39,13 @@ get_target_config() {
         "vivek")
             REMOTE_CONN="deshpande_vivek@34.26.75.26:/home/deshpande_vivek"
             KEY_FILE="$HOME/.ssh/gcp_key"
-            FOLDER_LIST="retire:retire selling:selling nifty:nifty Program_restart:Program_restart MAC/create_TMS_google_root.sh:create_TMS.sh"
+            FOLDER_LIST="retire:retire selling:selling nifty:nifty Program_restart:Program_restart shared_state:shared_state MAC/create_TMS_google_root.sh:create_TMS.sh"
             DL_BASE="$HOME/ICICI_Direct/Google"
             ;;
         "suresh")
             REMOTE_CONN="ubuntu@140.245.15.195:/home/ubuntu"
             KEY_FILE="$LOCAL_ROOT/Key/suresh_oracle/ssh_suresh_oracle.key"
-            FOLDER_LIST="algo_suresh:mod_rsi sensex_suresh:sensex_suresh nifty:nifty Program_restart:Program_restart"
+            FOLDER_LIST="algo_suresh:mod_rsi sensex_suresh:sensex_suresh nifty:nifty Program_restart:Program_restart shared_state:shared_state"
             DL_BASE="$HOME/ICICI_Direct/Ubentu/suresh"
             ;;
         "sensex_suresh")
@@ -69,13 +69,13 @@ get_target_config() {
         "oracle_binance")
             REMOTE_CONN="ubuntu@80.225.215.187:/home/ubuntu"
             KEY_FILE="$LOCAL_ROOT/Key/oracle/ssh-key-2026-02-11.key"
-            FOLDER_LIST="binance:binance mod_rsi:mod_rsi selling_1:selling_1 sensex:sensex nifty:nifty Program_restart:Program_restart MAC/kill_run_oracle.sh:kill_run_oracle.sh mod_rsi/create_TMS_oracle.sh:create_TMS_oracle.sh"
+            FOLDER_LIST="binance:binance mod_rsi:mod_rsi selling_1:selling_1 sensex:sensex nifty:nifty Program_restart:Program_restart shared_state:shared_state MAC/kill_run_oracle.sh:kill_run_oracle.sh mod_rsi/create_TMS_oracle.sh:create_TMS_oracle.sh"
             DL_BASE="$LOCAL_ROOT/Google"
             ;;
         "oracle2")
             REMOTE_CONN="ubuntu@155.248.244.211:/home/ubuntu"
             KEY_FILE="$LOCAL_ROOT/Key/oracle2/ssh-key-2026-02-11.key"
-            FOLDER_LIST="whatsapp:whatsapp ngrok:ngrok Program_restart:Program_restart MAC/create_TMS_oracle2.sh:create_TMS.sh"
+            FOLDER_LIST="whatsapp:whatsapp ngrok:ngrok Program_restart:Program_restart shared_state:shared_state MAC/create_TMS_oracle2.sh:create_TMS.sh"
             DL_BASE="$LOCAL_ROOT/Google"
             ;;
         *)
@@ -259,6 +259,11 @@ run_sync() {
             local is_directory=1
         else
             local is_directory=0
+        fi
+
+        # Skip download-only runtime state folders during uploads
+        if [ "$direction" == "up" ] && [ "$local_sub" == "shared_state" ]; then
+            continue
         fi
 
         if [ "$direction" == "up" ]; then
