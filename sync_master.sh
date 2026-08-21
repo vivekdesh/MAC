@@ -75,7 +75,7 @@ get_target_config() {
         "oracle2")
             REMOTE_CONN="ubuntu@155.248.244.211:/home/ubuntu"
             KEY_FILE="$LOCAL_ROOT/Key/oracle2/ssh-key-2026-02-11.key"
-            FOLDER_LIST="whatsapp:whatsapp ngrok:ngrok Program_restart:Program_restart shared_state:shared_state MAC/create_TMS_oracle2.sh:create_TMS.sh"
+            FOLDER_LIST="whatsapp:whatsapp ngrok:ngrok Program_restart:Program_restart session_manager:session_manager shared_state:shared_state MAC/create_TMS_oracle2.sh:create_TMS.sh"
             DL_BASE="$LOCAL_ROOT/Google"
             ;;
         *)
