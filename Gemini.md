@@ -1,14 +1,17 @@
+## Python Environment
+Always use `python3` (not `python`) when executing python commands or checking syntax via shell commands.
+
 ## Gemini Added Memories
 - The user has instructed me to not make changes to the code without confirmation. I must only log to change.txt without permission.
 
 # 1. CORE WORKFLOW & BEHAVIORAL RULES (GEMINI.MD & AGENTS.MD)
 
 ## A. Core Workflow Steps
-1.  **Analyze and Propose:** First, analyze the request and the relevant code. Present a clear proposal for the code modifications, explaining what will be changed and why. Do not make any changes to the code at this stage.
-2.  **User Approval:** Do not proceed with any code modification until you receive explicit "go ahead" or clarification.
-3.  **Implement and Verify Code Change:** After receiving approval, implement the code changes. Immediately after making the code changes, run the project's compilation/syntax checking, testing, or linting commands to verify that the changes are safe, syntactically correct, and adhere to project standards. For flag-dependent logic changes, syntax/compile checks must be done first. Run a small offline smoke test with fake parameter values for important flag combinations, without connecting to Breeze, Google Sheets, or placing orders, to confirm the changed logic path executes before live use.
-4.  **Final Logging:** Only after the code changes have been successfully implemented and verified, prepare the log entry for `change.txt` as per the logging procedure below. This ensures `change.txt` only contains records of successful and final versions, preventing logging of failed attempts or intermediate code versions.
-5.  **Multi-Folder Logging:** Use the respective folder's `change.txt` and `gemini_log_update.tmp` depending on where the changes are being made!
+1. **Analyze and Propose:** First, analyze the request and the relevant code. Present a clear proposal for the code modifications, explaining what will be changed and why. Do not make any changes to the code at this stage.
+2. **User Approval:** Do not proceed with any code modification until you receive explicit "go ahead" or clarification.
+3. **Implement and Verify Code Change:** After receiving approval, implement the code changes. Immediately after making the code changes, run the project's compilation/syntax checking, testing, or linting commands to verify that the changes are safe, syntactically correct, and adhere to project standards. For flag-dependent logic changes, syntax/compile checks must be done first. Run a small offline smoke test with fake parameter values for important flag combinations, without connecting to Breeze, Google Sheets, or placing orders, to confirm the changed logic path executes before live use.
+4. **Final Logging:** Only after the code changes have been successfully implemented and verified, prepare the log entry for `change.txt` as per the logging procedure below. This ensures `change.txt` only contains records of successful and final versions, preventing logging of failed attempts or intermediate code versions.
+5. **Multi-Folder Logging:** Use the respective folder's `change.txt` and `gemini_log_update.tmp` depending on where the changes are being made!
 
 ## B. Code Change Guidelines
 - **Comments:** Ensure any related comments are updated to reflect the changes. Add new comments sparingly, focusing only on the 'why' behind complex logic, not the 'what'. Always match the existing comment style and format of the file.
@@ -19,28 +22,29 @@
 
 ## C. `change.txt` Logging Procedure
 This procedure is for logging final, successfully implemented, and verified code changes only. Intermediate versions or failed attempts will not be logged.
-1.  **Prepare Content & Ask for Approval:** Save the full content for the new log entry directly to a temporary file (`gemini_log_update.tmp`) with exactly **two newlines at the end**. This must include:
-    *   A timestamp line at the very top (e.g., `Date: YYYY-MM-DD HH:MM:SS`).
-    *   The original user `query`.
-    *   The `logic` and `explanation` of the change.
-    *   A description of the `final code change`.
+1. **Prepare Content & Ask for Approval:** Save the full content for the new log entry directly to a temporary file (`gemini_log_update.tmp`) with exactly **two newlines at the end**. This must include:
+    * A timestamp line at the very top (e.g., `Date: YYYY-MM-DD HH:MM:SS`).
+    * The original user `query`.
+    * The `logic` and `explanation` of the change.
+    * A description of the `final code change`.
     After writing to the tmp file, ask the user for their "ok" on this file.
-2.  **Automated Prepending & Git Push Process:**
-    *   As soon as the user gives "ok" on the tmp file, **automatically** (without asking for further approval) use a shell command (`cat` and `mv`) to prepend the temporary content to `change.txt`.
-    *   Immediately after, **automatically** run `git add .`, `git commit` (using the log entry as the body), and `git push`. Do not ask for further permissions.
+2. **Automated Prepending & Git Push Process:**
+    * As soon as the user gives "ok" on the tmp file, **automatically** (without asking for further approval) use a shell command (`cat` and `mv`) to prepend the temporary content to `change.txt`.
+    * Immediately after, **automatically** run `git add .`, `git commit` (using the log entry as the body), and `git push`. Do not ask for further permissions.
 
 ## D. Critical Operating Procedures
 - **DO NOT DEVIATE:** Certain tasks have specific, multi-step procedures outlined in instructions (e.g., logging to `change.txt`, deployments). These procedures must be followed exactly as described, without substitution or simplification.
 - **DEBUG, DO NOT REPLACE:** If a command within a critical procedure fails, the only goal is to fix that command so the original procedure can run successfully. Never replace a prescribed complex procedure with a simpler but incorrect one to bypass an error.
 
 ## E. Enhanced Code Review Process
-1.  **Integrated Static Analysis:** For tasks involving code modifications or review for potential bugs, proactively suggest and utilize static analysis tools (e.g., `pylint`, `flake8`, `mypy`) via shell commands to reliably identify syntax errors, basic runtime issues, and common smells.
-2.  **Exhaustive Search for Critical Patterns:** Following significant changes to imports (e.g., `datetime` module handling) or when critical patterns are identified as potential sources of bugs, perform a systematic, file-wide search for all affected keywords, function calls, or variable usages. Ensure every instance is correctly qualified, aligned with current imports, and adheres to new standards.
-3.  **Explicit Scope Tracing:** When dealing with variables that are passed through multiple function calls or that operate in different scopes (e.g., global vs. local, function parameters), explicitly trace their definitions, assignments, and usage through each step of the call chain to prevent `NameError` or `UnboundLocalError`.
-4.  **Layered Review Structure:**
-    *   *Layer 1 (Syntax & Basic Runtime):* Prioritize checks for fundamental Python syntax correctness, import qualification, and potential immediate runtime errors.
-    *   *Layer 2 (Logical Flow & Intent):* Verify that the implemented logic correctly addresses the user's request, matches the proposed solution, and avoids unintended side effects.
-    *   *Layer 3 (Best Practices & Conventions):* Ensure adherence to project-specific coding standards, style guides, and general software engineering best practices.
+1. **Integrated Static Analysis:** For tasks involving code modifications or review for potential bugs, proactively suggest and utilize static analysis tools (e.g., `pylint`, `flake8`, `mypy`) via shell commands to reliably identify syntax errors, basic runtime issues, and common smells.
+2. **AST-Based Global Scope Analysis:** Systematically analyze Python AST (Abstract Syntax Tree) to check all variable and function name loads against imported module symbols, ensuring no unimported functions or undefined global variables exist in untriggered function branches.
+3. **Exhaustive Search for Critical Patterns:** Following significant changes to imports (e.g., `datetime` module handling) or when critical patterns are identified as potential sources of bugs, perform a systematic, file-wide search for all affected keywords, function calls, or variable usages. Ensure every instance is correctly qualified, aligned with current imports, and adheres to new standards.
+4. **Explicit Scope Tracing:** When dealing with variables that are passed through multiple function calls or that operate in different scopes (e.g., global vs. local, function parameters), explicitly trace their definitions, assignments, and usage through each step of the call chain to prevent `NameError` or `UnboundLocalError`.
+5. **Layered Review Structure:**
+    * *Layer 1 (Syntax & Basic Runtime):* Prioritize checks for fundamental Python syntax correctness, import qualification, and potential immediate runtime errors.
+    * *Layer 2 (Logical Flow & Intent):* Verify that the implemented logic correctly addresses the user's request, matches the proposed solution, and avoids unintended side effects.
+    * *Layer 3 (Best Practices & Conventions):* Ensure adherence to project-specific coding standards, style guides, and general software engineering best practices.
 
 ## F. Log Analysis Source Rule
 - **For LOGS** (what happened today — trades, signals, errors, P&L, Google Sheet actions): use the downloaded copies under `/Users/vivek/ICICI_Direct/Google/`:
@@ -72,6 +76,31 @@ This procedure is for logging final, successfully implemented, and verified code
   - ❌ Wrong: `retire_single_leg.py` or `retire/retire_single_leg.py`
 - This rule is mandatory because the same filename (e.g. `google_sheet_utils.py`, `retire_trade.py`) exists in multiple bot folders (`/Users/vivek/ICICI_Direct/retire/`, `/Users/vivek/ICICI_Direct/Google/retire/`, etc.) and short paths cause serious confusion about which file is being discussed.
 
+## I. Google Sheets API Quota & Multi-Bot Stagger Standard
+- **Global Quota:** Google Sheets enforces a hard limit of **60 read requests per minute per service account** across all 4 VMs.
+- **60-Second Stagger Window:** Multi-bot startup initializations in `read_function.py` must maintain a 60-second stagger window based on epoch time:
+  - `selling`: offset 0s
+  - `selling_1`: offset 8s
+  - `retire`: offset 16s
+  - `mod_rsi`: offset 24s
+  - `sensex`: offset 32s
+  - `nifty`: offset 40s
+  - `whatsapp`: offset 48s
+  - Plus script sub-stagger (3.0s for `single_leg` scripts) and random jitter (0.5s–2.0s).
+
+## J. Robust Exception Handling Standard for `gspread`
+- **Never rely solely on `getattr(e, 'response', None).status_code`:** `gspread.exceptions.APIError` can have `e.response = None`.
+- **Mandatory Helper:** Always use `_is_retriable_sheets_error(e)` which inspects:
+  1. `getattr(e, 'code', None) in (429, 500, 502, 503, 504)`
+  2. `getattr(e, 'response', None)` and `response.status_code in (429, 500, 502, 503, 504)`
+  3. String tokens in `str(e)`: `"429"`, `"Quota exceeded"`, `"RESOURCE_EXHAUSTED"`, `"RATE_LIMIT_EXCEEDED"`, `"500"`, `"502"`, `"503"`, `"504"`.
+- All Google Sheet read/fetch functions (`get_spreadsheet`, `get_worksheet`, `_get_parameter_row_map`, `get_parameters`) must have exponential backoff with jitter.
+
+## K. Mandatory Fault-Injection & Mock Testing Rule
+- Whenever creating or modifying retry/backoff, rate-limiting, error handling, or fallback logic:
+  - Static code review is **insufficient**.
+  - You **MUST** write and execute an offline mock test (injecting synthetic 429/timeout/connection exceptions) to prove that the code enters the backoff branch, retries with jitter, and recovers cleanly before deploying or pushing.
+
 ---
 
 # 2. VM ARCHITECTURE & MAC OPERATIONS REFERENCE
@@ -90,7 +119,7 @@ You have access to 4 remote virtual machines managed by scripts in `/Users/vivek
 ---
 
 ## 1. Vivek VM (GCP)
-- **Connection:** `deshpande_vivek@34.26.75.26`
+- **Connection:** `deshpande_vivek@35.237.249.135`
 - **SSH Key:** `~/.ssh/gcp_key`
 - **Remote Base:** `/home/deshpande_vivek`
 - **Local Download Destination:** `/Users/vivek/ICICI_Direct/Google/`
@@ -183,3 +212,15 @@ This section outlines the specific design and state management of the **Nifty EM
 - **Session Token Changes**: The bot continually monitors the `session_token` parameter. If a new token is detected, it logs the change to Google Sheets and calls `sys.exit(1)`. The external tmux/bash wrapper script automatically detects the exit and reboots the bot with the new token.
 - **Startup Diagnostics**: On a fresh boot, the bot verifies the Breeze API connection and logs `[NIFTY-TRADE] Breeze Connect initialized successfully.` to `log_single` to confirm recovery.
 - **Broker Reconciliation**: On startup, it checks the live broker position. If an active futures position exists but the local state is missing a Stop Loss, it attempts an emergency SL repair.
+
+
+## Mandatory AST Static Symbol Verification & Format-Agnostic Date Normalization Standard
+
+### 1. AST-Based Static Symbol Analysis (Zero NameErrors)
+- **Problem**: Python compilation (py_compile) only catches syntax errors, deferring undefined variable lookups (NameError) inside function bodies to runtime when untriggered branches execute in production.
+- **Mandatory Verification**: After every code edit, you **MUST** run an AST-based static symbol checker (such as `python3 -m pyflakes <file>` or an AST visitor) to verify that **zero** undefined names (`F821 / NameError`) exist in any branch, loop, or helper function.
+
+### 2. Format-Agnostic Date Comparisons
+- **Problem**: Comparing date strings with raw string equality (e.g., `"1-SEP-2026" == "01-SEP-2026"` or `"2026-09-01T06:00:00.000Z" == "01-SEP-2026"`) fails unpredictably due to single-digit vs zero-padded day formatting, month capitalization, and ISO timestamps from broker APIs.
+- **Mandatory Standard**: Always use `_normalize_expiry_token()` (or parsed `.date()` object comparisons e.g. `d1.date() == d2.date()` or `d1 >= d2`) so that all date comparisons are completely format-agnostic (both formatting to canonical `YYYY-MM-DD`). Never use raw string equality for dates.
+
