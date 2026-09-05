@@ -10,6 +10,7 @@ KILL_RET="$REMOTE_HOME/kill_retire_google.sh"
 KILL_SELL="$REMOTE_HOME/kill_selling_google.sh"
 KILL_WHATSAPP="$REMOTE_HOME/kill_whatsapp_google.sh"
 KILL_NIFTY="$REMOTE_HOME/kill_nifty_google.sh"
+KILL_INDEX_SELL="$REMOTE_HOME/kill_index_sell_google.sh"
 SETUP_SCRIPT="$REMOTE_HOME/create_TMS.sh"
 
 usage() {
@@ -20,6 +21,7 @@ usage() {
     echo "  restart sell [y|n]   Restart Selling Algo"
     echo "  restart wa [y|n]     Restart Whatsapp"
     echo "  restart nifty [y|n]  Restart Nifty Algo"
+    echo "  restart idx [y|n]    Restart index_sell (NIFTY/SENSEX option selling)"
     echo "  restart all [y|n]    Restart EVERYTHING"
     echo "  setup                Run tmux setup (create_TMS.sh)"
     exit 1
@@ -32,7 +34,7 @@ SUB_CMD=$2
 ARG3=$3
 
 # Defined sessions list for reuse
-SESSIONS_LIST="sell_sin sell_trade ret_trade ret_sin whatsapp rokde nifty_trade"
+SESSIONS_LIST="sell_sin sell_trade ret_trade ret_sin whatsapp rokde nifty_trade index_sell"
 
 # --- TMUX HEALTH SCRIPT (EXACT ALIAS CODE) ---
 TMUX_HEALTH_CMD=' 
@@ -102,6 +104,7 @@ case "$COMMAND" in
                 "sell") TARGET_SCRIPT="$KILL_SELL" ;; 
                 "wa"|"whatsapp") TARGET_SCRIPT="$KILL_WHATSAPP" ;; 
                 "nif"|"nifty") TARGET_SCRIPT="$KILL_NIFTY" ;;
+                "idx"|"index_sell") TARGET_SCRIPT="$KILL_INDEX_SELL" ;;
                 *) echo "❌ Invalid restart target: $SUB_CMD"; usage ;; 
             esac
 

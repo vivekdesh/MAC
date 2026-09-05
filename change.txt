@@ -1,3 +1,48 @@
+Date: 2026-09-05 08:15:00
+
+User Query:
+"go ahead with ops wiring" (register the new index_sell bot in the Mac-side deployment and
+restart tooling).
+
+Logic & Explanation:
+Wiring the new index_sell bot (NIFTY/SENSEX index-option SELLING, Vivek GCP VM, account1) into the
+Mac deployment scripts. ALL EDITS ARE PURELY ADDITIVE - no existing bot's entry was altered, and
+the diffs were checked line by line to confirm that.
+
+1. sync_master.sh: added "sell_index:sell_index" to the vivek target's FOLDER_LIST. This is what
+   makes `all_u`, `all_d`, `v.u` and `v.d` carry the new bot. Without it the folder is simply never
+   uploaded, and the bot would silently run whatever old code happened to be on the VM.
+
+2. kill_index_sell_google.sh: NEW two-line shim, mirroring kill_selling_google.sh. sync_master.sh
+   already uploads MAC/kill_*.sh to the VM home directory in a batched step, so the shim needs no
+   further wiring; it forwards to /home/deshpande_vivek/sell_index/kill_index_sell.sh.
+
+3. remote_vivek.sh: added KILL_INDEX_SELL, a "restart idx" command, and "index_sell" to
+   SESSIONS_LIST so the tmux health check reports it. ONE session, because index_sell is a single
+   process - it has no separate signal script, since the bot has no indicator strategy and the
+   operator supplies the strike.
+
+SAFETY NOTE ON THE KILL PATH: index_sell's own kill script matches only the full tokens
+"index_sell_trade.py|index_sell_wrapper.py". This was verified in BOTH directions against real
+process paths - our pattern matches our two processes and none of selling's, retire's or nifty's,
+and selling's own pattern (which contains the bare word "selling") matches none of ours. That
+matters because these patterns feed `kill -9` on a VM where several live bots hold real positions.
+
+Verification:
+- bash -n on sync_master.sh, remote_vivek.sh and kill_index_sell_google.sh: all OK.
+- git diff reviewed line by line: sync_master.sh is one FOLDER_LIST line; remote_vivek.sh is four
+  added lines plus one SESSIONS_LIST line; no other bot's configuration was touched.
+- prompt.md shows as modified in this repo but is a PRE-EXISTING local change, not part of this
+  work, and was deliberately left alone.
+
+NOT YET DEPLOYED: committing here does not touch any VM. The change reaches the servers only when
+`all_u` is run, which is a separate explicit action.
+
+Final Code Change:
+- Modified /Users/vivek/ICICI_Direct/MAC/sync_master.sh (vivek FOLDER_LIST).
+- Modified /Users/vivek/ICICI_Direct/MAC/remote_vivek.sh (kill target, restart command, session list).
+- Added /Users/vivek/ICICI_Direct/MAC/kill_index_sell_google.sh.
+
 Date: 2026-08-31 17:20:00
 
 User Query:

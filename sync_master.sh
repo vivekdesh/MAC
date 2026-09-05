@@ -39,7 +39,7 @@ get_target_config() {
         "vivek")
             REMOTE_CONN="deshpande_vivek@34.26.75.26:/home/deshpande_vivek"
             KEY_FILE="$HOME/.ssh/gcp_key"
-            FOLDER_LIST="retire:retire selling:selling nifty:nifty Program_restart:Program_restart shared_state:shared_state MAC/create_TMS_google_root.sh:create_TMS.sh"
+            FOLDER_LIST="retire:retire selling:selling nifty:nifty sell_index:sell_index Program_restart:Program_restart shared_state:shared_state MAC/create_TMS_google_root.sh:create_TMS.sh"
             DL_BASE="$HOME/ICICI_Direct/Google"
             ;;
         "suresh")
