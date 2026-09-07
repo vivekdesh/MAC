@@ -1,3 +1,106 @@
+Date: 2026-09-07 10:55:00
+
+User Query:
+"update alias in alias.md of mac folder? v.nifty v.nifty.u v.nifty.d kind of"
+
+Logic & Explanation:
+Five aliases added for index_sell, following the existing v.<bot> pattern exactly:
+
+    v.idx       restart, keeping logs
+    v.idx.y     hard restart, clearing logs
+    v.idx.u     upload Mac -> VM
+    v.idx.d     download VM -> ~/ICICI_Direct/Google/sell_index
+    v.idx.ur    upload then restart, only if the upload succeeded
+
+The prefix is "idx" because that is the token remote_vivek.sh already accepts
+(remote_vivek.sh:107, "idx"|"index_sell"). Inventing "v.sell_index" would have needed a second name
+in the dispatcher for no gain.
+
+NAMING TRAP, COMMENTED IN THE FILE: the FOLDER is sell_index at both ends, while the bot, its tmux
+session and its kill script are index_sell. Both spellings are correct in their own place. The comment
+exists so neither gets "corrected" into the other later.
+
+A REAL BUG FOUND WHILE VERIFYING, WHICH WOULD HAVE MADE v.idx FAIL ON FIRST USE.
+Rather than assume the aliases worked, each was expanded through bash and every path it references was
+checked to exist. Four of five resolved; the fifth did not:
+
+    remote_vivek.sh maps  idx -> $REMOTE_HOME/kill_index_sell_google.sh
+    that file did not exist on the VM
+
+sync_master.sh uploads the kill scripts to the VM home through an explicit include list, and
+kill_index_sell_google.sh had never been added to it:
+
+    --include='kill_retire_google.sh' --include='kill_selling_google.sh'
+    --include='kill_whatsapp_google.sh' --include='kill_nifty_google.sh' --exclude='*'
+
+So the shim had been sitting in MAC/ since 05-Sep and had never once been shipped. v.idx, and the
+control sheet's "index_sell" restart row, would both have failed with a missing script. Added to the
+filter and pushed to the VM immediately so the alias works now rather than after the next full sync.
+
+Verification:
+- All five aliases expanded through bash and printed: they parse and quote correctly, including the
+  nested quoting in the rsync -e "ssh -i ..." forms.
+- Every referenced path checked to exist: local ~/ICICI_Direct/sell_index OK, download target
+  ~/ICICI_Direct/Google/sell_index OK, remote ~/sell_index OK, and - after the fix -
+  ~/kill_index_sell_google.sh present and executable (-rwxr-xr-x).
+- bash -n sync_master.sh: OK.
+
+Final Code Change:
+- aliases.md: v.idx, v.idx.y, v.idx.u, v.idx.d, v.idx.ur, with the sell_index/index_sell naming note.
+- sync_master.sh: kill_index_sell_google.sh added to the VM-home kill-script upload filter.
+
+Date: 2026-09-06 22:10:00
+
+User Query:
+"37 all_vms all Y 0 / 38 all_vms all N 0 / nothing happened? for index_sell?" followed by the
+control-sheet Results log, then "yes add it to sync_master.sh".
+
+Logic & Explanation:
+DIAGNOSIS. Command 18 (setup) DID pick up index_sell - its result line shows
+"index_sell: 1 windows (created Sun Sep 6 12:11:27 2026)". Command 37 (all_vms/all) did NOT, and
+reported "selling:DONE, retire:DONE, nifty:DONE".
+
+The difference is where the changed code runs. `setup` executes a SCRIPT ON THE VM
+(~/create_TMS.sh -> retire/create_TMS.sh), so the synced file took effect on the next invocation.
+agent_config.py is the AGENT'S OWN code: restart_agent.py imports it ONCE at process start, and the
+program-restart service had been running since long before the sync. It kept serving the program list
+it loaded at boot - which did not contain index_sell - and there is no warning anywhere that the file
+on disk and the config in memory have diverged.
+
+THE UNDERLYING BUG IN sync_master.sh, now fixed. The post-sync block fired only for the fast-param
+subscriber:
+      sudo systemctl restart icici-fast-param-subscriber.service
+The restart agent was never restarted by any sync, on any VM. So EVERY agent_config.py change since
+that block was written has had an open-ended stale window, closed only if someone happened to reboot
+or restart the service by hand. This was not specific to index_sell; index_sell is simply the first
+change big enough to be noticed.
+
+SERVICE NAMES CHECKED, NOT GUESSED. They are program-restart-google / -oracle / -suresh / -oracle2,
+per ICICI_CONTROL_ARCHITECTURE_AND_OPERATIONS.md lines 314-317, which records them as verified on the
+live VMs. They are NOT the agent's internal VM ids (google_vm, oracle_vm, ...). I had suggested
+"program-restart-google_vm.service" in conversation before checking; that name does not exist. The
+two vocabularies differ and the file now says so at the declaration.
+
+RESTARTING THE AGENT IS SAFE AT ANY TIME, and the code says why: it is a stateless poller of the
+Commands sheet. It holds no position, owns no order, and is NOT the trading bots - those restart only
+when an explicit command row is executed. A failed restart is reported loudly rather than swallowed,
+because a silently-not-restarted agent is exactly the failure being fixed.
+
+bandu and sensex get RESTART_AGENT_SERVICE="" and are skipped: neither syncs Program_restart, and
+bandu runs no agent.
+
+Verification:
+- bash -n sync_master.sh: OK.
+- Mapping read back per target: vivek -> program-restart-google.service, suresh -> -suresh,
+  oracle_binance -> -oracle, oracle2 -> -oracle2, bandu -> none, sensex -> none.
+- The new block is inside the existing `if [[ "$FOLDER_LIST" == *"Program_restart"* ]]` guard, so it
+  cannot fire on a sync that did not ship agent code.
+
+Final Code Change:
+- sync_master.sh: new RESTART_AGENT_SERVICE variable declared with the other per-target settings and
+  set for the four VMs that run an agent; the post-sync block now restarts that service too, verifies
+  it with systemctl is-active, and prints an explicit warning if it could not.
+
 Date: 2026-09-05 08:15:00
 
 User Query:

@@ -54,6 +54,7 @@ alias v.sell_1='bash "$SCRIPT_DIR/remote_oracle.sh" restart selling_1' # Conveni
 alias v.sen='bash "$SCRIPT_DIR/remote_oracle.sh" restart sensex' # Convenience forwarder to Oracle Sensex
 alias v.wa='bash "$SCRIPT_DIR/remote_vivek.sh" restart whatsapp' # Restart WhatsApp
 alias v.nifty='bash "$SCRIPT_DIR/remote_vivek.sh" restart nifty' # Restart Nifty
+alias v.idx='bash "$SCRIPT_DIR/remote_vivek.sh" restart idx'     # Restart index_sell (NIFTY/SENSEX option selling)
 alias v.all='bash "$SCRIPT_DIR/remote_vivek.sh" restart all'     # Restart EVERYTHING
 
 # Vivek Hard Restarts (Clear Logs) - Add '.y'
@@ -63,6 +64,7 @@ alias v.sell_1.y='bash "$SCRIPT_DIR/remote_oracle.sh" restart selling_1 y'
 alias v.sen.y='bash "$SCRIPT_DIR/remote_oracle.sh" restart sensex y'
 alias v.wa.y='bash "$SCRIPT_DIR/remote_vivek.sh" restart whatsapp y'
 alias v.nifty.y='bash "$SCRIPT_DIR/remote_vivek.sh" restart nifty y'
+alias v.idx.y='bash "$SCRIPT_DIR/remote_vivek.sh" restart idx y'
 alias v.all.y='bash "$SCRIPT_DIR/remote_vivek.sh" restart all y'
 
 # Vivek Single Bot Sync
@@ -74,12 +76,17 @@ alias v.wa.u="rsync -avz -e \"ssh -i \$HOME/.ssh/gcp_key\" --exclude=FONSEScripM
 alias v.wa.d='rsync -avz -e "ssh -i $HOME/.ssh/gcp_key" --exclude=.git --exclude=__pycache__ --exclude=.DS_Store deshpande_vivek@34.26.75.26:/home/deshpande_vivek/whatsapp/ $HOME/ICICI_Direct/Google/whatsapp/'
 alias v.nifty.u="rsync -avz -e \"ssh -i \$HOME/.ssh/gcp_key\" --exclude=FONSEScripMaster.csv --exclude=parameters_cache.json --exclude=index_daily_ha_bias_cache.json --exclude='*state*.json' --exclude='calculated_greeks*.json' --exclude=option_chain_cache.json --include='*.py' --include='*.json' --include='*.sh' --include='*.csv' --exclude='*' \$HOME/ICICI_Direct/nifty/ deshpande_vivek@34.26.75.26:/home/deshpande_vivek/nifty/"
 alias v.nifty.d='rsync -avz -e "ssh -i $HOME/.ssh/gcp_key" --exclude=.git --exclude=__pycache__ --exclude=.DS_Store deshpande_vivek@34.26.75.26:/home/deshpande_vivek/nifty/ $HOME/ICICI_Direct/Google/nifty/'
+# index_sell. The FOLDER is sell_index at both ends; the bot, tmux session and kill script
+# are index_sell. Both spellings are correct in their own place - do not "fix" either.
+alias v.idx.u="rsync -avz -e \"ssh -i \$HOME/.ssh/gcp_key\" --exclude=FONSEScripMaster.csv --exclude=parameters_cache.json --exclude=index_daily_ha_bias_cache.json --exclude='*state*.json' --exclude='calculated_greeks*.json' --exclude=option_chain_cache.json --include='*.py' --include='*.json' --include='*.sh' --include='*.csv' --include=requirements.txt --exclude='*' \$HOME/ICICI_Direct/sell_index/ deshpande_vivek@34.26.75.26:/home/deshpande_vivek/sell_index/"
+alias v.idx.d='rsync -avz -e "ssh -i $HOME/.ssh/gcp_key" --exclude=.git --exclude=__pycache__ --exclude=.DS_Store deshpande_vivek@34.26.75.26:/home/deshpande_vivek/sell_index/ $HOME/ICICI_Direct/Google/sell_index/'
 
 # Upload then restart only if upload succeeds
 alias v.ret.ur='v.ret.u && v.ret'
 alias v.sell.ur='v.sell.u && v.sell'
 alias v.wa.ur='v.wa.u && v.wa'
 alias v.nifty.ur='v.nifty.u && v.nifty'
+alias v.idx.ur='v.idx.u && v.idx'
 
 alias s.rsi.ur='s.rsi.u && s.rs'
 alias s.sen.ur='s.sen.u && s.sen'

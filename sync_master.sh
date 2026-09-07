@@ -34,18 +34,24 @@ get_target_config() {
     KEY_FILE=""
     FOLDER_LIST=""
     DL_BASE=""
+    # systemd unit for the restart agent on this target, or "" if it does not run one.
+    # NOTE the names are program-restart-google/oracle/suresh/oracle2 - NOT the agent's
+    # internal VM ids (google_vm, oracle_vm, ...). The two vocabularies differ.
+    RESTART_AGENT_SERVICE=""
 
     case "$target" in
         "vivek")
             REMOTE_CONN="deshpande_vivek@34.26.75.26:/home/deshpande_vivek"
             KEY_FILE="$HOME/.ssh/gcp_key"
             FOLDER_LIST="retire:retire selling:selling nifty:nifty sell_index:sell_index Program_restart:Program_restart shared_state:shared_state MAC/create_TMS_google_root.sh:create_TMS.sh"
+            RESTART_AGENT_SERVICE="program-restart-google.service"
             DL_BASE="$HOME/ICICI_Direct/Google"
             ;;
         "suresh")
             REMOTE_CONN="ubuntu@140.245.15.195:/home/ubuntu"
             KEY_FILE="$LOCAL_ROOT/Key/suresh_oracle/ssh_suresh_oracle.key"
             FOLDER_LIST="algo_suresh:mod_rsi sensex_suresh:sensex_suresh nifty:nifty Program_restart:Program_restart shared_state:shared_state"
+            RESTART_AGENT_SERVICE="program-restart-suresh.service"
             DL_BASE="$HOME/ICICI_Direct/Ubentu/suresh"
             ;;
         "sensex_suresh")
@@ -70,12 +76,14 @@ get_target_config() {
             REMOTE_CONN="ubuntu@80.225.215.187:/home/ubuntu"
             KEY_FILE="$LOCAL_ROOT/Key/oracle/ssh-key-2026-02-11.key"
             FOLDER_LIST="binance:binance mod_rsi:mod_rsi selling_1:selling_1 sensex:sensex nifty:nifty Program_restart:Program_restart shared_state:shared_state MAC/kill_run_oracle.sh:kill_run_oracle.sh mod_rsi/create_TMS_oracle.sh:create_TMS_oracle.sh"
+            RESTART_AGENT_SERVICE="program-restart-oracle.service"
             DL_BASE="$LOCAL_ROOT/Google"
             ;;
         "oracle2")
             REMOTE_CONN="ubuntu@155.248.244.211:/home/ubuntu"
             KEY_FILE="$LOCAL_ROOT/Key/oracle2/ssh-key-2026-02-11.key"
             FOLDER_LIST="whatsapp:whatsapp ngrok:ngrok Program_restart:Program_restart session_manager:session_manager shared_state:shared_state MAC/create_TMS_oracle2.sh:create_TMS.sh"
+            RESTART_AGENT_SERVICE="program-restart-oracle2.service"
             DL_BASE="$LOCAL_ROOT/Google"
             ;;
         *)
@@ -349,6 +357,7 @@ run_sync() {
                 --include='kill_selling_google.sh' \
                 --include='kill_whatsapp_google.sh' \
                 --include='kill_nifty_google.sh' \
+                --include='kill_index_sell_google.sh' \
                 --exclude='*' \
                 "$LOCAL_ROOT/MAC/" "$remote_user_host:/home/deshpande_vivek/"
         elif [ "$target" == "oracle2" ]; then
@@ -365,6 +374,30 @@ run_sync() {
             echo "  🔄 POST-SYNC: Updating fast-param-subscriber on $target..."
             ssh -i "$KEY_FILE" -o ConnectTimeout=8 "$remote_user_host" \
               "cp ~/Program_restart/fast_parameter_handler.py ~/ 2>/dev/null; cp ~/Program_restart/fast_param_subscriber.py ~/ 2>/dev/null; sudo systemctl restart icici-fast-param-subscriber.service"
+
+            # ALSO restart the command/restart agent.
+            #
+            # WHY THIS IS NOT OPTIONAL: restart_agent.py reads agent_config.py ONCE, at
+            # process start. Syncing the file changes nothing for a service that is already
+            # running - it keeps serving the copy it loaded, with no warning anywhere. That
+            # is a silent, open-ended stale-config window: on 06-Sep-2026 index_sell had been
+            # registered in agent_config.py and pushed, the "setup" command picked up its new
+            # tmux session because setup runs a script ON the VM, and yet "all_vms / all"
+            # kept reporting "selling:DONE, retire:DONE, nifty:DONE" because the agent
+            # process still held the pre-index_sell program list in memory.
+            #
+            # Restarting is safe at any time: the agent is a stateless poller of the Commands
+            # sheet, holds no position and owns no order. It is NOT the trading bots - those
+            # are restarted only by an explicit command row.
+            if [[ -n "$RESTART_AGENT_SERVICE" ]]; then
+                echo "  🔄 POST-SYNC: Restarting $RESTART_AGENT_SERVICE on $target..."
+                ssh -i "$KEY_FILE" -o ConnectTimeout=8 "$remote_user_host" \
+                  "sudo systemctl restart $RESTART_AGENT_SERVICE && sleep 2 && systemctl is-active $RESTART_AGENT_SERVICE" \
+                  && echo "  ✅ $RESTART_AGENT_SERVICE restarted with the new agent_config.py" \
+                  || echo "  ⚠️  Could not restart $RESTART_AGENT_SERVICE on $target - the agent is STILL RUNNING OLD CONFIG. Restart it by hand before relying on any command row."
+            else
+                echo "  ℹ️  No restart agent configured for $target, skipping."
+            fi
         fi
     fi
 
