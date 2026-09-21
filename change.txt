@@ -1,3 +1,33 @@
+Date: 2026-09-21 20:28:30
+
+User Query:
+"OK for modification and Remove the 144 spurious dated restart logs created in Google/Program_restart and Ubentu/suresh/Program_restart.
+let 19thband 20th remians!"
+
+Logic & Explanation:
+1. DIAGNOSIS (Utility & Daemon folders repeatedly re-split into hundreds of spurious dated files):
+   In `/Users/vivek/ICICI_Direct/MAC/sync_master.sh`, `split_logs_by_date` was previously called on every folder downloaded by `run_sync`, including watchdog daemon and utility folders (`Program_restart`, `shared_state`, `ngrok`, `session_manager`).
+   Inside `split_logs_by_date`, the loop scanned wildcard `*.log`.
+   Because `Program_restart` contains 24/7 continuous watchdog logs (`restart_agent_google_vm.log`, `restart_agent_oracle_vm.log`, `restart_agent_oracle2_vm.log`, `restart_agent_suresh_vm.log`) spanning 35+ days (4.3 MB), the date-split parser generated 35 daily files for each VM restart log.
+   Furthermore, because `all.d` downloads `Program_restart` across 3 targets (`vivek`, `oracle_binance`, `oracle2`) to the same local destination `/Users/vivek/ICICI_Direct/Google/Program_restart`, all 35 files for all VMs were re-split and echoed to the terminal 3 separate times on every `all.d` run, creating 144 spurious files across Google and Suresh folders.
+2. RESOLUTION:
+   a) In `split_logs_by_date`, added an immediate guard skipping utility and watchdog daemon folders (`Program_restart|shared_state|ngrok|session_manager`). These folders run 24/7, maintain their own VM-prefixed rolling logs, and do not belong to 09:00-15:45 market trading sessions.
+   b) Constrained the inner loop from wildcard `*.log` to explicit trading bot rolling logs (`app.log`, `app_single.log`, `vivek.log`, `bin_trade.log`). Any non-trading or auxiliary log files in bot folders are ignored by the date-splitter.
+   c) Cleaned up all 144 spurious dated restart log files from `/Users/vivek/ICICI_Direct/Google/Program_restart` (108 files) and `/Users/vivek/ICICI_Direct/Ubentu/suresh/Program_restart` (36 files), while preserving the original rolling restart logs and retaining the 19th and 20th bot logs as requested.
+
+Verification:
+- Syntax checked: `bash -n /Users/vivek/ICICI_Direct/MAC/sync_master.sh` passed with 0 errors.
+- Offline smoke test verified:
+  * Passing `Program_restart`, `shared_state`, etc. exits immediately with 0 output and creates 0 files.
+  * Passing a bot folder (`selling`) splits only `app.log` and `app_single.log` into `09:00:00 - 15:45:00` market window, leaving auxiliary daemon logs untouched.
+  * Verified 144 spurious restart logs in `Google/Program_restart` and `Ubentu/suresh/Program_restart` were deleted, leaving only the 3 main VM logs in `Google` and 1 in `Ubentu`.
+
+Final Code Change:
+- Modified `/Users/vivek/ICICI_Direct/MAC/sync_master.sh`:
+  * Added folder guard in `split_logs_by_date` to skip `Program_restart`, `shared_state`, `ngrok`, and `session_manager`.
+  * Replaced wildcard `*.log` iteration with explicit bot log list (`app.log`, `app_single.log`, `vivek.log`, `bin_trade.log`).
+  * Conditioned the "Splitting logs by date" header print to only display if relevant bot logs actually exist in the target directory.
+
 Date: 2026-09-21 19:54:00
 
 User Query:

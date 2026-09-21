@@ -181,19 +181,29 @@ rename_logs_by_date() {
 # existing day files are preserved).
 split_logs_by_date() {
     local target_dir="$1"
-    echo "  🗂  Splitting logs by date in: $target_dir"
+    local folder_name
+    folder_name=$(basename "$target_dir")
 
-    shopt -s nullglob
-    for LOG_FILE in "$target_dir"/*.log; do
-        FILENAME=$(basename "$LOG_FILE")
-        # Skip our own day-split outputs (…_DDMonYY.log) and any legacy
-        # minute-stamped files (…_##########.log) so only live logs are split.
-        if [[ "$FILENAME" =~ _[0-9]{2}[A-Za-z]{3}[0-9]{2}\.log$ ]] || [[ "$FILENAME" =~ _[0-9]{10}\.log$ ]]; then
-            continue
+    # Skip utility, state, and watchdog daemon folders — they are not trading bots
+    case "$folder_name" in
+        Program_restart|shared_state|ngrok|session_manager)
+            return 0
+            ;;
+    esac
+
+    local files_split=0
+    # Only split actual trading bot rolling logs (never touch daemon or system logs)
+    for filename in app.log app_single.log vivek.log bin_trade.log; do
+        local LOG_FILE="$target_dir/$filename"
+        [ -f "$LOG_FILE" ] || continue
+
+        if [ "$files_split" -eq 0 ]; then
+            echo "  🗂  Splitting logs by date in: $target_dir"
+            files_split=1
         fi
 
-        local BASE_NAME="${FILENAME%.log}"
-        echo "    ↳ splitting $FILENAME"
+        local BASE_NAME="${filename%.log}"
+        echo "    ↳ splitting $filename"
         # Character classes (not {n} intervals) are used so this works with the
         # default macOS awk, which lacks interval-expression support.
         # Filters each day's stacked log to market hours: 09:00:00 to 15:45:00 inclusive.
@@ -225,7 +235,6 @@ split_logs_by_date() {
             echo "      → $(basename "$f") ($(ls -lh "$f" | awk '{print $5}'))"
         done
     done
-    shopt -u nullglob
 }
 
 # --- Sync Function ---
