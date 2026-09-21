@@ -196,22 +196,28 @@ split_logs_by_date() {
         echo "    ↳ splitting $FILENAME"
         # Character classes (not {n} intervals) are used so this works with the
         # default macOS awk, which lacks interval-expression support.
+        # Filters each day's stacked log to market hours: 09:00:00 to 15:45:00 inclusive.
         awk -v dir="$target_dir" -v base="$BASE_NAME" '
             BEGIN {
                 split("Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec", mon, " ")
             }
             {
-                # A line beginning "YYYY-MM-DD" switches the current output file.
+                # A line beginning "YYYY-MM-DD" checks date and market session time window.
                 if (substr($0, 1, 10) ~ /^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$/) {
                     yy = substr($0, 3, 2);
                     mm = substr($0, 6, 2) + 0;
                     dd = substr($0, 9, 2);
                     out = dir "/" base "_" dd mon[mm] yy ".log";
+                    time_str = substr($0, 12, 8);
+                    if (time_str >= "09:00:00" && time_str <= "15:45:00") {
+                        in_range = 1;
+                    } else {
+                        in_range = 0;
+                    }
                 }
-                # Dated lines and their continuation lines (e.g. tracebacks) are
-                # written to the current date file. Lines before any dated line
-                # (out still empty) are skipped.
-                if (out != "") print > out;
+                # Lines within the 09:00:00-15:45:00 window (and multi-line tracebacks)
+                # are written to the current date file.
+                if (in_range && out != "") print > out;
             }
         ' "$LOG_FILE"
         # Show which day-files were created/updated by this split.
@@ -324,11 +330,9 @@ run_sync() {
                     $DOWNLOAD_OPTS --include="*.log" --exclude="*" \
                     "$remote_user_host:$remote_path/" "$dl_final_path/"
 
-                # Rename rolling logs to include today's date (app.log → app_23Jun26.log)
-                # so each calendar day has a unique file and --append-verify works
-                rename_logs_by_date "$dl_final_path"
-
-                # Split downloaded logs into per-date files (app_DDMonYY.log)
+                # Split downloaded logs into per-date files (app_DDMonYY.log).
+                # Note: rolling logs (app.log) are left in place so incremental rsync
+                # delta transfers work and pending previous-day logs are completed.
                 split_logs_by_date "$dl_final_path"
             else
                 local dl_parent

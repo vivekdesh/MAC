@@ -1,3 +1,40 @@
+Date: 2026-09-21 19:54:00
+
+User Query:
+"if i use all.u on lets say Tue morning, it contains logs (may be some pending from lets say 11:00 to 3:40  for yesterday) it ignores!!
+secondly market timing has changed so my my stacked log files should be upto 15:45 from 9:00 AM!!
+re-read agents.md or gemini.md"
+Follow-up Query:
+"sorry all.d?"
+"what about if i do on thurday? and logs contain Mon to Thurday? is is taken care?"
+
+Logic & Explanation:
+1. DIAGNOSIS (Yesterday's pending logs ignored on Tuesday/subsequent morning downloads):
+   In `/Users/vivek/ICICI_Direct/MAC/sync_master.sh`, the download sequence previously called `rename_logs_by_date` immediately after `rsync`, before `split_logs_by_date`.
+   `rename_logs_by_date` renamed rolling logs (`app.log`, `app_single.log`) using `today=$(date +%d%b%y)` (e.g., `app_22Sep26.log` on Tuesday).
+   This caused two critical failures:
+   a) It destroyed the live rolling `app.log` on the Mac, preventing incremental rsync delta downloads on subsequent runs.
+   b) When running `all.d` on Tuesday morning after Monday's session, any pending Monday logs from 11:00 to 15:40 inside `app.log` were misfiled into `app_22Sep26.log`, leaving Monday's file `app_21Sep26.log` incomplete and permanently frozen at 11:00 AM.
+   c) `split_logs_by_date` was bypassed entirely on every run because `app.log` was already moved before it could inspect it.
+2. RESOLUTION:
+   a) Removed `rename_logs_by_date` from the sync flow so `app.log` / `app_single.log` remain in place on the Mac. On each download, `split_logs_by_date` inspects the live log directly.
+   b) Updated `split_logs_by_date` to split every date present in `app.log` into its respective date-stacked file (`app_DDMonYY.log`), while strictly filtering log events to market hours: 09:00:00 to 15:45:00 inclusive. Continuation lines and tracebacks originating within that window are preserved; off-market noise before 09:00 and overnight waiting loops after 15:45 are excluded.
+   c) For multi-day syncs (e.g. syncing on Thursday when `app.log` spans Monday to Thursday), each day's log file is generated/regenerated and completed independently according to the timestamps on each log line.
+
+Verification:
+- Syntax checked: `bash -n /Users/vivek/ICICI_Direct/MAC/sync_master.sh` passed with 0 errors.
+- Offline synthetic smoke test: Verified multi-day log split with events spanning Monday, Tuesday, Wednesday, and Thursday. Confirmed that:
+  * Events before 09:00:00 (e.g. 08:30 startup) are filtered out.
+  * Events after 15:45:00 (e.g. 15:45:01, overnight 16:00 waiting loops) are filtered out.
+  * Multi-line tracebacks are preserved.
+  * Incomplete previous-day files are regenerated and completed with the full 09:00 to 15:45 market session.
+  * Separate stacked files (`app_21Sep26.log`, `app_22Sep26.log`, `app_23Sep26.log`, `app_24Sep26.log`) are generated cleanly.
+
+Final Code Change:
+- Modified `/Users/vivek/ICICI_Direct/MAC/sync_master.sh`:
+  * Bypassed `rename_logs_by_date` call in `run_sync` (retaining function definition) so rolling logs (`app.log`) remain in place for incremental rsync and `split_logs_by_date`.
+  * Updated `split_logs_by_date` awk parser to filter each day's stacked log lines to `09:00:00` - `15:45:00` inclusive.
+
 Date: 2026-09-07 10:55:00
 
 User Query:
