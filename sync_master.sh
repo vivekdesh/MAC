@@ -19,8 +19,9 @@ UPLOAD_OPTS="--exclude=backtest_ha_ema34/ --exclude=backtest_ha_ema34_selling/ -
 # We also exclude apiLogs* (verbose Breeze SDK debug logs). They are large, grow
 # unbounded, and are never needed on the Mac — excluding them removes the bulk of
 # our egress cost.
-# Note: --append is added selectively in rsync commands (logs only) for incremental
-# transfers. Non-log files (JSON, CSV, .py, etc.) use -z compression only.
+# Note: logs are downloaded with plain rsync, NOT --append. rsync's own delta
+# transfer already sends only the newly-appended bytes, and unlike --append it
+# stays correct when a VM restart truncates app.log (remote smaller than local).
 DOWNLOAD_OPTS="--exclude=.git --exclude=__pycache__ --exclude=.DS_Store --exclude=apiLogs*"
 
 # ==============================================================================
@@ -329,13 +330,14 @@ run_sync() {
 
                 echo "  📥 DOWNLOADING: $remote_path -> $dl_final_path"
 
-                # First, download all non-log files without --append so JSON files overwrite cleanly
+                # First, download all non-log files (JSON, .py, CSV) so they overwrite cleanly
                 rsync -avz -e "ssh -i $KEY_FILE" \
                     $DOWNLOAD_OPTS --exclude="*.log" \
                     "$remote_user_host:$remote_path/" "$dl_final_path/"
 
-                # Second, download ONLY .log files WITH --append for incremental transfers
-                rsync -avz --append -e "ssh -i $KEY_FILE" \
+                # Second, download ONLY .log files. Plain rsync: delta transfer sends
+                # just the new tail, and survives a VM-side log truncation.
+                rsync -avz -e "ssh -i $KEY_FILE" \
                     $DOWNLOAD_OPTS --include="*.log" --exclude="*" \
                     "$remote_user_host:$remote_path/" "$dl_final_path/"
 
@@ -354,7 +356,7 @@ run_sync() {
                     $DOWNLOAD_OPTS --exclude="*.log" \
                     "$remote_user_host:$remote_path" "$DL_BASE/$local_sub"
 
-                rsync -avz --append -e "ssh -i $KEY_FILE" \
+                rsync -avz -e "ssh -i $KEY_FILE" \
                     $DOWNLOAD_OPTS --include="*.log" --exclude="*" \
                     "$remote_user_host:$remote_path" "$DL_BASE/$local_sub"
             fi
