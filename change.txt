@@ -1,3 +1,27 @@
+Date: 05-10-2026 15:00:12
+
+Query: "disable fwupd on oracle2, meaning of this?" -> "ok" -> "add it to create_TMS_oracle2.sh" -> "ok"
+
+Logic & Explanation:
+- fwupd is the Linux firmware-update daemon. On the Oracle2 cloud VM (155.248.244.211, 956 MB RAM) it has no
+  real hardware to update, yet held ~155 MB RSS while only 128 MB RAM was available next to
+  whatsapp_scanner.py (270 MB).
+- Done live on Oracle2 first: systemctl stop + mask fwupd and fwupd-refresh.timer (the timer would re-launch it).
+  Result: RAM available 252 -> 276 MB, swap used 402 -> 271 MB (vs 128 MB available / 620 MB swap earlier today).
+  whatsapp, ngrok, rokde tmux sessions unaffected.
+- Persisted in the setup script so a rebuilt VM gets the same state.
+
+Final code change:
+- /Users/vivek/ICICI_Direct/MAC/create_TMS_oracle2.sh: new disable_fwupd() called before the tmux sessions.
+  Idempotent (returns if fwupd is already masked); uses sudo -n so it never blocks on a password prompt and
+  only warns on failure, leaving the tmux setup to run.
+- Undo: sudo systemctl unmask fwupd fwupd-refresh.timer && sudo systemctl start fwupd
+
+Verification:
+- bash -n syntax OK (local and on VM); function dry-run on Oracle2 printed "fwupd already masked. Doing nothing."
+- Uploaded ONLY this file to /home/ubuntu/create_TMS.sh via scp (md5 67e36959e92457fc50fb0708575d1aef matches),
+  instead of o2.u, to avoid pushing live whatsapp code during market hours.
+
 Date: 05-10-2026 14:13:03
 
 Query: "why ? ✅ program-restart-suresh.service restarted with the new agent_config.py" -> "go ahead"

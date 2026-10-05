@@ -63,8 +63,22 @@ EOF
     fi
 }
 
+# fwupd (firmware updater) has no real hardware to update on a cloud VM but held
+# ~155 MB RAM on this 956 MB box. Masked so it never restarts. Undo: systemctl unmask.
+disable_fwupd() {
+    if [ "$(systemctl is-enabled fwupd 2>/dev/null)" = "masked" ]; then
+        echo "fwupd already masked. Doing nothing."
+        return
+    fi
+    sudo -n systemctl stop fwupd fwupd-refresh.timer 2>/dev/null
+    sudo -n systemctl mask fwupd fwupd-refresh.timer \
+        && echo "Disabled fwupd (stopped + masked)." \
+        || echo "WARNING: could not mask fwupd (sudo?)."
+}
+
 echo "Starting Oracle 2 tmux session setup..."
 
+disable_fwupd
 setup_session "whatsapp" "whatsapp"
 setup_session "rokde" "whatsapp"
 setup_ngrok_session
