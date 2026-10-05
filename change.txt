@@ -1,3 +1,38 @@
+Date: 05-10-2026 15:06:38
+
+Query: "check other VMs for useless services like fwupd" -> "fwupd plus the small ones, all VMs" -> "yes show the diff" -> "ok"
+
+Logic & Explanation:
+- Scan of all VMs for desktop-only services (read-only) found, besides fwupd already off on Oracle2:
+    ORACLE 80.225.215.187   fwupd 140,784 KB (RSS 9,740 + swap 131,044)
+    SURESH 140.245.15.195   fwupd 141,100 KB (RSS 9,344 + swap 131,756)
+  plus packagekitd (~9 MB) and udisks2 on all three Oracle-cloud VMs. Vivek VM (GCP) has none of them.
+  Bandu skipped: SSH host-key-changed warning, awaiting user confirmation.
+- fwupd = firmware updater (BIOS/SSD flashing), packagekit = software-centre helper,
+  udisks2 = removable-disk manager. None has work on a cloud VM.
+- Done live on ORACLE, SURESH, ORACLE2: systemctl stop + mask of fwupd.service, fwupd-refresh.timer,
+  packagekit.service, udisks2.service. All bot tmux sessions unaffected.
+    ORACLE   RAM avail 202 -> 221 MB, swap 800 -> 668 MB
+    SURESH   RAM avail 372 -> 380 MB, swap 393 -> 256 MB
+    ORACLE2  RAM avail 199 -> 201 MB, swap 274 -> 269 MB
+- Persisted in setup scripts so a REBUILT VM gets the same state (mask already survives reboot).
+  Suresh not persisted: it runs /home/ubuntu/create_TMX_sur.sh, which has no Mac master copy.
+
+Final code change:
+- /Users/vivek/ICICI_Direct/MAC/create_TMS_oracle2.sh: disable_fwupd() replaced by disable_unused_services()
+  covering all 4 units (deployed to Oracle2 as /home/ubuntu/create_TMS.sh).
+- Same function added to /Users/vivek/ICICI_Direct/mod_rsi/create_TMS_oracle.sh (Oracle VM), see mod_rsi change.txt.
+- disable_unused_services() loops UNUSED_SERVICES; per unit: skip if already masked, else
+  sudo -n stop + mask; warns (does not abort) if sudo/mask fails, so tmux setup still runs.
+- Undo: sudo systemctl unmask <unit>
+
+Verification:
+- bash -n syntax OK on both scripts.
+- Dry-run of the function on ORACLE and ORACLE2: all 4 units "already masked. Doing nothing."
+- Offline stub test (fake systemctl/sudo): disable path, already-masked path and mask-failure warning all
+  behave as intended.
+- Uploaded ONLY the two scripts via scp (not o.u / o2.u, market hours); md5 matches on both VMs.
+
 Date: 05-10-2026 15:00:12
 
 Query: "disable fwupd on oracle2, meaning of this?" -> "ok" -> "add it to create_TMS_oracle2.sh" -> "ok"

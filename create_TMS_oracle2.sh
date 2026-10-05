@@ -63,22 +63,28 @@ EOF
     fi
 }
 
-# fwupd (firmware updater) has no real hardware to update on a cloud VM but held
-# ~155 MB RAM on this 956 MB box. Masked so it never restarts. Undo: systemctl unmask.
-disable_fwupd() {
-    if [ "$(systemctl is-enabled fwupd 2>/dev/null)" = "masked" ]; then
-        echo "fwupd already masked. Doing nothing."
-        return
-    fi
-    sudo -n systemctl stop fwupd fwupd-refresh.timer 2>/dev/null
-    sudo -n systemctl mask fwupd fwupd-refresh.timer \
-        && echo "Disabled fwupd (stopped + masked)." \
-        || echo "WARNING: could not mask fwupd (sudo?)."
+# Desktop-only services with nothing to do on a cloud VM: fwupd (firmware updater,
+# held ~155 MB), packagekit (software-centre helper), udisks2 (removable-disk manager).
+# Masked so they never restart. Undo: sudo systemctl unmask <unit>.
+UNUSED_SERVICES="fwupd.service fwupd-refresh.timer packagekit.service udisks2.service"
+
+disable_unused_services() {
+    local unit
+    for unit in $UNUSED_SERVICES; do
+        if [ "$(systemctl is-enabled "$unit" 2>/dev/null)" = "masked" ]; then
+            echo "$unit already masked. Doing nothing."
+            continue
+        fi
+        sudo -n systemctl stop "$unit" 2>/dev/null
+        sudo -n systemctl mask "$unit" >/dev/null 2>&1 \
+            && echo "Disabled $unit (stopped + masked)." \
+            || echo "WARNING: could not mask $unit (sudo?)."
+    done
 }
 
 echo "Starting Oracle 2 tmux session setup..."
 
-disable_fwupd
+disable_unused_services
 setup_session "whatsapp" "whatsapp"
 setup_session "rokde" "whatsapp"
 setup_ngrok_session
