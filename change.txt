@@ -1,3 +1,34 @@
+Date: 05-10-2026 14:13:03
+
+Query: "why ? ✅ program-restart-suresh.service restarted with the new agent_config.py" -> "go ahead"
+
+Logic & Explanation:
+- The restart-agent block of POST-SYNC (added 07-09-2026, 6cbc706) restarted program-restart-<vm>.service on
+  EVERY upload containing Program_restart and always printed "restarted with the new agent_config.py".
+  Suresh VM 05-10-2026: agent_config.py last changed 06-09-2026 11:31, restart_agent.py 21-08-2026 18:28,
+  yet the agent was restarted at 14:09:24.
+- The 07-09-2026 reason still stands (the agent loads its config ONCE at start, so a changed file MUST restart
+  it); only the "nothing changed" restart is removed.
+- The agent loads 5 files at start: restart_agent.py, agent_config.py, sheet_support.py (local imports),
+  para.json (load_runtime_config) and service_account.json. A sha256 of those files is kept in
+  ~/.agent_deployed.sha256 on each VM. Checksums, not copies: service_account.json is a credential.
+  Not mtimes: rsync keeps the Mac's mtime, so an old-dated file uploaded after the agent started would be missed.
+  The marker is written only AFTER a successful restart, so a failed restart is retried on the next upload.
+- INVARIANT: restart agent <=> any of its 5 files changed OR service not active.
+
+Final code change:
+- /Users/vivek/ICICI_Direct/MAC/sync_master.sh POST-SYNC restart-agent block: the remote script compares the
+  checksum with ~/.agent_deployed.sha256 and the service state; prints UNCHANGED (skip) or restarts and, on
+  success, writes the new checksum and prints RESTARTED; the Mac side maps that to
+  "✅ restarted (agent code/config changed or service was down)", "⏭️ unchanged and running, not restarted",
+  or "⚠️ Could not restart ...". WHY comment added above the block.
+- One-time cost: the first upload per VM restarts the agent once (no marker yet).
+- Verified: bash -n on sync_master.sh and the extracted block; offline smoke test running the EXACT block with
+  fake ssh/systemctl/sudo and a fake HOME, 9 cases: first run +1; unchanged 0; agent_config.py changed +1;
+  re-run 0; para.json changed +1; unchanged but down +1; changed + restart fails -> ⚠️ (+1) then next upload
+  retries ✅ (+1); unchanged 0. No credential copy created. sha256sum present on VMs (checked on suresh).
+- PNG: documentation_images/Program_restart/05-10-2026_Program_restart_C_agent_restart_fix.png (de8ad00).
+
 Date: 05-10-2026 14:02:06
 
 Query: "why is it taking so much time for? ... POST-SYNC: Updating fast-param-subscriber on vivek..." -> "why coding was done like this? please dig out past history?" -> "yes show the diff for both fixes, in PNG!!" -> "if service is not running by any chance in VM then also who restarts it?" -> "go ahead, for other VMs also?"

@@ -425,12 +425,35 @@ run_sync() {
             # Restarting is safe at any time: the agent is a stateless poller of the Commands
             # sheet, holds no position and owns no order. It is NOT the trading bots - those
             # are restarted only by an explicit command row.
+            #
+            # WHY ONLY ON CHANGE: until 05-10-2026 this restarted on every upload and printed
+            # "restarted with the new agent_config.py" even when nothing had changed (suresh,
+            # 05-10-2026 14:09:24: agent_config.py last changed 06-09-2026). The agent loads
+            # restart_agent.py, agent_config.py, sheet_support.py, para.json and
+            # service_account.json at start. A checksum of those files is kept in
+            # ~/.agent_deployed.sha256 (checksums, not copies: service_account.json is a
+            # credential) and written only AFTER a successful restart, so a failed restart
+            # is retried on the next upload. File mtimes are not used: rsync keeps the Mac's
+            # mtime, so an old-dated file uploaded after the agent started would be missed.
+            # INVARIANT: restart agent <=> any of its 5 files changed OR service not active
             if [[ -n "$RESTART_AGENT_SERVICE" ]]; then
-                echo "  🔄 POST-SYNC: Restarting $RESTART_AGENT_SERVICE on $target..."
-                ssh -i "$KEY_FILE" -o ConnectTimeout=8 "$remote_user_host" \
-                  "sudo systemctl restart $RESTART_AGENT_SERVICE && sleep 2 && systemctl is-active $RESTART_AGENT_SERVICE" \
-                  && echo "  ✅ $RESTART_AGENT_SERVICE restarted with the new agent_config.py" \
-                  || echo "  ⚠️  Could not restart $RESTART_AGENT_SERVICE on $target - the agent is STILL RUNNING OLD CONFIG. Restart it by hand before relying on any command row."
+                echo "  🔄 POST-SYNC: Checking $RESTART_AGENT_SERVICE on $target..."
+                agent_result=$(ssh -i "$KEY_FILE" -o ConnectTimeout=8 "$remote_user_host" '
+                  svc='"$RESTART_AGENT_SERVICE"'
+                  cd "$HOME/Program_restart" || exit 1
+                  new=$(sha256sum restart_agent.py agent_config.py sheet_support.py para.json service_account.json 2>/dev/null)
+                  old=$(cat "$HOME/.agent_deployed.sha256" 2>/dev/null)
+                  if [ "$new" = "$old" ] && systemctl is-active --quiet "$svc"; then
+                    echo UNCHANGED; exit 0
+                  fi
+                  sudo systemctl restart "$svc" && sleep 2 && systemctl is-active --quiet "$svc" || exit 1
+                  printf "%s\n" "$new" > "$HOME/.agent_deployed.sha256"
+                  echo RESTARTED')
+                case "$agent_result" in
+                  *RESTARTED*) echo "  ✅ $RESTART_AGENT_SERVICE restarted (agent code/config changed or service was down)" ;;
+                  *UNCHANGED*) echo "  ⏭️  $RESTART_AGENT_SERVICE unchanged and running, not restarted" ;;
+                  *) echo "  ⚠️  Could not restart $RESTART_AGENT_SERVICE on $target - the agent may be RUNNING OLD CONFIG. Restart it by hand before relying on any command row." ;;
+                esac
             else
                 echo "  ℹ️  No restart agent configured for $target, skipping."
             fi
