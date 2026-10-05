@@ -384,11 +384,32 @@ run_sync() {
         fi
 
         # If we uploaded Program_restart, automatically apply it to the home directory
-        # and restart the subscriber service.
+        # and restart the subscriber service - but ONLY if a file changed or the service
+        # is not running.
+        #
+        # WHY: this block used to restart on EVERY upload that contained Program_restart.
+        # On 05-10-2026 a `v.u` with both files unchanged since 07-09-2026 restarted the
+        # Vivek VM subscriber, the old process hung 79s after "Subscriber closed", and the
+        # sync sat waiting for systemd's 90s stop timeout. The ~/ copy is the "last
+        # deployed" marker: on oracle2 the unit runs ~/Program_restart directly, and the
+        # cmp still detects a new upload there. A crash is already restarted by systemd
+        # (Restart=always, 5s, on all 4 VMs); the is-active check covers a service that
+        # was stopped by hand or gave up after a crash loop.
+        # INVARIANT: restart <=> subscriber files changed OR service not active
         if [[ "$FOLDER_LIST" == *"Program_restart"* ]]; then
             echo "  🔄 POST-SYNC: Updating fast-param-subscriber on $target..."
-            ssh -i "$KEY_FILE" -o ConnectTimeout=8 "$remote_user_host" \
-              "cp ~/Program_restart/fast_parameter_handler.py ~/ 2>/dev/null; cp ~/Program_restart/fast_param_subscriber.py ~/ 2>/dev/null; sudo systemctl restart icici-fast-param-subscriber.service"
+            ssh -i "$KEY_FILE" -o ConnectTimeout=8 "$remote_user_host" '
+              changed=0
+              for f in fast_parameter_handler.py fast_param_subscriber.py; do
+                [ -f "$HOME/Program_restart/$f" ] || continue
+                cmp -s "$HOME/Program_restart/$f" "$HOME/$f" || { cp "$HOME/Program_restart/$f" "$HOME/" && changed=1; }
+              done
+              systemctl is-active --quiet icici-fast-param-subscriber.service || changed=1
+              if [ "$changed" = 1 ]; then
+                sudo systemctl restart icici-fast-param-subscriber.service && echo "  ✅ fast-param-subscriber restarted (code changed or service was down)"
+              else
+                echo "  ⏭️  fast-param-subscriber unchanged and running, not restarted"
+              fi'
 
             # ALSO restart the command/restart agent.
             #

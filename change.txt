@@ -1,3 +1,31 @@
+Date: 05-10-2026 14:02:06
+
+Query: "why is it taking so much time for? ... POST-SYNC: Updating fast-param-subscriber on vivek..." -> "why coding was done like this? please dig out past history?" -> "yes show the diff for both fixes, in PNG!!" -> "if service is not running by any chance in VM then also who restarts it?" -> "go ahead, for other VMs also?"
+
+Logic & Explanation:
+- The POST-SYNC block (added 08-08-2026, 91d7a3f) restarted icici-fast-param-subscriber on EVERY upload whose
+  FOLDER_LIST contained Program_restart. Its change.txt entry said "when ... change", the code never checked.
+- 05-10-2026 Vivek VM journal: `v.u` with both subscriber files unchanged since 07-09-2026 restarted the service;
+  SIGTERM 13:22:33, "Subscriber closed." 13:22:44, then the process hung until systemd's 90s stop timeout
+  SIGKILLed it at 13:24:03. The sync waited the whole time. (Hang itself fixed in Program_restart, same date.)
+- All 4 VMs (Vivek, Suresh, Oracle, Oracle2) read on 05-10-2026: Restart=always, RestartSec=5, enabled, active.
+  So systemd already revives a crashed subscriber; the upload only needs to restart on a code change, or when
+  the service is not active (manual stop / start-limit after a crash loop). Oracle2 runs
+  ~/Program_restart/fast_param_subscriber.py directly; the ~/ copy acts as the "last deployed" marker.
+- INVARIANT: restart <=> subscriber files changed OR service not active.
+
+Final code change:
+- /Users/vivek/ICICI_Direct/MAC/sync_master.sh POST-SYNC (lines 399-412): remote script now cmp's each of
+  fast_parameter_handler.py / fast_param_subscriber.py against the ~/ copy, copies only changed files,
+  adds `systemctl is-active --quiet ... || changed=1`, and restarts only when changed=1; otherwise prints
+  "fast-param-subscriber unchanged and running, not restarted". Paths quoted ("$HOME/...").
+  Restart-agent block (RESTART_AGENT_SERVICE) unchanged - still unconditional by design (07-09-2026).
+- Verified: bash -n on sync_master.sh and on the extracted remote script; offline smoke test with fake HOME +
+  fake systemctl/sudo, 6 cases: unchanged+running 0 restarts; subscriber changed 1; ~/ copy missing 1;
+  unchanged+down 1; source missing+running 0; changed AND down 1; ~/ copy updated after change.
+- PNGs: documentation_images/Program_restart/05-10-2026_Program_restart_A_subscriber_restart_PROPOSAL.png (4a256f8),
+  05-10-2026_Program_restart_B_subscriber_restart_fix.png (978c9cb).
+
 Date: 2026-09-28 14:37:17
 Query: i want suresh to be last!! for up and down!!
 
