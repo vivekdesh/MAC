@@ -194,7 +194,7 @@ split_logs_by_date() {
 
     local files_split=0
     # Only split actual trading bot rolling logs (never touch daemon or system logs)
-    for filename in app.log app_single.log vivek.log bin_trade.log; do
+    for filename in app.log app_single.log vivek.log bin_trade.log line_break_monitor.log; do
         local LOG_FILE="$target_dir/$filename"
         [ -f "$LOG_FILE" ] || continue
 

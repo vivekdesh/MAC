@@ -1,3 +1,26 @@
+Date: 2026-10-14 11:12:00
+
+Query:
+"/Users/vivek/ICICI_Direct/Google/whatsapp/line_break_monitor.log
+it should be like date wise!!
+/Users/vivek/ICICI_Direct/Google/whatsapp/app_single_14Oct26.log /Users/vivek/ICICI_Direct/Google/whatsapp/app_14Oct26.log
+when i download logs like all.d!!"
+
+Logic and Explanation:
+1. When running `all.d` (or `all_d`), `/Users/vivek/ICICI_Direct/MAC/sync_master.sh` downloads remote bot logs via rsync and calls `split_logs_by_date()` on each downloaded directory.
+2. In `split_logs_by_date()`, log files are inspected and split into per-date files named `<base>_DDMonYY.log` by parsing the ISO timestamp prefix `YYYY-MM-DD` within market hours (09:00:00 to 15:45:00).
+3. Previously, the filename loop inside `split_logs_by_date()` only iterated over `app.log`, `app_single.log`, `vivek.log`, and `bin_trade.log`. Consequently, `line_break_monitor.log` was downloaded but never split into date-stamped files (e.g. `line_break_monitor_14Oct26.log`).
+4. Added `line_break_monitor.log` to the explicit filename list in `split_logs_by_date()`. On any download (`all.d` or individual server downloads), `line_break_monitor.log` is automatically split and formatted as `line_break_monitor_DDMonYY.log` alongside `app_DDMonYY.log` and `app_single_DDMonYY.log`.
+
+Final Code Change:
+- /Users/vivek/ICICI_Direct/MAC/sync_master.sh: Added `line_break_monitor.log` to `split_logs_by_date()` file list.
+
+Verification:
+- Syntax verified: `bash -n /Users/vivek/ICICI_Direct/MAC/sync_master.sh` passed with 0 errors.
+- Split test executed on `/Users/vivek/ICICI_Direct/Google/whatsapp`:
+  * Verified generation of `/Users/vivek/ICICI_Direct/Google/whatsapp/line_break_monitor_14Oct26.log` (24 KB).
+  * Validated that header timestamps, ticks, and candle evaluation logs from 09:07 onwards are correctly populated in the date-wise file.
+
 Date: 05-10-2026 15:06:38
 
 Query: "check other VMs for useless services like fwupd" -> "fwupd plus the small ones, all VMs" -> "yes show the diff" -> "ok"
