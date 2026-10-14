@@ -1,3 +1,20 @@
+Date: 14-10-2026 21:57:40
+Query: Add restart shortcuts and tmux session creation for Line_brake, Rokde, and WhatsApp on Oracle 2 VM.
+
+Logic & Explanation:
+1. Updated remote_oracle2.sh: Added 'line_break' and 'ngrok' to SESSIONS_LIST so o2.st reports health and log sizes across all 4 sessions.
+2. Added restart handlers in remote_oracle2.sh:
+   - 'lb' / 'line_break': Restarts line_break_nifty_monitor.py inside tmux session 'line_break', auto-creating session if missing.
+   - 'rok' / 'rokde': Restarts vivek_rokde.py inside tmux session 'rokde'.
+   - 'all': Restarts all bots on Oracle 2 VM via kill_whatsapp_google.sh.
+3. Updated create_TMS_oracle2.sh: Added setup_session 'line_break' 'whatsapp' so line_break tmux session is created automatically on VM startup.
+4. Updated aliases.md: Added o2.rok, o2.rok.y, o2.lb, o2.lb.y, o2.all, and o2.all.y shortcuts.
+
+Final Code Changes:
+- /Users/vivek/ICICI_Direct/MAC/remote_oracle2.sh: Added line_break and ngrok to SESSIONS_LIST; added restart handlers for lb, rok, and all.
+- /Users/vivek/ICICI_Direct/MAC/create_TMS_oracle2.sh: Added setup_session for line_break.
+- /Users/vivek/ICICI_Direct/MAC/aliases.md: Added o2.rok, o2.lb, and o2.all aliases.
+
 Date: 2026-10-14 11:12:00
 
 Query:

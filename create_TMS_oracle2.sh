@@ -87,6 +87,7 @@ echo "Starting Oracle 2 tmux session setup..."
 disable_unused_services
 setup_session "whatsapp" "whatsapp"
 setup_session "rokde" "whatsapp"
+setup_session "line_break" "whatsapp"
 setup_ngrok_session
 
 echo "Finished Oracle 2 tmux session setup."

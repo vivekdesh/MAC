@@ -5,7 +5,7 @@ REMOTE_CONN="ubuntu@155.248.244.211"
 KEY_FILE="$HOME/ICICI_Direct/Key/oracle2/ssh-key-2026-02-11.key"
 REMOTE_BASE_DIR="/home/ubuntu"
 KILL_WHATSAPP="$REMOTE_BASE_DIR/kill_whatsapp_google.sh"
-SESSIONS_LIST="whatsapp rokde"
+SESSIONS_LIST="whatsapp rokde line_break ngrok"
 
 # --- TMUX HEALTH SCRIPT ---
 TMUX_HEALTH_CMD=' 
@@ -72,6 +72,30 @@ case "$COMMAND" in
         CLEAR_LOGS=${ARG3:-n}
         if [[ "$ARG2" == "wa" || "$ARG2" == "whatsapp" ]]; then
             echo "🔄 Restarting WhatsApp Bot on Oracle 2 VM..."
+            execute_remote "printf '$CLEAR_LOGS\ny\ny\ny\ny\n' | bash $KILL_WHATSAPP"
+        elif [[ "$ARG2" == "rok" || "$ARG2" == "rokde" ]]; then
+            echo "🔄 Restarting Rokde (Executor Controller) on Oracle 2 VM..."
+            execute_remote "pkill -9 -f 'vivek_rokde.py' || true; \
+                tmux has-session -t rokde 2>/dev/null || tmux new-session -d -s rokde; \
+                tmux send-keys -t rokde 'clear' Enter; \
+                tmux send-keys -t rokde 'cd /home/ubuntu/whatsapp' Enter; \
+                tmux send-keys -t rokde 'source ~/myenv/bin/activate' Enter; \
+                tmux send-keys -t rokde '/home/ubuntu/myenv/bin/python vivek_rokde.py' Enter"
+        elif [[ "$ARG2" == "lb" || "$ARG2" == "line_break" ]]; then
+            echo "🔄 Restarting Line Break Monitor on Oracle 2 VM..."
+            CLEAR_CMD=""
+            if [[ "$CLEAR_LOGS" =~ ^[Yy]$ ]]; then
+                CLEAR_CMD="> /home/ubuntu/whatsapp/line_break_monitor.log && echo 'Cleared line_break_monitor.log' &&"
+            fi
+            execute_remote "pkill -9 -f 'line_break_nifty_monitor.py' || true; \
+                $CLEAR_CMD \
+                tmux has-session -t line_break 2>/dev/null || tmux new-session -d -s line_break; \
+                tmux send-keys -t line_break 'clear' Enter; \
+                tmux send-keys -t line_break 'cd /home/ubuntu/whatsapp' Enter; \
+                tmux send-keys -t line_break 'source ~/myenv/bin/activate' Enter; \
+                tmux send-keys -t line_break '/home/ubuntu/myenv/bin/python3 line_break_nifty_monitor.py' Enter"
+        elif [[ "$ARG2" == "all" ]]; then
+            echo "🔄 Restarting ALL Bots (WhatsApp, Rokde, Line Break) on Oracle 2 VM..."
             execute_remote "printf '$CLEAR_LOGS\ny\ny\ny\ny\n' | bash $KILL_WHATSAPP"
         else
             echo "❌ Unknown project for restart: $ARG2"
