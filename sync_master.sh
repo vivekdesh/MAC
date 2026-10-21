@@ -318,8 +318,15 @@ run_sync() {
                 rsync -avu --include='*.py' --exclude='*' "$LOCAL_ROOT/selling/" "$LOCAL_ROOT/selling_1/"
             fi
 
+            # mod_rsi only: data_cache/ is the VM's own rolling NIFTY 1-min CSV (LB+HA
+            # strategy). A Mac copy must never overwrite it. Other bots keep plain UPLOAD_OPTS.
+            local upload_extra_opts=""
+            if [ "$local_sub" == "mod_rsi" ]; then
+                upload_extra_opts="--exclude=data_cache/"
+            fi
+
             rsync -avz -e "ssh -i $KEY_FILE" \
-                $UPLOAD_OPTS \
+                $upload_extra_opts $UPLOAD_OPTS \
                 "$local_src" "$remote_dest"
 
         elif [ "$direction" == "down" ]; then

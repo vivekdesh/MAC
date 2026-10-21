@@ -1,3 +1,10 @@
+Date: 21-10-2026 15:45:00
+Query: mod_rsi LB+HA strategy (21-10-2026): the rolling NIFTY 1-min cache lives on the VM in mod_rsi/data_cache/; a Mac copy must never be uploaded over it, and the exclude must apply ONLY to mod_rsi uploads (not the shared UPLOAD_OPTS).
+Logic: UPLOAD_OPTS includes *.csv and an rsync dry run with those exact options showed data_cache/nifty_1min.csv WOULD be uploaded. run_sync() now prepends --exclude=data_cache/ only when local_sub == "mod_rsi".
+Explanation: Other bots and derived copies keep plain UPLOAD_OPTS. Dry run after the change: data_cache/ skipped, test_data/ and top-level *.py/*.csv still uploaded. bash -n passes.
+Final code change:
+- /Users/vivek/ICICI_Direct/MAC/sync_master.sh: upload branch of run_sync(): local upload_extra_opts="--exclude=data_cache/" for local_sub mod_rsi; rsync uses $upload_extra_opts $UPLOAD_OPTS.
+
 Date: 14-10-2026 21:57:40
 Query: Add restart shortcuts and tmux session creation for Line_brake, Rokde, and WhatsApp on Oracle 2 VM.
 
