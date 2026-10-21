@@ -1,7 +1,7 @@
-Date: 21-10-2026 15:45:00
-Query: mod_rsi LB+HA strategy (21-10-2026): the rolling NIFTY 1-min cache lives on the VM in mod_rsi/data_cache/; a Mac copy must never be uploaded over it, and the exclude must apply ONLY to mod_rsi uploads (not the shared UPLOAD_OPTS).
-Logic: UPLOAD_OPTS includes *.csv and an rsync dry run with those exact options showed data_cache/nifty_1min.csv WOULD be uploaded. run_sync() now prepends --exclude=data_cache/ only when local_sub == "mod_rsi".
-Explanation: Other bots and derived copies keep plain UPLOAD_OPTS. Dry run after the change: data_cache/ skipped, test_data/ and top-level *.py/*.csv still uploaded. bash -n passes.
+Date: 22-10-2026 11:00:00
+Query: "yes exclude Results folder from sync for mod_rsi" (mod_rsi LB+HA backtest output /Users/vivek/ICICI_Direct/mod_rsi/Results_LB_HA_STRATEGY_ENABLED/, ~9 MB of CSV, committed in mod_rsi a1521d1).
+Logic: run_sync() upload branch: upload_extra_opts for local_sub == mod_rsi is now "--exclude=data_cache/ --exclude=Results_LB_HA_STRATEGY_ENABLED/".
+Explanation: CORRECTION to the 21-10-2026 entry (3eb1a13). That entry said an rsync dry run showed data_cache/nifty_1min.csv WOULD be uploaded; the dry run was run in zsh, which passes an unquoted $UPLOAD_OPTS as ONE argument, so nothing was filtered. Re-run under bash (how sync_master.sh runs, 17 separate args): UPLOAD_OPTS ends with --exclude=* and has no --include=*/, so rsync never enters ANY subfolder; data_cache/, test_data/ and Results_LB_HA_STRATEGY_ENABLED/ were never uploaded. Both excludes are kept as a guard in case an --include=*/ is added later; the comment now says so. Verified with bash dry runs: mod_rsi with excludes -> 0 Results files, 0 data_cache files, 45 top-level .py files still uploaded. bash -n passes.
 Final code change:
-- /Users/vivek/ICICI_Direct/MAC/sync_master.sh: upload branch of run_sync(): local upload_extra_opts="--exclude=data_cache/" for local_sub mod_rsi; rsync uses $upload_extra_opts $UPLOAD_OPTS.
+- /Users/vivek/ICICI_Direct/MAC/sync_master.sh: mod_rsi upload_extra_opts adds --exclude=Results_LB_HA_STRATEGY_ENABLED/; comment rewritten (guard, not a fix).
 
