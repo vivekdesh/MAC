@@ -1,3 +1,18 @@
+Date: 22-10-2026 15:45:00
+Query: "1. Copy the scripts to /Users/vivek/ICICI_Direct/MAC/extreme_break_whatif/ 2. Replace the hard-coded temporary paths with a folder next to the scripts. Add one run_daily.sh that refreshes the sheet data, runs the validation, then prints the daily and cumulative table. 3. Re-run it once there to confirm the same result (+38,645 to 22-10). 4. Update the memory note with the new location and the run command. 5. Log it, commit and push in the MAC repo using your usual procedure. ok"
+Logic: The v2 what-if for Momentum_Extreme_Break_enabled=1 (nifty + retire) lived only in a temporary session scratchpad. It is now a permanent tool: replays each 10-min bar with the bots' OWN gate functions (pulled from the master source by ast, never importing the bot modules) on /Users/vivek/Documents/nifty/data/clean.nosync, runs one sequential flag=1 timeline per bot against the real trades from the Results sheet, and prints the daily and cumulative effect.
+Explanation:
+- Paths: SHEETS is now ./sheets next to the scripts; refresh_sheets.py downloads Results, log_single and Log_backup per bot (read-only, 6 reads, 5 s pause between bots, atomic CSV writes).
+- The hard-coded "22-10" log-bar rebuild became install_log_bars(): every SENSEX day after the last clean.nosync day (up to today) is rebuilt from the nifty log's 10-min bars.
+- validate.py: post-15:15 cycles skipped; bars before 01-10-2026 13:20 (older rule version: 01-10 morning "Floor check skipped", 13:15 break required) are informational only; ends with "VALIDATION CLEAN" or "FOUND N ISSUE(S)".
+- validate_sim.py: only chains fully covered by clean data are calibration points; excluded chains are counted. Corrected baseline: nifty simulator +18.6% optimistic (153,187 vs 129,120), retire -3.7% (145,965 vs 151,556); the earlier "+4%" for nifty included 22-10 on coarse log bars.
+- engine2.py: adds a COMBINED daily/cumulative table across bots.
+- run_daily.sh: refresh -> gate validation -> simulator check -> flag=1 timeline, saved to results/run_YYYY-MM-DD.txt; --no-refresh reuses ./sheets.
+- Verification: pyflakes clean on all scripts; zsh -n OK; run on the 10:40 sheet snapshot reproduced exactly nifty +27,794, retire +10,851, combined +38,645; live refresh OK (6 reads); full run on refreshed data: VALIDATION CLEAN, combined still +38,645 (22-10 partial).
+Final code change:
+- /Users/vivek/ICICI_Direct/MAC/extreme_break_whatif/ (new): livefuncs.py, bars.py, engine.py, engine2.py, validate.py, validate_sim.py, stress_test.py, sweep_sim.py, extreme_break_sheets.py, refresh_sheets.py, run_daily.sh, README.md, .gitignore (sheets/, results/, __pycache__/ are regenerated, not committed).
+- Memory: /Users/vivek/ICICI_Direct/memory/extreme-break-whatif-tracker.md updated with location, run command, corrected calibration.
+
 Date: 22-10-2026 11:00:00
 Query: "yes exclude Results folder from sync for mod_rsi" (mod_rsi LB+HA backtest output /Users/vivek/ICICI_Direct/mod_rsi/Results_LB_HA_STRATEGY_ENABLED/, ~9 MB of CSV, committed in mod_rsi a1521d1).
 Logic: run_sync() upload branch: upload_extra_opts for local_sub == mod_rsi is now "--exclude=data_cache/ --exclude=Results_LB_HA_STRATEGY_ENABLED/".
