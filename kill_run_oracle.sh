@@ -7,7 +7,7 @@ CLEAR_LOGS=$2
 BASE_DIR="/home/ubuntu"
 
 if [ -z "$PROJECT" ]; then
-    echo "Usage: $0 <mod_rsi|retire|selling_1|sensex> [clear_logs:y|n]"
+    echo "Usage: $0 <mod_rsi|retire|selling_1|sensex|weekly> [clear_logs:y|n]"
     exit 1
 fi
 
@@ -44,6 +44,15 @@ elif [ "$PROJECT" == "sensex" ]; then
     TRADE_SCRIPT="vivek_sensex.py"
     SINGLE_SCRIPT="vivek_sensex_single.py"
     DISPLAY_NAME="SENSEX"
+elif [ "$PROJECT" == "weekly" ]; then
+    # One process only: weekly_bot.py (wrapper) runs weekly_trade.py. No signal/_single script.
+    DIR_NAME="weekly"
+    PROC_GREP="weekly"
+    SESSION_SIN=""
+    SESSION_TRADE="wk_trade"
+    TRADE_SCRIPT="weekly_bot.py"
+    SINGLE_SCRIPT=""
+    DISPLAY_NAME="WEEKLY"
 else
     echo "❌ Unknown project: $PROJECT"
     exit 1
@@ -93,6 +102,10 @@ case "$PROJECT" in
     "sensex")
         KILL_PATTERN="sensex|vivek_sensex.py|vivek_sensex_single.py|sensex_trade.py|sensex_single_leg.py"
         ;;
+    "weekly")
+        # File names only: "weekly" alone could match an unrelated command line.
+        KILL_PATTERN="weekly_bot.py|weekly_trade.py"
+        ;;
     *)
         KILL_PATTERN="$PROC_GREP"
         ;;
@@ -108,6 +121,7 @@ sleep 2
 
 # 3. Manage Tmux Sessions
 for s in "$SESSION_SIN" "$SESSION_TRADE"; do
+    [ -z "$s" ] && continue
     if ! tmux has-session -t "$s" 2>/dev/null; then
         tmux new-session -d -s "$s"
         echo "Tmux session '$s' created."
@@ -128,11 +142,17 @@ else
     echo "Skipped ${TRADE_SCRIPT}."
 fi
 
-# Single Script
+# Single Script (none for weekly)
 REPLY=""
-read -t 3 -p "Start ${SINGLE_SCRIPT}? (y/n) " -n 1 -r
-echo
-if [[ ! $REPLY =~ ^[Nn]$ ]]; then
+if [ -z "$SINGLE_SCRIPT" ]; then
+    REPLY="n"
+else
+    read -t 3 -p "Start ${SINGLE_SCRIPT}? (y/n) " -n 1 -r
+    echo
+fi
+if [ -z "$SINGLE_SCRIPT" ]; then
+    echo "No single script for $DISPLAY_NAME."
+elif [[ ! $REPLY =~ ^[Nn]$ ]]; then
     tmux send-keys -t "$SESSION_SIN" "clear" Enter
     tmux send-keys -t "$SESSION_SIN" "source ${BASE_DIR}/myenv/bin/activate" Enter
     tmux send-keys -t "$SESSION_SIN" "python ${SCRIPT_DIR}/${SINGLE_SCRIPT}" Enter

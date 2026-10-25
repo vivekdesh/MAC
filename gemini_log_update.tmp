@@ -1,15 +1,11 @@
-Date: 22-10-2026 15:45:00
-Query: "1. Copy the scripts to /Users/vivek/ICICI_Direct/MAC/extreme_break_whatif/ 2. Replace the hard-coded temporary paths with a folder next to the scripts. Add one run_daily.sh that refreshes the sheet data, runs the validation, then prints the daily and cumulative table. 3. Re-run it once there to confirm the same result (+38,645 to 22-10). 4. Update the memory note with the new location and the run command. 5. Log it, commit and push in the MAC repo using your usual procedure. ok"
-Logic: The v2 what-if for Momentum_Extreme_Break_enabled=1 (nifty + retire) lived only in a temporary session scratchpad. It is now a permanent tool: replays each 10-min bar with the bots' OWN gate functions (pulled from the master source by ast, never importing the bot modules) on /Users/vivek/Documents/nifty/data/clean.nosync, runs one sequential flag=1 timeline per bot against the real trades from the Results sheet, and prints the daily and cumulative effect.
-Explanation:
-- Paths: SHEETS is now ./sheets next to the scripts; refresh_sheets.py downloads Results, log_single and Log_backup per bot (read-only, 6 reads, 5 s pause between bots, atomic CSV writes).
-- The hard-coded "22-10" log-bar rebuild became install_log_bars(): every SENSEX day after the last clean.nosync day (up to today) is rebuilt from the nifty log's 10-min bars.
-- validate.py: post-15:15 cycles skipped; bars before 01-10-2026 13:20 (older rule version: 01-10 morning "Floor check skipped", 13:15 break required) are informational only; ends with "VALIDATION CLEAN" or "FOUND N ISSUE(S)".
-- validate_sim.py: only chains fully covered by clean data are calibration points; excluded chains are counted. Corrected baseline: nifty simulator +18.6% optimistic (153,187 vs 129,120), retire -3.7% (145,965 vs 151,556); the earlier "+4%" for nifty included 22-10 on coarse log bars.
-- engine2.py: adds a COMBINED daily/cumulative table across bots.
-- run_daily.sh: refresh -> gate validation -> simulator check -> flag=1 timeline, saved to results/run_YYYY-MM-DD.txt; --no-refresh reuses ./sheets.
-- Verification: pyflakes clean on all scripts; zsh -n OK; run on the 10:40 sheet snapshot reproduced exactly nifty +27,794, retire +10,851, combined +38,645; live refresh OK (6 reads); full run on refreshed data: VALIDATION CLEAN, combined still +38,645 (22-10 partial).
-Final code change:
-- /Users/vivek/ICICI_Direct/MAC/extreme_break_whatif/ (new): livefuncs.py, bars.py, engine.py, engine2.py, validate.py, validate_sim.py, stress_test.py, sweep_sim.py, extreme_break_sheets.py, refresh_sheets.py, run_daily.sh, README.md, .gitignore (sheets/, results/, __pycache__/ are regenerated, not committed).
-- Memory: /Users/vivek/ICICI_Direct/memory/extreme-break-whatif-tracker.md updated with location, run command, corrected calibration.
+Date: 25-10-2026 18:28:44
+Query: "read weekly design.md" (/Users/vivek/ICICI_Direct/weekly/weekly design.md: weekly BOT on sheet 1W9om6x9qdhps0kEFp2GAXLQQKondeJI-f6k6qk-wyLs, configure json + 2 AM gs, emulate sensex/retire/nifty software SL (not GTT), Buy E(k) 15:15 CALL ATM+yy / PUT ATM-yy, trail start REF +/- xx, stop nn, trail/ratio, sheet variables xx 300 yy 100 nn 30 trail 10 ratio 0.9, rename for the new BOT, colourful parameter sheet, inspect every py/json/sh, part of Oracle with mod_rsi + sensex); answers: "New lean weekly_trade.py", "Full build in one go".
+Logic: Oracle wiring for the new weekly bot (/Users/vivek/ICICI_Direct/weekly, tmux wk_trade, weekly_bot.py).
+- sync_master.sh: oracle_binance FOLDER_LIST + weekly:weekly; WEEKLY_UPLOAD_OPTS = explicit list of 12 bot files (weekly_trade.py, weekly_bot.py, breeze_connect_API.py, read_function.py, google_sheet_utils.py, api_coordinator.py, api_limit_state.py, account_book.py, loging_utilities.py, para.json, holidays.json, service_account.json). WHY: the weekly folder is also the research folder and holds the mod_rsi seed files (RSI_trade.py, kill_rsi.sh ...) that must never reach ~/weekly on the VM.
+- aliases.md: o.wk.u / o.wk.d / o.wk.ur / o.wk / o.wk.y; o.r and o.r.y include weekly.
+- remote_oracle.sh: wk_trade in SESSIONS_LIST, weekly logs in status, restart weekly|wk.
+- kill_run_oracle.sh: weekly project (DIR weekly, session wk_trade, TRADE_SCRIPT weekly_bot.py, no single script/session), KILL_PATTERN "weekly_bot.py|weekly_trade.py" (file names only); empty SESSION_SIN / SINGLE_SCRIPT skipped.
+Explanation: mod_rsi's kill pattern matches RSI_trade.py / vivek_RSI.py, so the bot runs under new names and has its own pattern.
+Final code change: sync_master.sh, aliases.md, remote_oracle.sh, kill_run_oracle.sh.
+Verification: bash -n on the three scripts, zsh -n aliases.md; stub run (fake tmux/ps/kill): weekly restart killed only PIDs of weekly_bot.py + weekly_trade.py and started weekly_bot.py in wk_trade; mod_rsi restart killed only vivek_RSI.py, sensex only vivek_sensex.py; rsync -n with WEEKLY_UPLOAD_OPTS listed exactly the 12 files. Not run against the VM.
 

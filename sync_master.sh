@@ -14,6 +14,11 @@ KEY_BASE_PATH="$LOCAL_ROOT/Key/"
 # Uploads are restrictive (Code + Config only)
 UPLOAD_OPTS="--exclude=backtest_ha_ema34/ --exclude=backtest_ha_ema34_selling/ --exclude=FONSEScripMaster.csv --exclude=parameters_cache.json --exclude=index_daily_ha_bias_cache.json --exclude=*state*.json --exclude=calculated_greeks*.json --exclude=option_chain_cache.json --exclude=.claude/ --exclude=__pycache__/ --exclude=.git/ --include=*.py --include=*.json --include=*.sh --include=*.csv --include=requirements.txt --exclude=*"
 
+# weekly: an explicit file list. The weekly folder is also the research folder (backtests,
+# downloaders) and holds the mod_rsi seed files (RSI_trade.py, kill_rsi.sh, ...); none of
+# those may reach ~/weekly on the VM, where running one by mistake could hit a live bot.
+WEEKLY_UPLOAD_OPTS="--include=weekly_trade.py --include=weekly_bot.py --include=breeze_connect_API.py --include=read_function.py --include=google_sheet_utils.py --include=api_coordinator.py --include=api_limit_state.py --include=account_book.py --include=loging_utilities.py --include=para.json --include=holidays.json --include=service_account.json --exclude=*"
+
 # Downloads are permissive (Get everything except junk)
 # We exclude .git and __pycache__ to keep it clean, but get all logs/txt/etc.
 # We also exclude apiLogs* (verbose Breeze SDK debug logs). They are large, grow
@@ -76,7 +81,7 @@ get_target_config() {
         "oracle_binance")
             REMOTE_CONN="ubuntu@80.225.215.187:/home/ubuntu"
             KEY_FILE="$LOCAL_ROOT/Key/oracle/ssh-key-2026-02-11.key"
-            FOLDER_LIST="binance:binance mod_rsi:mod_rsi selling_1:selling_1 sensex:sensex nifty:nifty Program_restart:Program_restart shared_state:shared_state MAC/kill_run_oracle.sh:kill_run_oracle.sh mod_rsi/create_TMS_oracle.sh:create_TMS_oracle.sh"
+            FOLDER_LIST="binance:binance mod_rsi:mod_rsi selling_1:selling_1 sensex:sensex weekly:weekly nifty:nifty Program_restart:Program_restart shared_state:shared_state MAC/kill_run_oracle.sh:kill_run_oracle.sh mod_rsi/create_TMS_oracle.sh:create_TMS_oracle.sh"
             RESTART_AGENT_SERVICE="program-restart-oracle.service"
             DL_BASE="$LOCAL_ROOT/Google"
             ;;
@@ -327,9 +332,15 @@ run_sync() {
                 upload_extra_opts="--exclude=data_cache/ --exclude=Results_LB_HA_STRATEGY_ENABLED/"
             fi
 
-            rsync -avz -e "ssh -i $KEY_FILE" \
-                $upload_extra_opts $UPLOAD_OPTS \
-                "$local_src" "$remote_dest"
+            if [ "$local_sub" == "weekly" ]; then
+                rsync -avz -e "ssh -i $KEY_FILE" \
+                    $WEEKLY_UPLOAD_OPTS \
+                    "$local_src" "$remote_dest"
+            else
+                rsync -avz -e "ssh -i $KEY_FILE" \
+                    $upload_extra_opts $UPLOAD_OPTS \
+                    "$local_src" "$remote_dest"
+            fi
 
         elif [ "$direction" == "down" ]; then
             # Use configured download base

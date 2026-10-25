@@ -14,7 +14,7 @@ UNIFIED_RESTART_SCRIPT="$REMOTE_BASE_DIR/kill_run_oracle.sh"
 SETUP_SCRIPT="$REMOTE_BASE_DIR/create_TMS_oracle.sh"
 # Defined sessions list for reuse
 BINANCE_SESSION="bnc"
-SESSIONS_LIST="rsi_trade rsi_sin sell_1_trade sell_1_sin sen_trade sen_sin $BINANCE_SESSION"
+SESSIONS_LIST="rsi_trade rsi_sin sell_1_trade sell_1_sin sen_trade sen_sin wk_trade $BINANCE_SESSION"
 
 # --- TMUX HEALTH SCRIPT ---
 TMUX_HEALTH_CMD=' 
@@ -49,7 +49,7 @@ done
 
 echo ""
 echo "--- LOG FILE SIZES ---"
-find mod_rsi selling_1 binance sensex -maxdepth 2 -name "*.log" -exec ls -lh {} + 2>/dev/null | awk "{print \$5, \$9}"
+find mod_rsi selling_1 binance sensex weekly -maxdepth 2 -name "*.log" -exec ls -lh {} + 2>/dev/null | awk "{print \$5, \$9}"
 echo "============================================================"
 '
 
@@ -102,6 +102,9 @@ case "$COMMAND" in
             RESTART_SCRIPT="$UNIFIED_RESTART_SCRIPT"
         elif [[ "$PROJECT_NAME" == "sensex" ]]; then
             PROJECT_KEY="sensex"
+            RESTART_SCRIPT="$UNIFIED_RESTART_SCRIPT"
+        elif [[ "$PROJECT_NAME" == "weekly" || "$PROJECT_NAME" == "wk" ]]; then
+            PROJECT_KEY="weekly"
             RESTART_SCRIPT="$UNIFIED_RESTART_SCRIPT"
         else
             echo "❌ Unknown project for restart: $PROJECT_NAME"
