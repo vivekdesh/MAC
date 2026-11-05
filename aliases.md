@@ -119,7 +119,7 @@ alias o.sell_1.u="rsync -avz -e \"ssh -i \$HOME/ICICI_Direct/Key/oracle/ssh-key-
 alias o.sell_1.d='rsync -avz -e "ssh -i $HOME/ICICI_Direct/Key/oracle/ssh-key-2026-02-11.key" --exclude=.git --exclude=__pycache__ --exclude=.DS_Store ubuntu@80.225.215.187:/home/ubuntu/selling_1/ $HOME/ICICI_Direct/Google/selling_1/'
 alias o.sen.u="rsync -avz -e \"ssh -i \$HOME/ICICI_Direct/Key/oracle/ssh-key-2026-02-11.key\" --exclude=FONSEScripMaster.csv --exclude=parameters_cache.json --exclude=index_daily_ha_bias_cache.json --exclude='*state*.json' --exclude='calculated_greeks*.json' --exclude=option_chain_cache.json --include='*.py' --include='*.json' --include='*.sh' --include='*.csv' --include=requirements.txt --exclude='*' \$HOME/ICICI_Direct/sensex/ ubuntu@80.225.215.187:/home/ubuntu/sensex/"
 alias o.sen.d='rsync -avz -e "ssh -i $HOME/ICICI_Direct/Key/oracle/ssh-key-2026-02-11.key" --exclude=.git --exclude=__pycache__ --exclude=.DS_Store ubuntu@80.225.215.187:/home/ubuntu/sensex/ $HOME/ICICI_Direct/Google/sensex/'
-alias o.wk.u="rsync -avz -e \"ssh -i \$HOME/ICICI_Direct/Key/oracle/ssh-key-2026-02-11.key\" --include=weekly_trade.py --include=weekly_bot.py --include=breeze_connect_API.py --include=read_function.py --include=google_sheet_utils.py --include=api_coordinator.py --include=api_limit_state.py --include=account_book.py --include=loging_utilities.py --include=para.json --include=holidays.json --include=service_account.json --exclude='*' \$HOME/ICICI_Direct/weekly/ ubuntu@80.225.215.187:/home/ubuntu/weekly/"
+alias o.wk.u="rsync -avz -e \"ssh -i \$HOME/ICICI_Direct/Key/oracle/ssh-key-2026-02-11.key\" --include=weekly_trade.py --include=weekly_bot.py --include=entry_lock.py --include=breeze_connect_API.py --include=read_function.py --include=google_sheet_utils.py --include=api_coordinator.py --include=api_limit_state.py --include=account_book.py --include=loging_utilities.py --include=para.json --include=holidays.json --include=service_account.json --exclude='*' \$HOME/ICICI_Direct/weekly/ ubuntu@80.225.215.187:/home/ubuntu/weekly/"
 alias o.wk.d='rsync -avz -e "ssh -i $HOME/ICICI_Direct/Key/oracle/ssh-key-2026-02-11.key" --exclude=.git --exclude=__pycache__ --exclude=.DS_Store ubuntu@80.225.215.187:/home/ubuntu/weekly/ $HOME/ICICI_Direct/Google/weekly/'
 
 # --- BANDU (GCP) ---
@@ -450,3 +450,8 @@ fetchopt_bk() {
   [ -n "$3" ] && args+=(--to "$3")
   python3 "$HOME/ICICI_Direct/data_extraction/extract_option_data.py" "${args[@]}"
 }
+
+# === 🔑 SPARE CREDENTIALS TOKEN UPDATE ===
+# Copies latest session token from Status_VM cell G13 to spare_credentials.json
+alias spare_token='python3 /Users/vivek/Documents/nifty/data/index_options/credentials.nosync/update_spare_credentials.py'
+alias sp_token='spare_token'
