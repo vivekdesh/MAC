@@ -1,3 +1,36 @@
+Date: 10-11-2026 10:53:00
+
+Query:
+now i wish to do sceduled task at 5 PM daily(or when laptop lid opened after that / sleep wakeip)
+Alias to run:
+fetchopt
+md.nb
+md.bb_nb
+User clarified: "Option B: Remove the 8:00 PM cron job."
+User clarified: "Option 1 (Current - Parallel Downloads): fetchopt finishes -> md.nb and md.bb_nb download in parallel (faster, ~1–2 minutes total). with timeout!! md.nb and md.bb_nb, timeout required?"
+
+Logic & Explanation:
+- Configured macOS LaunchAgent /Users/vivek/Library/LaunchAgents/com.vivek.evening_tasks.plist scheduled at 17:00 (5:00 PM) daily with automatic catch-up on system wake / lid open.
+- Created wrapper script /Users/vivek/ICICI_Direct/MAC/run_evening_tasks.sh:
+  1. Checks for active network connectivity on wake (up to 60s ping check).
+  2. Executes fetchopt (extract_option_data.py --bot mod_rsi,sensex,selling) guarded with a 180s (/usr/bin/timeout) watchdog timeout to prevent hanging if Google Sheets stalls.
+  3. Spawns md.nb (run_market_data_bot_background.sh) and md.bb_nb (run_binance_market_data_bot_background.sh --no-backup) in parallel in the background.
+  4. Logs execution and exit status with timestamps to /Users/vivek/Documents/nifty/logs/daily_evening_tasks.log.
+- Removed obsolete 8:00 PM market_data_bot cron job via crontab -r.
+- Updated /Users/vivek/ICICI_Direct/MAC/ubuntu_cheatsheet.md with Section 8 documentation for evening tasks.
+- Created memory note /Users/vivek/ICICI_Direct/memory/macos-scheduled-launchagents.md and linked in MEMORY.md.
+
+Final Code Changes:
+- /Users/vivek/ICICI_Direct/MAC/run_evening_tasks.sh (created executable runner).
+- /Users/vivek/Library/LaunchAgents/com.vivek.evening_tasks.plist (created and loaded via launchctl).
+- /Users/vivek/ICICI_Direct/MAC/ubuntu_cheatsheet.md (added evening tasks documentation).
+
+Verification:
+- bash -n /Users/vivek/ICICI_Direct/MAC/run_evening_tasks.sh: syntax clean.
+- plutil -lint /Users/vivek/Library/LaunchAgents/com.vivek.evening_tasks.plist: OK.
+- launchctl load com.vivek.evening_tasks: verified registered and active in launchctl list.
+- crontab -l: confirmed 8:00 PM cron job removed (crontab is empty).
+
 Date: 10-11-2026 10:39:00
 
 Query:

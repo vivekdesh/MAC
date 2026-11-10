@@ -1127,3 +1127,25 @@ Runs daily at **06:00 AM**, or executes immediately upon waking / opening the la
 | **Re-enable / Turn On** | `launchctl load -w ~/Library/LaunchAgents/com.vivek.spare_token.plist` |
 | **Check Live Status** | `launchctl list \| grep spare_token` |
 | **View Run Log** | `tail -n 20 /Users/vivek/Documents/nifty/data/index_options/credentials.nosync/spare_token_run.log` |
+
+---
+
+## 🌆 Evening Market Data & Option Tasks (`com.vivek.evening_tasks`)
+Runs daily at **05:00 PM** (`17:00`), or executes immediately upon waking / opening the laptop lid.
+- **Tasks Executed**:
+  1. `fetchopt`: Extracts daily option data for `mod_rsi`, `sensex`, `selling` with a 3-minute watchdog timeout guard.
+  2. `md.nb`: Launches Nifty/Sensex market data bot in the background in parallel.
+  3. `md.bb_nb`: Launches Binance crypto market data bot (`--no-backup`) in the background in parallel.
+- **Runner Script**: `/Users/vivek/ICICI_Direct/MAC/run_evening_tasks.sh`
+- **Plist Config**: `/Users/vivek/Library/LaunchAgents/com.vivek.evening_tasks.plist`
+- **Log File**: `/Users/vivek/Documents/nifty/logs/daily_evening_tasks.log`
+
+### How to Disable or Re-enable this Task
+
+| Action | Terminal Command |
+| :--- | :--- |
+| **Disable / Turn Off** | `launchctl unload ~/Library/LaunchAgents/com.vivek.evening_tasks.plist` |
+| **Re-enable / Turn On** | `launchctl load -w ~/Library/LaunchAgents/com.vivek.evening_tasks.plist` |
+| **Check Live Status** | `launchctl list \| grep evening_tasks` |
+| **View Run Log** | `tail -n 30 /Users/vivek/Documents/nifty/logs/daily_evening_tasks.log` |
+
