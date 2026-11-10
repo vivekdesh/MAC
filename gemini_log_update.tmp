@@ -1,33 +1,19 @@
-Date: 10-11-2026 10:53:00
+Date: 10-11-2026 11:04:00
 
 Query:
-now i wish to do sceduled task at 5 PM daily(or when laptop lid opened after that / sleep wakeip)
-Alias to run:
-fetchopt
-md.nb
-md.bb_nb
-User clarified: "Option B: Remove the 8:00 PM cron job."
-User clarified: "Option 1 (Current - Parallel Downloads): fetchopt finishes -> md.nb and md.bb_nb download in parallel (faster, ~1–2 minutes total). with timeout!! md.nb and md.bb_nb, timeout required?"
+as well as morning!! ok to add timeout protections to morning and evening tasks.
 
 Logic & Explanation:
-- Configured macOS LaunchAgent /Users/vivek/Library/LaunchAgents/com.vivek.evening_tasks.plist scheduled at 17:00 (5:00 PM) daily with automatic catch-up on system wake / lid open.
-- Created wrapper script /Users/vivek/ICICI_Direct/MAC/run_evening_tasks.sh:
-  1. Checks for active network connectivity on wake (up to 60s ping check).
-  2. Executes fetchopt (extract_option_data.py --bot mod_rsi,sensex,selling) guarded with a 180s (/usr/bin/timeout) watchdog timeout to prevent hanging if Google Sheets stalls.
-  3. Spawns md.nb (run_market_data_bot_background.sh) and md.bb_nb (run_binance_market_data_bot_background.sh --no-backup) in parallel in the background.
-  4. Logs execution and exit status with timestamps to /Users/vivek/Documents/nifty/logs/daily_evening_tasks.log.
-- Removed obsolete 8:00 PM market_data_bot cron job via crontab -r.
-- Updated /Users/vivek/ICICI_Direct/MAC/ubuntu_cheatsheet.md with Section 8 documentation for evening tasks.
-- Created memory note /Users/vivek/ICICI_Direct/memory/macos-scheduled-launchagents.md and linked in MEMORY.md.
+- Added defensive watchdog timeout protections and lock guards to prevent any hang or stale lockouts across all automated routines:
+  1. Morning runner (/Users/vivek/ICICI_Direct/MAC/run_spare_token.sh): Guarded update_spare_credentials.py with /usr/bin/timeout 120 (2-minute maximum runtime). Added automatic log trimming if log exceeds 5,000 lines.
+  2. Evening runner (/Users/vivek/ICICI_Direct/MAC/run_evening_tasks.sh): Added clean_stale_pid() helper to detect and terminate any frozen background process from previous days before launching new ones. Guarded both md.nb (market_data_bot.py) and md.bb_nb (binance_market_data_bot.py) with /usr/bin/timeout 900 (15-minute watchdog). Added automatic log trimming.
 
 Final Code Changes:
-- /Users/vivek/ICICI_Direct/MAC/run_evening_tasks.sh (created executable runner).
-- /Users/vivek/Library/LaunchAgents/com.vivek.evening_tasks.plist (created and loaded via launchctl).
-- /Users/vivek/ICICI_Direct/MAC/ubuntu_cheatsheet.md (added evening tasks documentation).
+- /Users/vivek/ICICI_Direct/MAC/run_spare_token.sh (added 120s timeout and log rotation).
+- /Users/vivek/ICICI_Direct/MAC/run_evening_tasks.sh (added stale PID cleanup, 15m watchdog timeouts on background bots, and log rotation).
 
 Verification:
+- bash -n /Users/vivek/ICICI_Direct/MAC/run_spare_token.sh: syntax clean.
 - bash -n /Users/vivek/ICICI_Direct/MAC/run_evening_tasks.sh: syntax clean.
-- plutil -lint /Users/vivek/Library/LaunchAgents/com.vivek.evening_tasks.plist: OK.
-- launchctl load com.vivek.evening_tasks: verified registered and active in launchctl list.
-- crontab -l: confirmed 8:00 PM cron job removed (crontab is empty).
+- Executed run_spare_token.sh smoke test: confirmed 120s timeout wrapper executed cleanly (exit code 0 in 2s, token verified, logged).
 

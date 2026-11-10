@@ -1,7 +1,7 @@
 #!/bin/bash
 # ==============================================================================
 # Daily Evening Tasks Runner (5:00 PM or immediate on wake)
-# Runs: fetchopt (with 3m timeout guard), md.nb, md.bb_nb (in parallel)
+# Runs: fetchopt (with 3m timeout guard), md.nb, md.bb_nb (with 15m watchdog + stale PID cleanup)
 # Location: /Users/vivek/ICICI_Direct/MAC/run_evening_tasks.sh
 # ==============================================================================
 
@@ -11,6 +11,25 @@ mkdir -p "$(dirname "$LOG_FILE")"
 
 log() {
     echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" >> "$LOG_FILE"
+}
+
+# Auto-trim log if exceeds 5000 lines
+if [ -f "$LOG_FILE" ] && [ "$(wc -l < "$LOG_FILE" 2>/dev/null)" -gt 5000 ]; then
+    tail -n 2000 "$LOG_FILE" > "${LOG_FILE}.tmp" && mv "${LOG_FILE}.tmp" "$LOG_FILE"
+fi
+
+# Helper: clean stale locks and processes from previous runs
+clean_stale_pid() {
+    local pid_file="$1"
+    local bot_name="$2"
+    if [ -f "$pid_file" ]; then
+        local old_pid=$(cat "$pid_file" 2>/dev/null)
+        if [ -n "$old_pid" ] && ps -p "$old_pid" >/dev/null 2>&1; then
+            log "[CLEANUP] Stale $bot_name running from previous day (PID: $old_pid). Terminating."
+            kill -9 "$old_pid" 2>/dev/null || true
+        fi
+        rm -f "$pid_file"
+    fi
 }
 
 log "[START] Triggered 5 PM evening scheduled tasks."
@@ -43,16 +62,34 @@ else
     log "[TASK 1/3] fetchopt finished with exit code $EXIT_FETCHOPT."
 fi
 
-# 3. Step 2: md.nb (Market Data Bot for Indian Indices - background parallel)
-log "[TASK 2/3] Spawning md.nb (run_market_data_bot_background.sh)..."
-bash /Users/vivek/Documents/nifty/market_data_bot/run_market_data_bot_background.sh >> "$LOG_FILE" 2>&1
-EXIT_MD=$?
-log "[TASK 2/3] md.nb initiated with exit code $EXIT_MD."
+# 3. Step 2: md.nb with stale cleanup + 15-minute watchdog (timeout 900)
+log "[TASK 2/3] Spawning md.nb (max 15m runtime)..."
+PID_NIFTY="/Users/vivek/Documents/nifty/reports/market_data_bot.pid"
+clean_stale_pid "$PID_NIFTY" "Market Data BOT"
 
-# 4. Step 3: md.bb_nb (Binance Market Data Bot --no-backup - background parallel)
-log "[TASK 3/3] Spawning md.bb_nb (run_binance_market_data_bot_background.sh --no-backup)..."
-bash /Users/vivek/ICICI_Direct/binance/market_data_bot/run_binance_market_data_bot_background.sh --no-backup >> "$LOG_FILE" 2>&1
-EXIT_BINANCE=$?
-log "[TASK 3/3] md.bb_nb initiated with exit code $EXIT_BINANCE."
+nohup /usr/bin/timeout 900 /Users/vivek/Documents/nifty/venv.nosync/bin/python \
+    /Users/vivek/Documents/nifty/market_data_bot/market_data_bot.py \
+    --symbols nifty,nifty_futures,banknifty,sensex,sensex_futures,indiavix \
+    --append-latest \
+    --rebuild-timeframes 1,3,5,10,15 \
+    >> "/Users/vivek/Documents/nifty/logs/market_data_bot_background.log" 2>&1 &
+BOT_PID_NIFTY=$!
+echo "$BOT_PID_NIFTY" > "$PID_NIFTY"
+log "[TASK 2/3] md.nb initiated (PID: $BOT_PID_NIFTY)."
 
-log "[END] All 5 PM evening tasks triggered successfully."
+# 4. Step 3: md.bb_nb with stale cleanup + 15-minute watchdog (timeout 900)
+log "[TASK 3/3] Spawning md.bb_nb (max 15m runtime)..."
+PID_BINANCE="/Users/vivek/ICICI_Direct/binance/reports/binance_market_data_bot.pid"
+clean_stale_pid "$PID_BINANCE" "Binance Market Data BOT"
+
+nohup /usr/bin/timeout 900 /opt/homebrew/opt/python@3.13/bin/python3 -u \
+    /Users/vivek/ICICI_Direct/binance/market_data_bot/binance_market_data_bot.py \
+    --symbols btc,eth,btc_futures,eth_futures \
+    --append-latest \
+    --rebuild-timeframes 1 \
+    >> "/Users/vivek/ICICI_Direct/binance/logs/binance_market_data_bot_background.log" 2>&1 &
+BOT_PID_BINANCE=$!
+echo "$BOT_PID_BINANCE" > "$PID_BINANCE"
+log "[TASK 3/3] md.bb_nb initiated (PID: $BOT_PID_BINANCE)."
+
+log "[END] All 5 PM evening tasks triggered successfully with watchdog protection."

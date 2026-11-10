@@ -1,3 +1,22 @@
+Date: 10-11-2026 11:04:00
+
+Query:
+as well as morning!! ok to add timeout protections to morning and evening tasks.
+
+Logic & Explanation:
+- Added defensive watchdog timeout protections and lock guards to prevent any hang or stale lockouts across all automated routines:
+  1. Morning runner (/Users/vivek/ICICI_Direct/MAC/run_spare_token.sh): Guarded update_spare_credentials.py with /usr/bin/timeout 120 (2-minute maximum runtime). Added automatic log trimming if log exceeds 5,000 lines.
+  2. Evening runner (/Users/vivek/ICICI_Direct/MAC/run_evening_tasks.sh): Added clean_stale_pid() helper to detect and terminate any frozen background process from previous days before launching new ones. Guarded both md.nb (market_data_bot.py) and md.bb_nb (binance_market_data_bot.py) with /usr/bin/timeout 900 (15-minute watchdog). Added automatic log trimming.
+
+Final Code Changes:
+- /Users/vivek/ICICI_Direct/MAC/run_spare_token.sh (added 120s timeout and log rotation).
+- /Users/vivek/ICICI_Direct/MAC/run_evening_tasks.sh (added stale PID cleanup, 15m watchdog timeouts on background bots, and log rotation).
+
+Verification:
+- bash -n /Users/vivek/ICICI_Direct/MAC/run_spare_token.sh: syntax clean.
+- bash -n /Users/vivek/ICICI_Direct/MAC/run_evening_tasks.sh: syntax clean.
+- Executed run_spare_token.sh smoke test: confirmed 120s timeout wrapper executed cleanly (exit code 0 in 2s, token verified, logged).
+
 Date: 10-11-2026 10:53:00
 
 Query:
