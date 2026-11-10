@@ -1,3 +1,34 @@
+Date: 10-11-2026 10:39:00
+
+Query:
+i wish to run alias spare_token at 6 AM or if laptop lid is closed or laptop sleeping, need to excute asap when i open lid
+User clarified: "both Question: Would you like the automated runner to also sync the new session token to the live copy (index_temp.nosync/spare_credentials.json), or keep it strictly updating only credentials.nosync/spare_credentials.json?" -> both
+User requested: "put it in ubentu cheet sheet of MAC under some nice heading How to disable or re-enable this task"
+User requested: "remove ai.perplexity.CometUpdater.wake (Perplexity app updater)., homebrew.mxcl.ollama ... remove com.vivek.nifty-breeze-download"
+
+Logic & Explanation:
+- Configured a macOS LaunchAgent /Users/vivek/Library/LaunchAgents/com.vivek.spare_token.plist with StartCalendarInterval set to 06:00 daily. macOS launchd natively coalesces and triggers missed calendar intervals immediately upon system wake when the MacBook lid is opened.
+- Implemented wrapper script /Users/vivek/ICICI_Direct/MAC/run_spare_token.sh:
+  1. Detects system wake and waits up to 60s for active network/Wi-Fi connectivity to prevent DNS/socket errors when contacting Google Sheets.
+  2. Runs python3 /Users/vivek/Documents/nifty/data/index_options/credentials.nosync/update_spare_credentials.py to retrieve session token from Status_VM!G13 and update /Users/vivek/Documents/nifty/data/index_options/credentials.nosync/spare_credentials.json.
+  3. Automatically syncs the retrieved session_token to the live copy /Users/vivek/Documents/nifty/data/index_temp.nosync/spare_credentials.json (mode 600) so downstream downloaders read the latest token.
+  4. Appends execution status and timestamps to /Users/vivek/Documents/nifty/data/index_options/credentials.nosync/spare_token_run.log.
+- Added Section 8 "macOS Scheduled Tasks & LaunchAgents" to /Users/vivek/ICICI_Direct/MAC/ubuntu_cheatsheet.md documenting how to disable, re-enable, and verify the task.
+- Cleaned up obsolete user LaunchAgents: unloaded and removed com.vivek.nifty-breeze-download, ai.perplexity.*, and homebrew.mxcl.ollama.
+- Updated memory note /Users/vivek/ICICI_Direct/memory/spare-token-updater-writes-backup-only.md and index in /Users/vivek/ICICI_Direct/memory/MEMORY.md.
+
+Final Code Changes:
+- /Users/vivek/ICICI_Direct/MAC/run_spare_token.sh (created executable wrapper with wake internet check and dual-file token sync).
+- /Users/vivek/Library/LaunchAgents/com.vivek.spare_token.plist (created and loaded via launchctl).
+- /Users/vivek/ICICI_Direct/MAC/ubuntu_cheatsheet.md (added Section 8 documentation).
+
+Verification:
+- bash -n /Users/vivek/ICICI_Direct/MAC/run_spare_token.sh: syntax clean.
+- plutil -lint /Users/vivek/Library/LaunchAgents/com.vivek.spare_token.plist: OK.
+- Executed /Users/vivek/ICICI_Direct/MAC/run_spare_token.sh manually: successfully connected to Status_VM!G13, confirmed token, synced to live copy with mode 600, logged in spare_token_run.log.
+- launchctl load com.vivek.spare_token: verified registered and active in launchctl list.
+- launchctl list | grep -E "spare_token|breeze|perplexity|ollama": confirmed only com.vivek.spare_token remains active.
+
 Date: 25-10-2026 18:28:44
 Query: "read weekly design.md" (/Users/vivek/ICICI_Direct/weekly/weekly design.md: weekly BOT on sheet 1W9om6x9qdhps0kEFp2GAXLQQKondeJI-f6k6qk-wyLs, configure json + 2 AM gs, emulate sensex/retire/nifty software SL (not GTT), Buy E(k) 15:15 CALL ATM+yy / PUT ATM-yy, trail start REF +/- xx, stop nn, trail/ratio, sheet variables xx 300 yy 100 nn 30 trail 10 ratio 0.9, rename for the new BOT, colourful parameter sheet, inspect every py/json/sh, part of Oracle with mod_rsi + sensex); answers: "New lean weekly_trade.py", "Full build in one go".
 Logic: Oracle wiring for the new weekly bot (/Users/vivek/ICICI_Direct/weekly, tmux wk_trade, weekly_bot.py).

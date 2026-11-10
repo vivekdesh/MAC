@@ -37,6 +37,8 @@
   - [Environment](#environment)
 - [7. Bash History Commands](#7-bash-history-commands)
   - [Extra Useful History Commands](#extra-useful-history-commands)
+- [8. macOS Scheduled Tasks & LaunchAgents](#8-macos-scheduled-tasks--launchagents)
+  - [Spare Token Auto-Updater](#-spare-token-auto-updater-comvivekspare_token)
   
   nano commands for editing files in the terminal:
   ngrok session details and its TMUX:
@@ -1022,6 +1024,7 @@ find /Users/vivek/ICICI_Direct/Google -name "*.log" -type f -mtime +3 -delete
 
 ## This will Move to Trash
 find /Users/vivek/ICICI_Direct/Google -name "*.log" -type f -mtime +3 -exec mv {} ~/.Trash/ \;
+find /Users/vivek/ICICI_Direct/Ubentu -name "*.log" -type f -mtime +3 -exec mv {} ~/.Trash/ \;
 
 
 -type f: Ensures that only regular files are targeted (ignoring directories or symlinks).
@@ -1105,3 +1108,22 @@ find /Users/vivek/ICICI_Direct/Google \
 
 ## see alias lets say 1 to8:
 alias | grep "^alias [1-8]="
+
+---
+
+# 8. macOS Scheduled Tasks & LaunchAgents
+
+## 🔑 Spare Token Auto-Updater (`com.vivek.spare_token`)
+Runs daily at **06:00 AM**, or executes immediately upon waking / opening the laptop lid.
+- **Runner Script**: `/Users/vivek/ICICI_Direct/MAC/run_spare_token.sh`
+- **Plist Config**: `/Users/vivek/Library/LaunchAgents/com.vivek.spare_token.plist`
+- **Log File**: `/Users/vivek/Documents/nifty/data/index_options/credentials.nosync/spare_token_run.log`
+
+### How to Disable or Re-enable this Task
+
+| Action | Terminal Command |
+| :--- | :--- |
+| **Disable / Turn Off** | `launchctl unload ~/Library/LaunchAgents/com.vivek.spare_token.plist` |
+| **Re-enable / Turn On** | `launchctl load -w ~/Library/LaunchAgents/com.vivek.spare_token.plist` |
+| **Check Live Status** | `launchctl list \| grep spare_token` |
+| **View Run Log** | `tail -n 20 /Users/vivek/Documents/nifty/data/index_options/credentials.nosync/spare_token_run.log` |
