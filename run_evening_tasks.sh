@@ -69,7 +69,7 @@ clean_stale_pid "$PID_NIFTY" "Market Data BOT"
 
 nohup /usr/bin/timeout 900 /Users/vivek/Documents/nifty/venv.nosync/bin/python \
     /Users/vivek/Documents/nifty/market_data_bot/market_data_bot.py \
-    --symbols nifty,nifty_futures,banknifty,sensex,sensex_futures,indiavix \
+    --symbols nifty,nifty_futures,banknifty,banknifty_futures,sensex,sensex_futures,indiavix \
     --append-latest \
     --rebuild-timeframes 1,3,5,10,15 \
     >> "/Users/vivek/ICICI_Direct/logs/market_data_bot_background.log" 2>&1 &
