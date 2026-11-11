@@ -51,7 +51,7 @@ if [ "$WAITED" -gt 0 ]; then
 fi
 
 # 2. Step 1: fetchopt with 3-minute hard timeout guard
-log "[TASK 1/3] Running fetchopt (max 180s)..."
+log "[TASK 1/4] Running fetchopt (max 180s)..."
 /usr/bin/timeout 180 "$PYTHON_BIN" /Users/vivek/ICICI_Direct/data_extraction/extract_option_data.py \
     --bot mod_rsi,sensex,selling >> "$LOG_FILE" 2>&1
 EXIT_FETCHOPT=$?
@@ -59,26 +59,28 @@ EXIT_FETCHOPT=$?
 if [ $EXIT_FETCHOPT -eq 124 ]; then
     log "[WARNING] fetchopt timed out after 180s and was killed. Proceeding to market data bots."
 else
-    log "[TASK 1/3] fetchopt finished with exit code $EXIT_FETCHOPT."
+    log "[TASK 1/4] fetchopt finished with exit code $EXIT_FETCHOPT."
 fi
 
 # 3. Step 2: md.nb with stale cleanup + 15-minute watchdog (timeout 900)
-log "[TASK 2/3] Spawning md.nb (max 15m runtime)..."
+log "[TASK 2/4] Spawning md.nb (max 15m runtime)..."
 PID_NIFTY="/Users/vivek/ICICI_Direct/logs/market_data_bot.pid"
 clean_stale_pid "$PID_NIFTY" "Market Data BOT"
 
-nohup /usr/bin/timeout 900 /Users/vivek/Documents/nifty/venv.nosync/bin/python \
-    /Users/vivek/Documents/nifty/market_data_bot/market_data_bot.py \
-    --symbols nifty,nifty_futures,banknifty,banknifty_futures,sensex,sensex_futures,indiavix \
-    --append-latest \
-    --rebuild-timeframes 1,3,5,10,15 \
-    >> "/Users/vivek/ICICI_Direct/logs/market_data_bot_background.log" 2>&1 &
-BOT_PID_NIFTY=$!
-echo "$BOT_PID_NIFTY" > "$PID_NIFTY"
-log "[TASK 2/3] md.nb initiated (PID: $BOT_PID_NIFTY)."
+(
+    cd /Users/vivek/Documents/nifty || exit 1
+    nohup /usr/bin/timeout 900 /Users/vivek/Documents/nifty/venv.nosync/bin/python \
+        /Users/vivek/Documents/nifty/market_data_bot/market_data_bot.py \
+        --symbols nifty,nifty_futures,banknifty,banknifty_futures,sensex,sensex_futures,indiavix \
+        --append-latest \
+        --rebuild-timeframes 1,3,5,10,15 \
+        >> "/Users/vivek/ICICI_Direct/logs/market_data_bot_background.log" 2>&1 &
+    echo $! > "$PID_NIFTY"
+)
+log "[TASK 2/4] md.nb initiated (PID: $(cat "$PID_NIFTY" 2>/dev/null))."
 
 # 4. Step 3: md.bb_nb with stale cleanup + 15-minute watchdog (timeout 900)
-log "[TASK 3/3] Spawning md.bb_nb (max 15m runtime)..."
+log "[TASK 3/4] Spawning md.bb_nb (max 15m runtime)..."
 PID_BINANCE="/Users/vivek/ICICI_Direct/logs/binance_market_data_bot.pid"
 clean_stale_pid "$PID_BINANCE" "Binance Market Data BOT"
 
@@ -90,6 +92,15 @@ nohup /usr/bin/timeout 900 /opt/homebrew/opt/python@3.13/bin/python3 -u \
     >> "/Users/vivek/ICICI_Direct/logs/binance_market_data_bot_background.log" 2>&1 &
 BOT_PID_BINANCE=$!
 echo "$BOT_PID_BINANCE" > "$PID_BINANCE"
-log "[TASK 3/3] md.bb_nb initiated (PID: $BOT_PID_BINANCE)."
+log "[TASK 3/4] md.bb_nb initiated (PID: $BOT_PID_BINANCE)."
+
+# 5. Step 4: all.d with 15-minute watchdog (timeout 900)
+log "[TASK 4/4] Spawning all.d (max 15m runtime)..."
+(
+    cd /Users/vivek/ICICI_Direct/MAC || exit 1
+    nohup /usr/bin/timeout 900 bash /Users/vivek/ICICI_Direct/MAC/sync_master.sh all_d \
+        >> "/Users/vivek/ICICI_Direct/logs/all_d_background.log" 2>&1 &
+    log "[TASK 4/4] all.d initiated (PID: $!)."
+)
 
 log "[END] All 5 PM evening tasks triggered successfully with watchdog protection."

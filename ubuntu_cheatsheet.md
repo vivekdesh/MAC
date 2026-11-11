@@ -1136,6 +1136,7 @@ Runs daily at **05:00 PM** (`17:00`), or executes immediately upon waking / open
   1. `fetchopt`: Extracts daily option data for `mod_rsi`, `sensex`, `selling` with a 3-minute watchdog timeout guard.
   2. `md.nb`: Launches Nifty/Sensex market data bot in the background in parallel.
   3. `md.bb_nb`: Launches Binance crypto market data bot (`--no-backup`) in the background in parallel.
+  4. `all.d`: Downloads all remote VM logs and code (`sync_master.sh all_d`) in the background with a 15-minute watchdog.
 - **Runner Script**: `/Users/vivek/ICICI_Direct/MAC/run_evening_tasks.sh`
 - **Plist Config**: `/Users/vivek/Library/LaunchAgents/com.vivek.evening_tasks.plist`
 - **Log File**: `/Users/vivek/ICICI_Direct/logs/daily_evening_tasks.log`

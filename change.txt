@@ -1,3 +1,30 @@
+Date: 11-11-2026 18:55:00
+
+Query:
+6 PM done? also i wish to add daily 6 PM all.d alias
+5 pm only along with other!!
+[Traceback OSError: [Errno 30] Read-only file system: '/app.log' ??]
+
+Logic & Explanation:
+- Integrated all.d (sync_master.sh all_d) as Task 4/4 into the daily 5:00 PM evening routine (/Users/vivek/ICICI_Direct/MAC/run_evening_tasks.sh) guarded by a 15-minute watchdog (timeout 900).
+- Fixed OSError: [Errno 30] Read-only file system: '/app.log' in market_data_bot.py: launchd sets working directory to root '/', which is read-only. Added explicit 'cd /Users/vivek/Documents/nifty' subshell in run_evening_tasks.sh before launching market_data_bot.py.
+- Restored banknifty_futures to the --symbols list in run_evening_tasks.sh to match the interactive md.nb alias.
+- Added alias all.d='all_d' to /Users/vivek/ICICI_Direct/MAC/aliases.md and documented Task 4 in /Users/vivek/ICICI_Direct/MAC/ubuntu_cheatsheet.md.
+
+Final Code Changes:
+- /Users/vivek/ICICI_Direct/MAC/run_evening_tasks.sh:
+  - Added subshell 'cd /Users/vivek/Documents/nifty' for Task 2/4.
+  - Added banknifty_futures to --symbols.
+  - Added Task 4/4 to execute 'sync_master.sh all_d' in background with 15m timeout.
+- /Users/vivek/ICICI_Direct/MAC/aliases.md:
+  - Added alias all.d='all_d'.
+- /Users/vivek/ICICI_Direct/MAC/ubuntu_cheatsheet.md:
+  - Documented Task 4 all.d under Section 8 evening tasks.
+
+Verification:
+- bash -n /Users/vivek/ICICI_Direct/MAC/run_evening_tasks.sh (clean, exit code 0)
+- Verified all.d alias works in zshrc and sync_master.sh syntax clean.
+
 Date: 11-11-2026 12:55:00
 
 Query:
