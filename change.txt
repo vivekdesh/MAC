@@ -1,3 +1,12 @@
+Date: 12-11-2026 03:45:45
+Query: (after the WS-dead alert deploy, 8 bots) "Add ws_dead_alert.py to the weekly upload include lists in the MAC folder?" -> "Yes, fix alias"
+Logic: /Users/vivek/ICICI_Direct/weekly/weekly_trade.py now imports ws_dead_alert (weekly commit 0427a946). The weekly upload uses a fixed include list that did not name the new module, so o.wk.u / sync_master upload would never ship it or its later updates (12-11-2026 it was deployed by a one-off direct rsync).
+Explanation: Added --include=ws_dead_alert.py to the two weekly include lists. No other bot's upload is affected (they include '*.py').
+Final Code Change:
+- /Users/vivek/ICICI_Direct/MAC/aliases.md: alias o.wk.u gains --include=ws_dead_alert.py.
+- /Users/vivek/ICICI_Direct/MAC/sync_master.sh: WEEKLY_UPLOAD_OPTS gains --include=ws_dead_alert.py.
+Verification: bash -n sync_master.sh OK; o.wk.u dry-run with -I lists ws_dead_alert.py; plain dry-run sends nothing (VM copy already identical).
+
 Date: 11-11-2026 18:55:00
 
 Query:

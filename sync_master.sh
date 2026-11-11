@@ -17,7 +17,7 @@ UPLOAD_OPTS="--exclude=backtest_ha_ema34/ --exclude=backtest_ha_ema34_selling/ -
 # weekly: an explicit file list. The weekly folder is also the research folder (backtests,
 # downloaders) and holds the mod_rsi seed files (RSI_trade.py, kill_rsi.sh, ...); none of
 # those may reach ~/weekly on the VM, where running one by mistake could hit a live bot.
-WEEKLY_UPLOAD_OPTS="--include=weekly_trade.py --include=weekly_bot.py --include=entry_lock.py --include=breeze_connect_API.py --include=read_function.py --include=google_sheet_utils.py --include=api_coordinator.py --include=api_limit_state.py --include=account_book.py --include=loging_utilities.py --include=para.json --include=holidays.json --include=service_account.json --exclude=*"
+WEEKLY_UPLOAD_OPTS="--include=weekly_trade.py --include=weekly_bot.py --include=entry_lock.py --include=breeze_connect_API.py --include=read_function.py --include=google_sheet_utils.py --include=api_coordinator.py --include=api_limit_state.py --include=ws_dead_alert.py --include=account_book.py --include=loging_utilities.py --include=para.json --include=holidays.json --include=service_account.json --exclude=*"
 
 # Downloads are permissive (Get everything except junk)
 # We exclude .git and __pycache__ to keep it clean, but get all logs/txt/etc.
