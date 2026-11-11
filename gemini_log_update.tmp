@@ -1,19 +1,25 @@
-Date: 10-11-2026 11:04:00
+Date: 11-11-2026 09:18:00
 
 Query:
-as well as morning!! ok to add timeout protections to morning and evening tasks.
+is today 6 AM has it run?
+User confirmed fix for macOS TCC permission issue: "ok"
 
 Logic & Explanation:
-- Added defensive watchdog timeout protections and lock guards to prevent any hang or stale lockouts across all automated routines:
-  1. Morning runner (/Users/vivek/ICICI_Direct/MAC/run_spare_token.sh): Guarded update_spare_credentials.py with /usr/bin/timeout 120 (2-minute maximum runtime). Added automatic log trimming if log exceeds 5,000 lines.
-  2. Evening runner (/Users/vivek/ICICI_Direct/MAC/run_evening_tasks.sh): Added clean_stale_pid() helper to detect and terminate any frozen background process from previous days before launching new ones. Guarded both md.nb (market_data_bot.py) and md.bb_nb (binance_market_data_bot.py) with /usr/bin/timeout 900 (15-minute watchdog). Added automatic log trimming.
+- Diagnosed failure of 06:00 AM spare_token task: launchd fired on schedule (06:00:05), but Apple's TCC privacy sandbox forbids non-interactive background shells (/bin/bash) from writing files inside ~/Documents/. Bash redirection to ~/Documents/nifty/.../spare_token_run.log failed with "Operation not permitted" and aborted execution before running Python.
+- Resolved by migrating all background logs, stdout/err redirections, and PID files from ~/Documents/ to /Users/vivek/ICICI_Direct/logs/ (which has zero TCC restrictions).
+- Verified Homebrew Python (/opt/homebrew/opt/python@3.13/bin/python3) retains full read/write permission to both credential files under launchd.
+- Manually retrieved today's session token '57650120' from Status_VM!G13 and verified synchronization across both credentials.nosync and index_temp.nosync (mode 600).
+- Reloaded both com.vivek.spare_token and com.vivek.evening_tasks LaunchAgents with updated log paths. Tested launchctl start com.vivek.spare_token: completed with exit code 0, 0 stderr errors.
 
 Final Code Changes:
-- /Users/vivek/ICICI_Direct/MAC/run_spare_token.sh (added 120s timeout and log rotation).
-- /Users/vivek/ICICI_Direct/MAC/run_evening_tasks.sh (added stale PID cleanup, 15m watchdog timeouts on background bots, and log rotation).
+- /Users/vivek/ICICI_Direct/MAC/run_spare_token.sh (updated log file path to /Users/vivek/ICICI_Direct/logs/spare_token_run.log).
+- /Users/vivek/ICICI_Direct/MAC/run_evening_tasks.sh (updated log and PID paths to /Users/vivek/ICICI_Direct/logs/).
+- /Users/vivek/Library/LaunchAgents/com.vivek.spare_token.plist (updated stdout/stderr paths to /Users/vivek/ICICI_Direct/logs/).
+- /Users/vivek/Library/LaunchAgents/com.vivek.evening_tasks.plist (updated stdout/stderr paths to /Users/vivek/ICICI_Direct/logs/).
+- /Users/vivek/ICICI_Direct/MAC/ubuntu_cheatsheet.md (updated log viewing commands).
 
 Verification:
-- bash -n /Users/vivek/ICICI_Direct/MAC/run_spare_token.sh: syntax clean.
-- bash -n /Users/vivek/ICICI_Direct/MAC/run_evening_tasks.sh: syntax clean.
-- Executed run_spare_token.sh smoke test: confirmed 120s timeout wrapper executed cleanly (exit code 0 in 2s, token verified, logged).
+- launchctl start com.vivek.spare_token: executed cleanly, verified in /Users/vivek/ICICI_Direct/logs/spare_token_run.log.
+- Plist lint: plutil -lint clean on both plists.
+- Script lint: bash -n clean on both scripts.
 

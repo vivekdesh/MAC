@@ -1117,7 +1117,7 @@ alias | grep "^alias [1-8]="
 Runs daily at **06:00 AM**, or executes immediately upon waking / opening the laptop lid.
 - **Runner Script**: `/Users/vivek/ICICI_Direct/MAC/run_spare_token.sh`
 - **Plist Config**: `/Users/vivek/Library/LaunchAgents/com.vivek.spare_token.plist`
-- **Log File**: `/Users/vivek/Documents/nifty/data/index_options/credentials.nosync/spare_token_run.log`
+- **Log File**: `/Users/vivek/ICICI_Direct/logs/spare_token_run.log`
 
 ### How to Disable or Re-enable this Task
 
@@ -1126,7 +1126,7 @@ Runs daily at **06:00 AM**, or executes immediately upon waking / opening the la
 | **Disable / Turn Off** | `launchctl unload ~/Library/LaunchAgents/com.vivek.spare_token.plist` |
 | **Re-enable / Turn On** | `launchctl load -w ~/Library/LaunchAgents/com.vivek.spare_token.plist` |
 | **Check Live Status** | `launchctl list \| grep spare_token` |
-| **View Run Log** | `tail -n 20 /Users/vivek/Documents/nifty/data/index_options/credentials.nosync/spare_token_run.log` |
+| **View Run Log** | `tail -n 20 /Users/vivek/ICICI_Direct/logs/spare_token_run.log` |
 
 ---
 
@@ -1138,7 +1138,7 @@ Runs daily at **05:00 PM** (`17:00`), or executes immediately upon waking / open
   3. `md.bb_nb`: Launches Binance crypto market data bot (`--no-backup`) in the background in parallel.
 - **Runner Script**: `/Users/vivek/ICICI_Direct/MAC/run_evening_tasks.sh`
 - **Plist Config**: `/Users/vivek/Library/LaunchAgents/com.vivek.evening_tasks.plist`
-- **Log File**: `/Users/vivek/Documents/nifty/logs/daily_evening_tasks.log`
+- **Log File**: `/Users/vivek/ICICI_Direct/logs/daily_evening_tasks.log`
 
 ### How to Disable or Re-enable this Task
 
@@ -1147,5 +1147,5 @@ Runs daily at **05:00 PM** (`17:00`), or executes immediately upon waking / open
 | **Disable / Turn Off** | `launchctl unload ~/Library/LaunchAgents/com.vivek.evening_tasks.plist` |
 | **Re-enable / Turn On** | `launchctl load -w ~/Library/LaunchAgents/com.vivek.evening_tasks.plist` |
 | **Check Live Status** | `launchctl list \| grep evening_tasks` |
-| **View Run Log** | `tail -n 30 /Users/vivek/Documents/nifty/logs/daily_evening_tasks.log` |
+| **View Run Log** | `tail -n 30 /Users/vivek/ICICI_Direct/logs/daily_evening_tasks.log` |
 

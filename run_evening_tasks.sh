@@ -5,7 +5,7 @@
 # Location: /Users/vivek/ICICI_Direct/MAC/run_evening_tasks.sh
 # ==============================================================================
 
-LOG_FILE="/Users/vivek/Documents/nifty/logs/daily_evening_tasks.log"
+LOG_FILE="/Users/vivek/ICICI_Direct/logs/daily_evening_tasks.log"
 PYTHON_BIN="/opt/homebrew/opt/python@3.13/bin/python3"
 mkdir -p "$(dirname "$LOG_FILE")"
 
@@ -64,7 +64,7 @@ fi
 
 # 3. Step 2: md.nb with stale cleanup + 15-minute watchdog (timeout 900)
 log "[TASK 2/3] Spawning md.nb (max 15m runtime)..."
-PID_NIFTY="/Users/vivek/Documents/nifty/reports/market_data_bot.pid"
+PID_NIFTY="/Users/vivek/ICICI_Direct/logs/market_data_bot.pid"
 clean_stale_pid "$PID_NIFTY" "Market Data BOT"
 
 nohup /usr/bin/timeout 900 /Users/vivek/Documents/nifty/venv.nosync/bin/python \
@@ -72,14 +72,14 @@ nohup /usr/bin/timeout 900 /Users/vivek/Documents/nifty/venv.nosync/bin/python \
     --symbols nifty,nifty_futures,banknifty,sensex,sensex_futures,indiavix \
     --append-latest \
     --rebuild-timeframes 1,3,5,10,15 \
-    >> "/Users/vivek/Documents/nifty/logs/market_data_bot_background.log" 2>&1 &
+    >> "/Users/vivek/ICICI_Direct/logs/market_data_bot_background.log" 2>&1 &
 BOT_PID_NIFTY=$!
 echo "$BOT_PID_NIFTY" > "$PID_NIFTY"
 log "[TASK 2/3] md.nb initiated (PID: $BOT_PID_NIFTY)."
 
 # 4. Step 3: md.bb_nb with stale cleanup + 15-minute watchdog (timeout 900)
 log "[TASK 3/3] Spawning md.bb_nb (max 15m runtime)..."
-PID_BINANCE="/Users/vivek/ICICI_Direct/binance/reports/binance_market_data_bot.pid"
+PID_BINANCE="/Users/vivek/ICICI_Direct/logs/binance_market_data_bot.pid"
 clean_stale_pid "$PID_BINANCE" "Binance Market Data BOT"
 
 nohup /usr/bin/timeout 900 /opt/homebrew/opt/python@3.13/bin/python3 -u \
@@ -87,7 +87,7 @@ nohup /usr/bin/timeout 900 /opt/homebrew/opt/python@3.13/bin/python3 -u \
     --symbols btc,eth,btc_futures,eth_futures \
     --append-latest \
     --rebuild-timeframes 1 \
-    >> "/Users/vivek/ICICI_Direct/binance/logs/binance_market_data_bot_background.log" 2>&1 &
+    >> "/Users/vivek/ICICI_Direct/logs/binance_market_data_bot_background.log" 2>&1 &
 BOT_PID_BINANCE=$!
 echo "$BOT_PID_BINANCE" > "$PID_BINANCE"
 log "[TASK 3/3] md.bb_nb initiated (PID: $BOT_PID_BINANCE)."

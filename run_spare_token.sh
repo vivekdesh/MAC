@@ -5,11 +5,12 @@
 # Runs: update_spare_credentials.py (with 120s timeout guard) + dual-file sync
 # ==============================================================================
 
-LOG_FILE="/Users/vivek/Documents/nifty/data/index_options/credentials.nosync/spare_token_run.log"
+LOG_FILE="/Users/vivek/ICICI_Direct/logs/spare_token_run.log"
 PYTHON_BIN="/opt/homebrew/opt/python@3.13/bin/python3"
 SCRIPT_PATH="/Users/vivek/Documents/nifty/data/index_options/credentials.nosync/update_spare_credentials.py"
 BACKUP_JSON="/Users/vivek/Documents/nifty/data/index_options/credentials.nosync/spare_credentials.json"
 LIVE_JSON="/Users/vivek/Documents/nifty/data/index_temp.nosync/spare_credentials.json"
+mkdir -p "$(dirname "$LOG_FILE")"
 
 log() {
     echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" >> "$LOG_FILE"
