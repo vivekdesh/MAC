@@ -1,3 +1,22 @@
+Date: 12-11-2026 13:00:00
+
+User Query:
+"Also, FYERS margin requirement, margin available, and margin-related logs, etc., need to be logged into a new log file." (in the context of whatsapp/fyers_silver_trade.py gaining a dedicated fyers_margin.log, same as silverm.log before it).
+
+Logic & Explanation:
+- whatsapp/fyers_silver_trade.py was changed (separately, in the whatsapp repo) to write FYERS
+  margin/funds snapshots into a new dedicated rolling log, /Users/vivek/ICICI_Direct/whatsapp/
+  fyers_margin.log, matching the earlier silverm.log addition.
+- split_logs_by_date() only date-splits the fixed, named list of rolling logs it is told about.
+  Added "fyers_margin.log" to that list (line 202), same as the silverm.log addition moments
+  earlier -- it is a whatsapp-folder-only file, so the existing folder=="whatsapp" ->
+  end_time="23:59:59" exception (6ba5289) applies to it automatically.
+
+Final Code Change:
+- /Users/vivek/ICICI_Direct/MAC/sync_master.sh (line 202):
+  - for filename in app.log app_single.log vivek.log bin_trade.log line_break_monitor.log silverm.log fyers_margin.log; do
+- Verification: bash -n sync_master.sh (clean).
+
 Date: 12-11-2026 12:35:00
 
 User Query:
