@@ -1,3 +1,24 @@
+Date: 12-11-2026 11:06:00
+
+User Query:
+"only for whatsapp!! 1. Fix Log Splitting Ceiling in /Users/vivek/ICICI_Direct/MAC/sync_master.sh
+Change line 228 from time_str <= \"15:45:00\" to time_str <= \"23:59:59\" so all evening commodity trading sessions are fully captured in the daily split logs.
+r u sure 100 %? this time no misses and excuses!!"
+
+Logic & Explanation:
+- In /Users/vivek/ICICI_Direct/MAC/sync_master.sh, the function split_logs_by_date() uses an awk script to filter and split monolithic logs (app.log, app_single.log, etc.) into dated daily files (e.g., app_11Nov26.log).
+- The time window was previously hardcoded to 09:00:00 through 15:45:00 for all bots.
+- While 15:45:00 is correct for daytime NSE equity and index options bots, the WhatsApp bot trades MCX Silver commodities (SILMIN), whose market hours extend through the evening up to 23:30 / 23:55.
+- As a result, evening commodity events (such as the 20:05 exit square-off and retry attempts on 11-Nov-2026) were present in raw app.log on the VM but discarded by awk when creating daily split files like app_11Nov26.log.
+- To resolve this without impacting any other bot, folder_name is now passed into awk (-v folder="$folder_name"), and end_time is conditionally set: if folder == "whatsapp", end_time is "23:59:59"; otherwise, it strictly remains "15:45:00".
+
+Final Code Change:
+- In /Users/vivek/ICICI_Direct/MAC/sync_master.sh (lines 216-235):
+  - Passed -v folder="$folder_name" to awk.
+  - Defined end_time = (folder == "whatsapp") ? "23:59:59" : "15:45:00" in BEGIN block.
+  - Replaced hardcoded condition time_str <= "15:45:00" with time_str <= end_time.
+  - Verified with bash -n and verified on /Users/vivek/ICICI_Direct/Google/whatsapp/app.log that app_11Nov26.log now captures all evening entries up to 23:59:59.
+
 Date: 12-11-2026 03:45:45
 Query: (after the WS-dead alert deploy, 8 bots) "Add ws_dead_alert.py to the weekly upload include lists in the MAC folder?" -> "Yes, fix alias"
 Logic: /Users/vivek/ICICI_Direct/weekly/weekly_trade.py now imports ws_dead_alert (weekly commit 0427a946). The weekly upload uses a fixed include list that did not name the new module, so o.wk.u / sync_master upload would never ship it or its later updates (12-11-2026 it was deployed by a one-off direct rsync).

@@ -212,10 +212,12 @@ split_logs_by_date() {
         echo "    ↳ splitting $filename"
         # Character classes (not {n} intervals) are used so this works with the
         # default macOS awk, which lacks interval-expression support.
-        # Filters each day's stacked log to market hours: 09:00:00 to 15:45:00 inclusive.
-        awk -v dir="$target_dir" -v base="$BASE_NAME" '
+        # Filters each day's stacked log to market hours: 09:00:00 to 15:45:00 inclusive (or 23:59:59 for whatsapp).
+        awk -v dir="$target_dir" -v base="$BASE_NAME" -v folder="$folder_name" '
             BEGIN {
                 split("Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec", mon, " ")
+                # whatsapp (MCX silver commodity) trades until 23:30/23:55; all other bots stop at 15:45:00
+                end_time = (folder == "whatsapp") ? "23:59:59" : "15:45:00";
             }
             {
                 # A line beginning "YYYY-MM-DD" checks date and market session time window.
@@ -225,13 +227,13 @@ split_logs_by_date() {
                     dd = substr($0, 9, 2);
                     out = dir "/" base "_" dd mon[mm] yy ".log";
                     time_str = substr($0, 12, 8);
-                    if (time_str >= "09:00:00" && time_str <= "15:45:00") {
+                    if (time_str >= "09:00:00" && time_str <= end_time) {
                         in_range = 1;
                     } else {
                         in_range = 0;
                     }
                 }
-                # Lines within the 09:00:00-15:45:00 window (and multi-line tracebacks)
+                # Lines within the market window (and multi-line tracebacks)
                 # are written to the current date file.
                 if (in_range && out != "") print > out;
             }
