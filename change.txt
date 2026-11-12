@@ -1,3 +1,27 @@
+Date: 12-11-2026 12:35:00
+
+User Query:
+"yes, go ahead, also downloaded logs renaming with date!!" (in the context of giving the whatsapp FYERS/SilverM module its own dedicated log file, silverm.log, instead of sharing app.log).
+
+Logic & Explanation:
+- whatsapp/fyers_silver_trade.py and whatsapp/whatsapp_scanner.py were changed (separately, in the
+  whatsapp repo) to write the SilverM strategy engine's and FYERS adapter's log lines into a new
+  dedicated file, /Users/vivek/ICICI_Direct/whatsapp/silverm.log, instead of the shared app.log.
+- sync_master.sh's split_logs_by_date() only date-splits a fixed, named list of rolling logs per
+  bot folder when downloading (app.log, app_single.log, vivek.log, bin_trade.log,
+  line_break_monitor.log) into dated daily files like app_12Nov26.log. A new rolling log name is
+  invisible to it until added to that list, so silverm.log would never get the same daily split.
+- Added "silverm.log" to that list (line 202). It is a whatsapp-folder-only file, so the existing
+  folder=="whatsapp" -> end_time="23:59:59" exception (commit 6ba5289) already applies to it
+  automatically, correctly keeping evening MCX commodity-session lines.
+
+Final Code Change:
+- /Users/vivek/ICICI_Direct/MAC/sync_master.sh (line 202):
+  - for filename in app.log app_single.log vivek.log bin_trade.log line_break_monitor.log silverm.log; do
+- Verification: bash -n sync_master.sh (clean); smoke-tested split_logs_by_date() against a sample
+  silverm.log with lines at 09:05:00 and 20:10:00 -- both lines correctly landed in the produced
+  silverm_12Nov26.log (whatsapp's 23:59:59 end-time exception confirmed to apply to this file too).
+
 Date: 12-11-2026 11:06:00
 
 User Query:
