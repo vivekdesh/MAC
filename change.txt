@@ -1,3 +1,36 @@
+Date: 13-11-2026 09:20:00
+
+User Query:
+"no no as other processes of program_restart is uploaded, if change happens, then and then it is restarted, i need all.u if change then upload restart_agent.py if changed - re-start sudo systemctl restart program-restart-oracle2.service and not every day at 5 AM, it will add delay!!" / "so ur earlier solution and this above is same? <<<< new=$(sha256sum restart_agent.py agent_config.py sheet_support.py para.json service_account.json 2>/dev/null) ==== new=$(sha256sum restart_agent.py agent_config.py sheet_support.py para.json service_account.json \"$HOME/session_manager/session_engine.py\" 2>/dev/null) >>>> what about other services which also can affect?"
+
+Logic & Explanation:
+- On Oracle 2 VM, restart_agent.py is run by systemd service program-restart-oracle2.service.
+  The service imports session_engine from ~/session_manager/session_engine.py at startup,
+  which caches the compiled module in memory.
+- When session_engine.py is updated locally and uploaded via sync_master.sh (all.u / oracle2 up),
+  the post-sync check previously only computed the sha256 checksum of files strictly inside
+  ~/Program_restart (restart_agent.py, agent_config.py, sheet_support.py, para.json,
+  service_account.json). Because session_engine.py was not in the sha256 file list,
+  the service was marked UNCHANGED and not restarted, leaving the daemon running stale
+  in-memory session logic (causing the 13-Nov morning FYERS token refresh to be skipped).
+- Adding "$HOME/session_manager/session_engine.py" to the sha256sum list in sync_master.sh ensures
+  that any upload modifying session_engine.py automatically triggers a one-time restart of
+  program-restart-oracle2.service during upload, eliminating stale in-memory modules while
+  introducing zero runtime delay to the morning 05:00 AM execution path.
+- Verified that no other background services are affected, as session_manager is uniquely used
+  on Oracle 2 VM, while all other VMs host their restart logic strictly inside ~/Program_restart.
+
+Final Code Change:
+- /Users/vivek/ICICI_Direct/MAC/sync_master.sh (lines 452-466):
+  - Updated comment and added "$HOME/session_manager/session_engine.py" to the sha256sum
+    checksum calculation list evaluated for RESTART_AGENT_SERVICE.
+- Verification:
+  - bash -n /Users/vivek/ICICI_Direct/MAC/sync_master.sh (passed clean with zero syntax errors).
+  - Executed bash /Users/vivek/ICICI_Direct/MAC/sync_master.sh oracle2 up: detected new hash with
+    session_engine.py, successfully restarted program-restart-oracle2.service.
+  - Executed a second consecutive upload: verified unchanged state (UNCHANGED), correctly skipping
+    unnecessary service restart.
+
 Date: 12-11-2026 13:00:00
 
 User Query:

@@ -451,19 +451,20 @@ run_sync() {
             # WHY ONLY ON CHANGE: until 05-10-2026 this restarted on every upload and printed
             # "restarted with the new agent_config.py" even when nothing had changed (suresh,
             # 05-10-2026 14:09:24: agent_config.py last changed 06-09-2026). The agent loads
-            # restart_agent.py, agent_config.py, sheet_support.py, para.json and
-            # service_account.json at start. A checksum of those files is kept in
+            # restart_agent.py, agent_config.py, sheet_support.py, para.json,
+            # service_account.json and (on oracle2) session_manager/session_engine.py at start.
+            # A checksum of those files is kept in
             # ~/.agent_deployed.sha256 (checksums, not copies: service_account.json is a
             # credential) and written only AFTER a successful restart, so a failed restart
             # is retried on the next upload. File mtimes are not used: rsync keeps the Mac's
             # mtime, so an old-dated file uploaded after the agent started would be missed.
-            # INVARIANT: restart agent <=> any of its 5 files changed OR service not active
+            # INVARIANT: restart agent <=> any of its monitored files (including session_manager/session_engine.py if present) changed OR service not active
             if [[ -n "$RESTART_AGENT_SERVICE" ]]; then
                 echo "  🔄 POST-SYNC: Checking $RESTART_AGENT_SERVICE on $target..."
                 agent_result=$(ssh -i "$KEY_FILE" -o ConnectTimeout=8 "$remote_user_host" '
                   svc='"$RESTART_AGENT_SERVICE"'
                   cd "$HOME/Program_restart" || exit 1
-                  new=$(sha256sum restart_agent.py agent_config.py sheet_support.py para.json service_account.json 2>/dev/null)
+                  new=$(sha256sum restart_agent.py agent_config.py sheet_support.py para.json service_account.json "$HOME/session_manager/session_engine.py" 2>/dev/null)
                   old=$(cat "$HOME/.agent_deployed.sha256" 2>/dev/null)
                   if [ "$new" = "$old" ] && systemctl is-active --quiet "$svc"; then
                     echo UNCHANGED; exit 0
