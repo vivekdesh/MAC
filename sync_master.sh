@@ -210,6 +210,11 @@ split_logs_by_date() {
 
         local BASE_NAME="${filename%.log}"
         echo "    ↳ splitting $filename"
+        # If a rotated .log.1 exists, pass it first so chronological history is preserved
+        local LOG_INPUTS=()
+        [ -f "${LOG_FILE}.1" ] && LOG_INPUTS+=("${LOG_FILE}.1")
+        LOG_INPUTS+=("$LOG_FILE")
+
         # Character classes (not {n} intervals) are used so this works with the
         # default macOS awk, which lacks interval-expression support.
         # Filters each day's stacked log to market hours: 09:00:00 to 15:45:00 inclusive (or 23:59:59 for whatsapp).
@@ -237,7 +242,7 @@ split_logs_by_date() {
                 # are written to the current date file.
                 if (in_range && out != "") print > out;
             }
-        ' "$LOG_FILE"
+        ' "${LOG_INPUTS[@]}"
         # Show which day-files were created/updated by this split.
         find "$target_dir" -maxdepth 1 -name "${BASE_NAME}_[0-9][0-9][A-Za-z][a-z][a-z][0-9][0-9].log" -newer "$LOG_FILE" 2>/dev/null | while read f; do
             echo "      → $(basename "$f") ($(ls -lh "$f" | awk '{print $5}'))"

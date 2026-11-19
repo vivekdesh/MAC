@@ -1,0 +1,17 @@
+Date: 19-11-2026 19:05:00
+
+Query:
+"issue, when token is refreshed at about 6 AM, logs files got deleted for yeasterday or wiped out, so logs of whatsapp BOT (specially SILVERM which closes at 11:30) so for whatsapp i want logs to retained for 2 days so as it will be downloaded and renamed arraneed in yeasterdaty and todays (please see logic)!! please suggest better method!! i think when laptop lid is open we download BOT logs at 5 PM o al yestaersy logs are preserved!!"
+
+Logic:
+1. In `sync_master.sh`, `split_logs_by_date()` reads live rolling logs (e.g. `silverm.log`, `app.log`) and uses awk to extract lines into daily files formatted as `<base>_DDMonYY.log`.
+2. When a rolling log rotated (e.g. `silverm.log` rotating to `silverm.log.1`), `split_logs_by_date()` only processed the active `silverm.log`, ignoring `silverm.log.1`.
+3. Because awk's `print > out` truncates the destination file on its initial write, processing only the newly-rotated active log caused the daily file (e.g. `silverm_19Nov26.log`) to be overwritten with only the post-rotation lines, dropping the earlier session lines.
+4. Updated `split_logs_by_date()` in `/Users/vivek/ICICI_Direct/MAC/sync_master.sh` to assemble an input array `LOG_INPUTS`: if `${LOG_FILE}.1` exists, it is passed first, followed by `$LOG_FILE`.
+5. This guarantees all lines from both the rotated segment and active segment are parsed in chronological order, seamlessly rebuilding complete daily logs for yesterday and today without data loss.
+
+Final Code Change:
+- Modified `/Users/vivek/ICICI_Direct/MAC/sync_master.sh` inside `split_logs_by_date()`: Constructed `LOG_INPUTS` array checking for `${LOG_FILE}.1`, passing `"${LOG_INPUTS[@]}"` into the awk script instead of `$LOG_FILE` alone.
+- Verified syntax with `bash -n /Users/vivek/ICICI_Direct/MAC/sync_master.sh`.
+- Verified live split on `/Users/vivek/ICICI_Direct/Google/whatsapp`: `silverm_19Nov26.log` expanded from 9.9 KB to 561 KB, capturing all daytime and evening lines, and `silverm_18Nov26.log` completed at 869 KB.
+
