@@ -19,6 +19,7 @@
   - [Suresh VM systemd](#suresh-vm-systemd)
   - [Logs and Control](#logs-and-control)
   - [Current Bot Paths](#current-bot-paths)
+- [2C. Google Drive Cloud Backup (Safe Incremental RSYNC)](#2c-google-drive-cloud-backup-safe-incremental-rsync)
 - [3. Process Management](#3-process-management)
   - [Finding Processes](#finding-processes)
   - [Killing Processes](#killing-processes)
@@ -697,6 +698,62 @@ Use this table to map each bot quickly.
 | Oracle | `selling_1` | `/home/ubuntu/selling_1/` | `$HOME/ICICI_Direct/Google/selling_1/` for download, `$HOME/ICICI_Direct/selling_1/` for upload |
 | Oracle | `binance` | `/home/ubuntu/binance/` | `$HOME/ICICI_Direct/Google/binance/` for download, `$HOME/ICICI_Direct/binance/` for upload |
 | Oracle | `sensex` | `/home/ubuntu/sensex/` | `$HOME/ICICI_Direct/sensex/` for both download and upload |
+
+---
+
+## 2C. Google Drive Cloud Backup (Safe Incremental RSYNC)
+
+Copies only new and modified files to Google Drive without altering or polluting the local source folder.
+
+### Command
+
+```bash
+rsync -auv --stats \
+  --exclude="binance/data/" \
+  --exclude="weekly/data/" \
+  --exclude="Google/" \
+  --exclude="Ubentu/" \
+  --exclude="*venv*" \
+  --exclude=".claude/" \
+  --exclude=".antigravity/" \
+  --exclude=".gemini/" \
+  --exclude="*.tmp" \
+  --exclude="*.scratch" \
+  --exclude="__pycache__/" \
+  --exclude=".DS_Store" \
+  "/Users/vivek/ICICI_Direct/" \
+  "/Users/vivek/Library/CloudStorage/GoogleDrive-deshpande.vivek@gmail.com/My Drive/Programming_experiments/ICICI_Direct/"
+```
+
+### Flags & Exclusions Summary
+
+| Flag / Exclusion | What it does / Reason |
+|---|---|
+| `-a` (archive) | Preserves timestamps, permissions, symlinks, and folder structure. |
+| `-u` (update) | Copies only new or modified files; skips unchanged files on destination. |
+| `-v` / `--stats` | Displays live transfer names and final bytes/speed metrics. |
+| `binance/data/` | Skips heavy crypto raw/clean CSV dumps (bot code is kept). |
+| `weekly/data/` | Skips 18,900+ option CSV candles and master parquet (code is kept). |
+| `Google/`, `Ubentu/` | Skips remote VM download log mirrors. |
+| `*venv*` | Skips local Python virtual environment packages & binaries. |
+| `.claude/` | Skips Claude agent scratch worktrees and session files. |
+| `.antigravity/`, `.gemini/` | Skips AI agent runtime caches and logs. |
+| `*.tmp`, `*.scratch` | Skips ephemeral working and logging buffers. |
+| `__pycache__/`, `.DS_Store` | Skips Python compiled bytecode and macOS desktop metadata. |
+
+### Shell Shortcut Alias (`~/.zshrc`)
+
+```bash
+alias sync.gdrive='rsync -auv --stats \
+  --exclude="binance/data/" --exclude="weekly/data/" \
+  --exclude="Google/" --exclude="Ubentu/" \
+  --exclude="*venv*" --exclude=".claude/" \
+  --exclude=".antigravity/" --exclude=".gemini/" \
+  --exclude="*.tmp" --exclude="*.scratch" \
+  --exclude="__pycache__/" --exclude=".DS_Store" \
+  "/Users/vivek/ICICI_Direct/" \
+  "/Users/vivek/Library/CloudStorage/GoogleDrive-deshpande.vivek@gmail.com/My Drive/Programming_experiments/ICICI_Direct/"'
+```
 
 ---
 

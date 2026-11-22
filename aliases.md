@@ -157,6 +157,7 @@ alias cleanhist='bash "$SCRIPT_DIR/remove_duplicate.sh"'
 # Legacy Syncs (For reference)
 alias syncgemini='bash "$SCRIPT_DIR/sync_gemini.sh"'
 alias syncgdrive='bash "$SCRIPT_DIR/syn_vivek.sh"'
+alias sync.gdrive='bash "$SCRIPT_DIR/syn_vivek.sh"'
 alias syncbandu='bash "$SCRIPT_DIR/bandu_vivekmac.sh"'
 alias syncsuresh='bash "$SCRIPT_DIR/suresh_vivekmac.sh"'
 alias syncvivek='bash "$SCRIPT_DIR/vivek_vivekmac.sh"'

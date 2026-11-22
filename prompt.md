@@ -53,6 +53,39 @@ documentation, change-log, Git commit, and push procedures.
 Now perform this task:
 
 
+
+
+Follow /Users/vivek/ICICI_Direct/AGENTS.md exactly. Interactiveness first:
+understand, inspect, discuss findings, propose, show exact changes, and WAIT
+for my approval before modifying anything.
+
+Task:
+
+
+
+
+/goal I approve the discussed plan and proposal. You are fully authorized to
+execute autonomously without pausing for intermediate confirmation popups.
+Follow all rules in /Users/vivek/ICICI_Direct/AGENTS.md.
+
+1. [CODE]: Implement in the authoritative master files, full absolute paths.
+2. [PYTHON INTEGRITY]:
+   - python3 -m py_compile <modified_files>
+   - python3 -m pyflakes <modified_files>  (0 undefined names, zero F821)
+   - Cross-module import check on dependent modules.
+3. [SMOKE TEST]: Offline, synthetic values, zero live API/Sheets/order calls.
+4. [LOGGING]: Write the entry to gemini_log_update.tmp with exactly two
+   trailing newlines, then prepend to change.txt with cat and mv.
+5. [GIT]: git add ONLY the files you changed, plus gemini_log_update.tmp and
+   change.txt. Never `git add .` — these repos contain unrelated uncommitted
+   work. Then git commit with the log entry as the body, and git push.
+   Before committing, show me `git status --short` if anything unexpected
+   is staged.
+6. [REPORT]: Commit hash, branch, push status, verification summary.
+
+
+
+
 How India VIX changes option prices — and the mathematical bounds
 The mechanism: India VIX is the market's expected ~30-day annualized volatility (σ) of NIFTY. In the pricer it enters through the ATM-vol mapping (log_vix is the strongest feature) → higher VIX → higher σ → higher option price. Through Black-76, the price depends on σ via vega:
 
@@ -175,3 +208,20 @@ DTE 1: 0.74
 DTE 2: 0.96
 DTE 3+: 1.0
 My fit_models.py will optimize these to minimize errors. Should I proceed with that instead?
+
+
+Task: 9th OCt
+The check is scheduled to run once on 09-10-2026 at 4:00 PM, after the market closes.
+
+It is read-only. It reads the logs over SSH from both VMs, which is the only file access it needs, and it may write one dated line to the memory note. It reports with a diagram, then a table, then a verdict of CLEAN or NEEDS ATTENTION. For any red flag it quotes the log lines and recommends the safest action, such as switching the sell_index flag off, but it does not carry that action out.
+
+The task runs only while the Claude app is open. If the app is closed at 4:00 PM, it runs at the next launch.
+
+The first run may pause on tool permission prompts, such as SSH. To avoid that, use “Run now” on it once from the Scheduled section in the sidebar. It will fail the market-hours check (it is before 15:40 today) and stop without doing anything, but the approvals will be stored for tomorrow. The note is saved as well, so any session you start after 15:40 tomorrow will see it too.
+
+
+
+Memory is now ONE common folder: /Users/vivek/ICICI_Direct/memory/
+1. Re-read /Users/vivek/ICICI_Direct/memory/MEMORY.md now, PENDING section first.
+2. From now on read and save memory ONLY there: one note file + one index line under the right heading (ALL BOTS, MULTI-BOT with a [bot, bot] tag, or the single bot). Re-read MEMORY.md right before editing it.
+3. Also re-read the "Memory" block in /Users/vivek/.claude/CLAUDE.md. Keep no separate per-bot memory copy.

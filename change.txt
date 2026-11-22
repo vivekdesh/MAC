@@ -1,3 +1,22 @@
+Date: 22-11-2026 10:12:40
+
+User Query:
+ALSO make good document with all commnets, exclusions, reasons etc and update in ubentu cheat sheet in MAC folder!!
+have u made alias?
+
+Logic & Explanation:
+- Documented the safe, incremental, non-polluting rsync backup process from /Users/vivek/ICICI_Direct/ to Google Drive.
+- Added Section '2C. Google Drive Cloud Backup (Safe Incremental RSYNC)' to /Users/vivek/ICICI_Direct/MAC/ubuntu_cheatsheet.md with exact command, flags breakdown, and exclusion rationales.
+- Refactored /Users/vivek/ICICI_Direct/MAC/syn_vivek.sh to execute the safe one-way rsync push with comprehensive exclusions (binance/data/, weekly/data/, Google/, Ubentu/, venv, .claude, temp buffers, and pycache), eliminating previous risky bidirectional sync.
+- Configured and linked shell aliases 'syncgdrive' and 'sync.gdrive' to syn_vivek.sh in ~/.zshrc and documented them in /Users/vivek/ICICI_Direct/MAC/aliases.md.
+
+Final Code Change:
+- Updated /Users/vivek/ICICI_Direct/MAC/ubuntu_cheatsheet.md (TOC and Section 2C added).
+- Rewrote /Users/vivek/ICICI_Direct/MAC/syn_vivek.sh with the one-way safe rsync pipeline.
+- Updated /Users/vivek/ICICI_Direct/MAC/aliases.md to document syncgdrive and sync.gdrive.
+- Updated ~/.zshrc to define alias sync.gdrive='bash "$SCRIPT_DIR/syn_vivek.sh"'.
+
+
 Date: 19-11-2026 19:05:00
 
 Query:
