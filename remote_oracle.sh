@@ -10,11 +10,13 @@ REMOTE_CONN="ubuntu@80.225.215.187"
 KEY_FILE="$HOME/ICICI_Direct/Key/oracle/ssh-key-2026-02-11.key"
 REMOTE_BASE_DIR="/home/ubuntu"
 RESTART_BINANCE_SCRIPT="$REMOTE_BASE_DIR/binance/kill_run.sh"
+RESTART_BTC_OPT_SCRIPT="$REMOTE_BASE_DIR/binance/btc_opt_run.sh"   # BTC options PAPER bot (own virtualenv)
 UNIFIED_RESTART_SCRIPT="$REMOTE_BASE_DIR/kill_run_oracle.sh"
 SETUP_SCRIPT="$REMOTE_BASE_DIR/create_TMS_oracle.sh"
 # Defined sessions list for reuse
 BINANCE_SESSION="bnc"
-SESSIONS_LIST="rsi_trade rsi_sin sell_1_trade sell_1_sin sen_trade sen_sin wk_trade $BINANCE_SESSION"
+BTC_OPT_SESSION="btc_opt"
+SESSIONS_LIST="rsi_trade rsi_sin sell_1_trade sell_1_sin sen_trade sen_sin wk_trade $BINANCE_SESSION $BTC_OPT_SESSION"
 
 # --- TMUX HEALTH SCRIPT ---
 TMUX_HEALTH_CMD=' 
@@ -106,6 +108,9 @@ case "$COMMAND" in
         elif [[ "$PROJECT_NAME" == "weekly" || "$PROJECT_NAME" == "wk" ]]; then
             PROJECT_KEY="weekly"
             RESTART_SCRIPT="$UNIFIED_RESTART_SCRIPT"
+        elif [[ "$PROJECT_NAME" == "btc_opt" || "$PROJECT_NAME" == "btc" ]]; then
+            PROJECT_KEY="btc_opt"
+            RESTART_SCRIPT="$RESTART_BTC_OPT_SCRIPT"
         else
             echo "❌ Unknown project for restart: $PROJECT_NAME"
             exit 1

@@ -27,7 +27,8 @@ WEEKLY_UPLOAD_OPTS="--include=weekly_trade.py --include=weekly_bot.py --include=
 # Note: logs are downloaded with plain rsync, NOT --append. rsync's own delta
 # transfer already sends only the newly-appended bytes, and unlike --append it
 # stays correct when a VM restart truncates app.log (remote smaller than local).
-DOWNLOAD_OPTS="--exclude=.git --exclude=__pycache__ --exclude=.DS_Store --exclude=apiLogs*"
+# clean.nosync = the BTC paper bot's trimmed price history on the Oracle VM (25 MB, a copy of a Mac file): never pulled back.
+DOWNLOAD_OPTS="--exclude=.git --exclude=__pycache__ --exclude=.DS_Store --exclude=apiLogs* --exclude=clean.nosync"
 
 # ==============================================================================
 # 🛠️ Configuration Lookup Function (Replaces Associative Arrays)
@@ -346,6 +347,14 @@ run_sync() {
             else
                 rsync -avz -e "ssh -i $KEY_FILE" \
                     $upload_extra_opts $UPLOAD_OPTS \
+                    "$local_src" "$remote_dest"
+            fi
+
+            # BTC options paper bot (binance folder on the Oracle VM): UPLOAD_OPTS skips every subfolder, so also send the
+            # two rule-engine files the bot imports. The 105 MB price history (data/) and the VM's state (btc_opt_paper/) stay put.
+            if [ "$target" == "oracle_binance" ] && [ "$local_sub" == "binance" ]; then
+                rsync -avz -e "ssh -i $KEY_FILE" \
+                    --include=BTC_backtesting/ --include=BTC_backtesting/code/ --include=btc_rule.py --include=btc_data.py --exclude='*' \
                     "$local_src" "$remote_dest"
             fi
 

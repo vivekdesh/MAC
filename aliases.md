@@ -96,6 +96,7 @@ alias o.rsi.ur='o.rsi.u && o.rsi'
 alias o.sell_1.ur='o.sell_1.u && o.sell_1'
 alias o.sen.ur='o.sen.u && o.sen'
 alias o.wk.ur='o.wk.u && o.wk'
+alias o.btc.ur='o.btc.u && o.btc'
 
 # --- SURESH (AWS) ---
 alias s.st='bash "$SCRIPT_DIR/remote_suresh.sh" status'
@@ -121,6 +122,8 @@ alias o.sell_1.d='rsync -avz -e "ssh -i $HOME/ICICI_Direct/Key/oracle/ssh-key-20
 alias o.sen.u="rsync -avz -e \"ssh -i \$HOME/ICICI_Direct/Key/oracle/ssh-key-2026-02-11.key\" --exclude=FONSEScripMaster.csv --exclude=parameters_cache.json --exclude=index_daily_ha_bias_cache.json --exclude='*state*.json' --exclude='calculated_greeks*.json' --exclude=option_chain_cache.json --include='*.py' --include='*.json' --include='*.sh' --include='*.csv' --include=requirements.txt --exclude='*' \$HOME/ICICI_Direct/sensex/ ubuntu@80.225.215.187:/home/ubuntu/sensex/"
 alias o.sen.d='rsync -avz -e "ssh -i $HOME/ICICI_Direct/Key/oracle/ssh-key-2026-02-11.key" --exclude=.git --exclude=__pycache__ --exclude=.DS_Store ubuntu@80.225.215.187:/home/ubuntu/sensex/ $HOME/ICICI_Direct/Google/sensex/'
 alias o.wk.u="rsync -avz -e \"ssh -i \$HOME/ICICI_Direct/Key/oracle/ssh-key-2026-02-11.key\" --include=weekly_trade.py --include=weekly_bot.py --include=entry_lock.py --include=breeze_connect_API.py --include=read_function.py --include=google_sheet_utils.py --include=api_coordinator.py --include=api_limit_state.py --include=ws_dead_alert.py --include=account_book.py --include=loging_utilities.py --include=para.json --include=holidays.json --include=service_account.json --exclude='*' \$HOME/ICICI_Direct/weekly/ ubuntu@80.225.215.187:/home/ubuntu/weekly/"
+alias o.btc.u="rsync -avz -e \"ssh -i \$HOME/ICICI_Direct/Key/oracle/ssh-key-2026-02-11.key\" --include='btc_opt_*.py' --include=btc_opt_run.sh --include=BTC_backtesting/ --include=BTC_backtesting/code/ --include=btc_rule.py --include=btc_data.py --include=tests/ --include=test_btc_opt_paper.py --exclude='*' \$HOME/ICICI_Direct/binance/ ubuntu@80.225.215.187:/home/ubuntu/binance/"
+alias o.btc.d="rsync -avz -e \"ssh -i \$HOME/ICICI_Direct/Key/oracle/ssh-key-2026-02-11.key\" --include=btc_opt_paper/ --include='btc_opt_paper/***' --include='btc_opt_paper_*.log' --include=app.log --exclude='*' ubuntu@80.225.215.187:/home/ubuntu/binance/ \$HOME/ICICI_Direct/Google/binance/"
 alias o.wk.d='rsync -avz -e "ssh -i $HOME/ICICI_Direct/Key/oracle/ssh-key-2026-02-11.key" --exclude=.git --exclude=__pycache__ --exclude=.DS_Store ubuntu@80.225.215.187:/home/ubuntu/weekly/ $HOME/ICICI_Direct/Google/weekly/'
 
 # --- BANDU (GCP) ---
@@ -194,6 +197,7 @@ alias o.rsi='bash "$SCRIPT_DIR/remote_oracle.sh" restart rsi'        # Restart m
 alias o.sell_1='bash "$SCRIPT_DIR/remote_oracle.sh" restart selling_1' # Restart Selling_1
 alias o.sen='bash "$SCRIPT_DIR/remote_oracle.sh" restart sensex'     # Restart Sensex
 alias o.wk='bash "$SCRIPT_DIR/remote_oracle.sh" restart weekly'      # Restart weekly
+alias o.btc='bash "$SCRIPT_DIR/remote_oracle.sh" restart btc_opt'     # Restart BTC options PAPER bot (tmux btc_opt)
 
 # Oracle Hard Restarts (Clear Logs) - Add '.y'
 alias o.rsi.y='bash "$SCRIPT_DIR/remote_oracle.sh" restart rsi y'
