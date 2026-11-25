@@ -1,11 +1,6 @@
-Date: 23-11-2026 11:45:00
-Query: Add o.btc / o.btc.u / o.btc.d for the BTC options paper bot on the Oracle VM, and make all.d download its logs into the Google folder of binance, date-wise, with two days kept on the VM as silver does.
-
-Logic and explanation: /Users/vivek/ICICI_Direct/MAC/aliases.md: o.btc (restart tmux btc_opt through remote_oracle.sh), o.btc.u (rsync only btc_opt_*.py, btc_opt_run.sh, BTC_backtesting/code/btc_rule.py and btc_data.py, tests/test_btc_opt_paper.py to /home/ubuntu/binance/, nothing else of the old binance bot), o.btc.ur (upload then restart), o.btc.d (download btc_opt_paper/, btc_opt_paper_*.log and app.log into /Users/vivek/ICICI_Direct/Google/binance/). /Users/vivek/ICICI_Direct/MAC/remote_oracle.sh: new BTC_OPT_SESSION and RESTART_BTC_OPT_SCRIPT (/home/ubuntu/binance/btc_opt_run.sh), btc_opt added to SESSIONS_LIST (status and kill all) and to the restart project list. /Users/vivek/ICICI_Direct/MAC/sync_master.sh: DOWNLOAD_OPTS gets --exclude=clean.nosync so all.d never pulls the paper bot's 25 MB price-history copy from the VM. all.d itself needed no other change: oracle_binance already downloads binance:binance to Google/binance with plain rsync (never deleting), and the bot now writes one dated file per day (btc_opt_paper_DDMonYY.log, two days kept on the VM), so the Mac keeps every day. Checked with the same two rsync commands under bash: 264 KB downloaded, the day file arrives, no parquet.
-
-all.u: for oracle_binance the binance folder is uploaded with UPLOAD_OPTS (top-level *.py/*.json/*.sh/*.csv only, no subfolders, state files excluded), which already covers btc_opt_*.py and btc_opt_run.sh but NOT BTC_backtesting/code/btc_rule.py and btc_data.py that the bot imports. sync_master.sh now sends those two files in a second rsync for that folder only; the 105 MB price history (data/) and the VM's btc_opt_paper/ state are never uploaded. A dry run of both uploads showed nothing to change (VM already identical). all.u does not restart the bot: run o.btc afterwards (or o.btc.ur instead).
-
-Final code change: aliases.md, remote_oracle.sh, sync_master.sh (see above).
-Verification: bash -n on remote_oracle.sh and sync_master.sh; o.btc.u, o.btc.d and o.btc executed end to end against the VM. New aliases take effect in a new shell (source ~/.zshrc).
-
+Date: 25-11-2026 16:20:11
+Query: create o2.wa.ur!! (upload Oracle2 and soft-restart WhatsApp/SilverM on Oracle2 using o2.u && o2.wa)
+Logic and explanation: Added `alias o2.wa.ur='o2.u && o2.wa'` to /Users/vivek/ICICI_Direct/MAC/aliases.md under the upload-then-restart (`*.ur`) section. It runs `o2.u` (`sync_master.sh oracle2 up`) and, only if the upload succeeds, runs `o2.wa` (`remote_oracle2.sh restart wa`) to soft-restart WhatsApp/SilverM on Oracle 2 while preserving logs and state. Verified with `zsh -n /Users/vivek/ICICI_Direct/MAC/aliases.md` and `source /Users/vivek/ICICI_Direct/MAC/aliases.md && alias o2.wa.ur`.
+Final code change:
+- /Users/vivek/ICICI_Direct/MAC/aliases.md: Added `alias o2.wa.ur='o2.u && o2.wa'` at line 101.
 

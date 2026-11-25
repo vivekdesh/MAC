@@ -98,6 +98,8 @@ alias o.sen.ur='o.sen.u && o.sen'
 alias o.wk.ur='o.wk.u && o.wk'
 alias o.btc.ur='o.btc.u && o.btc'
 
+alias o2.wa.ur='o2.u && o2.wa'
+
 # --- SURESH (AWS) ---
 alias s.st='bash "$SCRIPT_DIR/remote_suresh.sh" status'
 alias s.rs='bash "$SCRIPT_DIR/remote_suresh.sh" restart'          # Restart Algo
