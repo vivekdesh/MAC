@@ -1,6 +1,8 @@
-Date: 25-11-2026 16:20:11
-Query: create o2.wa.ur!! (upload Oracle2 and soft-restart WhatsApp/SilverM on Oracle2 using o2.u && o2.wa)
-Logic and explanation: Added `alias o2.wa.ur='o2.u && o2.wa'` to /Users/vivek/ICICI_Direct/MAC/aliases.md under the upload-then-restart (`*.ur`) section. It runs `o2.u` (`sync_master.sh oracle2 up`) and, only if the upload succeeds, runs `o2.wa` (`remote_oracle2.sh restart wa`) to soft-restart WhatsApp/SilverM on Oracle 2 while preserving logs and state. Verified with `zsh -n /Users/vivek/ICICI_Direct/MAC/aliases.md` and `source /Users/vivek/ICICI_Direct/MAC/aliases.md && alias o2.wa.ur`.
+Date: 26-11-2026 20:15:00
+Query: "Yes, investigate" (selling daily loss stop did not block 27-10/30-10/04-11) -> "make humaly explaination whats issue?" -> "ok" -> "Go ahead"
+Logic and explanation: The investigation found no code bug: the live Parameters sheet had MAX_LOSING_TRADES_PER_DAY = 5 (not 3) from at least 27-10 to 04-11 (VM parameters read 04-11 15:12 IST = 5; 27-10 stopped exactly after the 5th loss), and 3 again by 09-11. It did find a real hazard: every Vivek-VM upload includes *.json and did not exclude the live daily loss-count files (selling_daily_losses.json, retire_daily_losses.json, nifty_ema34_daily_losses.json). A stray Mac copy (e.g. written by a test) would overwrite the VM's count mid-day and silently reset the losing-trade stop. Invariant: the VM's *_daily_losses.json is written only by the bot on the VM, never by an upload. rsync uses the first matching rule, so the new exclude sits before --include='*.json'. Downloads are unchanged.
 Final code change:
-- /Users/vivek/ICICI_Direct/MAC/aliases.md: Added `alias o2.wa.ur='o2.u && o2.wa'` at line 101.
+- /Users/vivek/ICICI_Direct/MAC/aliases.md: --exclude='*_daily_losses.json' added to v.ret.u (line 72), v.sell.u (74), v.nifty.u (78), v.idx.u (82).
+- /Users/vivek/ICICI_Direct/MAC/sync_master.sh: --exclude=*_daily_losses.json added to UPLOAD_OPTS (line 15, used by v.u / all_u and the other VM uploads).
+Verification: bash -n sync_master.sh OK; zsh -n aliases.md OK. Local rsync -an dry run under bash with each line's exact filters on a scratch folder (a.py, para.json, selling_daily_losses.json, nifty_ema34_daily_losses.json, *_state.json): BEFORE all 5 uploads sent both loss files; AFTER all 5 send only a.py and para.json. No upload to any VM was run. Open a new terminal or `source ~/.zshrc` to load the new aliases.
 
