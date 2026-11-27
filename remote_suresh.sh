@@ -6,7 +6,7 @@ KEY_FILE="$HOME/ICICI_Direct/Key/suresh_oracle/ssh_suresh_oracle.key"
 REMOTE_DIR="/home/ubuntu/mod_rsi"
 RESTART_SCRIPT="$REMOTE_DIR/kill_rsi_sur.sh"
 SETUP_SCRIPT="$REMOTE_DIR/create_TMX_sur.sh"
-SESSIONS_LIST="rsi_trade rsi_sin sen_trade sen_sin"
+SESSIONS_LIST="rsi_trade rsi_sin sen_trade sen_sin wk_trade"
 
 # --- TMUX HEALTH SCRIPT ---
 TMUX_HEALTH_CMD=' 
@@ -41,7 +41,7 @@ done
 
 echo ""
 echo "--- LOG FILE SIZES ---"
-find mod_rsi sensex_suresh -maxdepth 2 -name "*.log" -exec ls -lh {} + 2>/dev/null | awk "{print \$5, \$9}"
+find mod_rsi sensex_suresh weekly_suresh -maxdepth 2 -name "*.log" -exec ls -lh {} + 2>/dev/null | awk "{print \$5, \$9}"
 echo "============================================================"
 '
 
@@ -49,7 +49,7 @@ usage() {
     echo "Usage: $0 [command] [args]"
     echo "Commands:"
     echo "  status         Check running processes"
-    echo "  restart [project:all|mod_rsi|sensex] [y|n]"
+    echo "  restart [project:all|mod_rsi|sensex|weekly] [y|n]"
     echo "                 If project omitted, defaults to 'all'"
     echo "                 If clear_logs omitted, defaults to 'n'"
     echo "  setup          Run tmux setup script (create_TMX_sur.sh)"
@@ -159,6 +159,35 @@ case "$COMMAND" in
                 tmux send-keys -t sen_sin 'cd /home/ubuntu/sensex_suresh' Enter
                 tmux send-keys -t sen_sin 'python /home/ubuntu/sensex_suresh/vivek_sensex_single.py' Enter
                 echo \"Started vivek_sensex_single.py in 'sen_sin'\"
+            "
+        elif [[ "$PROJECT_NAME" == "weekly" || "$PROJECT_NAME" == "wk" ]]; then
+            echo "   Start Scripts: Yes (Auto-confirmed for Weekly only)"
+            ssh -i "$KEY_FILE" "$REMOTE_CONN" "
+                WEEKLY_DIR=/home/ubuntu/weekly_suresh
+                if [[ \"$CLEAR_LOGS\" == \"y\" ]]; then
+                    echo 'Clearing log files for WEEKLY_SURESH...'
+                    [ -f \"\$WEEKLY_DIR/app.log\" ] && > \"\$WEEKLY_DIR/app.log\"
+                    [ -f \"\$WEEKLY_DIR/app_single.log\" ] && > \"\$WEEKLY_DIR/app_single.log\"
+                    if [ -d \"\$WEEKLY_DIR/logs\" ]; then
+                        echo 'Clearing Weekly API log directory...'
+                        rm -f \"\$WEEKLY_DIR\"/logs/*.log
+                    fi
+                    echo 'Log files have been cleared.'
+                else
+                    echo 'Log files not cleared.'
+                fi
+
+                echo \"Killing existing Weekly processes...\"
+                ps auxww | grep -E 'weekly_suresh|weekly_bot\.py|weekly_trade\.py' | grep -v 'grep' | grep -v 'tmux' | awk '{print \$2}' | xargs -r kill -9 2>/dev/null || true
+                tmux kill-session -t wk_trade 2>/dev/null || true
+                sleep 2
+
+                tmux new-session -d -s wk_trade
+                tmux send-keys -t wk_trade 'clear' Enter
+                tmux send-keys -t wk_trade 'source ~/venv/bin/activate' Enter
+                tmux send-keys -t wk_trade 'cd /home/ubuntu/weekly_suresh' Enter
+                tmux send-keys -t wk_trade 'python /home/ubuntu/weekly_suresh/weekly_bot.py' Enter
+                echo \"Started weekly_bot.py in 'wk_trade'\"
             "
         else
             echo "❌ Unknown project for restart: $PROJECT_NAME"

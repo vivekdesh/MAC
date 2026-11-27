@@ -106,6 +106,9 @@ alias s.rs='bash "$SCRIPT_DIR/remote_suresh.sh" restart'          # Restart Algo
 alias s.rs.y='bash "$SCRIPT_DIR/remote_suresh.sh" restart y'      # Restart + Clear Logs
 alias s.sen='bash "$SCRIPT_DIR/remote_suresh.sh" restart sensex'  # Restart Sensex
 alias s.sen.y='bash "$SCRIPT_DIR/remote_suresh.sh" restart sensex y'
+alias s.wk='bash "$SCRIPT_DIR/remote_suresh.sh" restart weekly'   # Restart Weekly
+alias s.wk.y='bash "$SCRIPT_DIR/remote_suresh.sh" restart weekly y'
+alias s.wk.ur='s.wk.u && s.wk'
 alias s.setup='bash "$SCRIPT_DIR/remote_suresh.sh" setup'
 
 # Suresh Single Bot Sync
@@ -113,6 +116,8 @@ alias s.rsi.u="rsync -avz -e \"ssh -i \$HOME/ICICI_Direct/Key/suresh_oracle/ssh_
 alias s.rsi.d='rsync -avz -e "ssh -i $HOME/ICICI_Direct/Key/suresh_oracle/ssh_suresh_oracle.key" --exclude=.git --exclude=__pycache__ --exclude=.DS_Store ubuntu@140.245.15.195:/home/ubuntu/mod_rsi/ $HOME/ICICI_Direct/Ubentu/suresh/algo_suresh/'
 alias s.sen.u="rsync -avz -e \"ssh -i \$HOME/ICICI_Direct/Key/suresh_oracle/ssh_suresh_oracle.key\" --exclude=FONSEScripMaster.csv --exclude=parameters_cache.json --exclude=index_daily_ha_bias_cache.json --exclude='*state*.json' --exclude='calculated_greeks*.json' --exclude=option_chain_cache.json --include='*.py' --include='*.json' --include='*.sh' --include='*.csv' --include=requirements.txt --exclude='*' \$HOME/ICICI_Direct/sensex_suresh/ ubuntu@140.245.15.195:/home/ubuntu/sensex_suresh/"
 alias s.sen.d='rsync -avz -e "ssh -i $HOME/ICICI_Direct/Key/suresh_oracle/ssh_suresh_oracle.key" --exclude=.git --exclude=__pycache__ --exclude=.DS_Store ubuntu@140.245.15.195:/home/ubuntu/sensex_suresh/ $HOME/ICICI_Direct/Ubentu/suresh/sensex_suresh/'
+alias s.wk.u="rsync -avz -e \"ssh -i \$HOME/ICICI_Direct/Key/suresh_oracle/ssh_suresh_oracle.key\" --include=weekly_trade.py --include=weekly_bot.py --include=entry_lock.py --include=breeze_connect_API.py --include=read_function.py --include=google_sheet_utils.py --include=api_coordinator.py --include=api_limit_state.py --include=ws_dead_alert.py --include=funds_snapshot.py --include=account_book.py --include=loging_utilities.py --include=para.json --include=holidays.json --include=service_account.json --exclude='*' \$HOME/ICICI_Direct/weekly_suresh/ ubuntu@140.245.15.195:/home/ubuntu/weekly_suresh/"
+alias s.wk.d='rsync -avz -e "ssh -i $HOME/ICICI_Direct/Key/suresh_oracle/ssh_suresh_oracle.key" --exclude=.git --exclude=__pycache__ --exclude=.DS_Store ubuntu@140.245.15.195:/home/ubuntu/weekly_suresh/ $HOME/ICICI_Direct/Ubentu/suresh/weekly_suresh/'
 
 # Oracle Single Bot Sync
 alias o.bin.u="rsync -avz -e \"ssh -i \$HOME/ICICI_Direct/Key/oracle/ssh-key-2026-02-11.key\" --exclude=FONSEScripMaster.csv --exclude=parameters_cache.json --exclude=index_daily_ha_bias_cache.json --exclude='*state*.json' --exclude='calculated_greeks*.json' --exclude=option_chain_cache.json --include='*.py' --include='*.json' --include='*.sh' --include='*.csv' --include=requirements.txt --exclude='*' \$HOME/ICICI_Direct/binance/ ubuntu@80.225.215.187:/home/ubuntu/binance/"

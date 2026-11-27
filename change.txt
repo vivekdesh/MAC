@@ -1,3 +1,14 @@
+Date: 27-11-2026 17:20:30
+Query: Add new suresh_weekly bot (/Users/vivek/ICICI_Direct/weekly_suresh/) without touching sensex_suresh; sync code via all.u/s.u without overwriting Suresh credentials; share account book across suresh_rsi and suresh_weekly.
+Logic:
+- /Users/vivek/ICICI_Direct/MAC/sync_master.sh: Added weekly_suresh:weekly_suresh to suresh FOLDER_LIST, added copy_weekly_to_weekly_suresh() (copies only the 12 weekly .py files + holidays.json from /Users/vivek/ICICI_Direct/weekly/ to /Users/vivek/ICICI_Direct/weekly_suresh/, never touching para.json or service_account.json), and hooked it into s.u and all_u using WEEKLY_UPLOAD_OPTS.
+- /Users/vivek/ICICI_Direct/MAC/remote_suresh.sh: Added wk_trade to SESSIONS_LIST, weekly_suresh to log-size check, and restart weekly (launches weekly_bot.py in wk_trade).
+- /Users/vivek/ICICI_Direct/MAC/aliases.md: Added s.wk, s.wk.y, s.wk.u, s.wk.d, s.wk.ur.
+- Also created /Users/vivek/ICICI_Direct/weekly_suresh/ (para.json with sheet 1PJsCVq1ZvzfaU-8fvS1O1DTZ0mKm6xT4iok8w223nUw, BOT_ACCOUNT_SCOPE=suresh, BOT_ACCOUNT_SLICE_NAME=weekly; Suresh service_account.json; Google_scripts/ with updated SPREADSHEET_ID), updated BOT_ACCOUNT_SCOPE=suresh in algo_suresh/para.json and sensex_suresh/para.json, updated algo_suresh/create_TMX_sur.sh, algo_suresh/kill_rsi_sur.sh, and session_manager/auto_login_suresh.py.
+Explanation: Keeps sensex_suresh untouched while enabling automated code sync and separate tmux/account-slice management for suresh_weekly.
+Verification: bash -n passed on all 4 shell scripts; JSON/import/smoke tests passed for weekly_suresh and algo_suresh resolving suresh_shared_account_book.json.
+
+
 Date: 27-11-2026 09:44:00
 
 User Query:

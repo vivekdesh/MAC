@@ -57,7 +57,7 @@ get_target_config() {
         "suresh")
             REMOTE_CONN="ubuntu@140.245.15.195:/home/ubuntu"
             KEY_FILE="$LOCAL_ROOT/Key/suresh_oracle/ssh_suresh_oracle.key"
-            FOLDER_LIST="algo_suresh:mod_rsi sensex_suresh:sensex_suresh nifty:nifty Program_restart:Program_restart shared_state:shared_state"
+            FOLDER_LIST="algo_suresh:mod_rsi sensex_suresh:sensex_suresh weekly_suresh:weekly_suresh nifty:nifty Program_restart:Program_restart shared_state:shared_state"
             RESTART_AGENT_SERVICE="program-restart-suresh.service"
             DL_BASE="$HOME/ICICI_Direct/Ubentu/suresh"
             ;;
@@ -136,6 +136,27 @@ copy_sensex_to_sensex_suresh() {
     done
 
     echo "✅ Copy completed: sensex → sensex_suresh"
+}
+
+# --- 🔄 Copy Function for weekly → weekly_suresh (code + holidays only; never credentials) ---
+copy_weekly_to_weekly_suresh() {
+    echo "🔄 Syncing changed weekly → weekly_suresh (12 .py files + holidays.json only)..."
+
+    SRC_DIR="$LOCAL_ROOT/weekly"
+    DEST_DIR="$LOCAL_ROOT/weekly_suresh"
+
+    mkdir -p "$DEST_DIR"
+
+    for fname in weekly_trade.py weekly_bot.py entry_lock.py breeze_connect_API.py read_function.py google_sheet_utils.py api_coordinator.py api_limit_state.py ws_dead_alert.py funds_snapshot.py account_book.py loging_utilities.py holidays.json; do
+        src_file="$SRC_DIR/$fname"
+        dest_file="$DEST_DIR/$fname"
+        if [ -f "$src_file" ] && { [ ! -f "$dest_file" ] || ! cmp -s "$src_file" "$dest_file"; }; then
+            cp -f "$src_file" "$dest_file"
+            echo "    Updated: $fname"
+        fi
+    done
+
+    echo "✅ Copy completed: weekly → weekly_suresh"
 }
 
 # --- Rename Logs by Date ---
@@ -317,6 +338,11 @@ run_sync() {
                 copy_sensex_to_sensex_suresh
             fi
 
+            # Ensure weekly_suresh is refreshed from weekly before upload (never touches para.json / service_account.json)
+            if [ "$target" == "suresh" ] && [ "$local_sub" == "weekly_suresh" ]; then
+                copy_weekly_to_weekly_suresh
+            fi
+
             # Special case for Bandu
             if [ "$target" == "bandu" ]; then
                 echo "    Note: Syncing mod_rsi/*.py to vinay/ first..."
@@ -340,7 +366,7 @@ run_sync() {
                 upload_extra_opts="--exclude=data_cache/ --exclude=Results_LB_HA_STRATEGY_ENABLED/"
             fi
 
-            if [ "$local_sub" == "weekly" ]; then
+            if [ "$local_sub" == "weekly" ] || [ "$local_sub" == "weekly_suresh" ]; then
                 rsync -avz -e "ssh -i $KEY_FILE" \
                     $WEEKLY_UPLOAD_OPTS \
                     "$local_src" "$remote_dest"
@@ -519,6 +545,7 @@ case "$COMMAND" in
     "all_u")
         echo "🌐 MASTER BATCH: Uploading to ALL..."
         copy_sensex_to_sensex_suresh
+        copy_weekly_to_weekly_suresh
         for t in "vivek" "oracle_binance" "oracle2" "suresh"; do
             echo "---------------------------------------------------"
             run_sync "$t" "up"
