@@ -1,8 +1,22 @@
-Date: 26-11-2026 20:15:00
-Query: "Yes, investigate" (selling daily loss stop did not block 27-10/30-10/04-11) -> "make humaly explaination whats issue?" -> "ok" -> "Go ahead"
-Logic and explanation: The investigation found no code bug: the live Parameters sheet had MAX_LOSING_TRADES_PER_DAY = 5 (not 3) from at least 27-10 to 04-11 (VM parameters read 04-11 15:12 IST = 5; 27-10 stopped exactly after the 5th loss), and 3 again by 09-11. It did find a real hazard: every Vivek-VM upload includes *.json and did not exclude the live daily loss-count files (selling_daily_losses.json, retire_daily_losses.json, nifty_ema34_daily_losses.json). A stray Mac copy (e.g. written by a test) would overwrite the VM's count mid-day and silently reset the losing-trade stop. Invariant: the VM's *_daily_losses.json is written only by the bot on the VM, never by an upload. rsync uses the first matching rule, so the new exclude sits before --include='*.json'. Downloads are unchanged.
-Final code change:
-- /Users/vivek/ICICI_Direct/MAC/aliases.md: --exclude='*_daily_losses.json' added to v.ret.u (line 72), v.sell.u (74), v.nifty.u (78), v.idx.u (82).
-- /Users/vivek/ICICI_Direct/MAC/sync_master.sh: --exclude=*_daily_losses.json added to UPLOAD_OPTS (line 15, used by v.u / all_u and the other VM uploads).
-Verification: bash -n sync_master.sh OK; zsh -n aliases.md OK. Local rsync -an dry run under bash with each line's exact filters on a scratch folder (a.py, para.json, selling_daily_losses.json, nifty_ema34_daily_losses.json, *_state.json): BEFORE all 5 uploads sent both loss files; AFTER all 5 send only a.py and para.json. No upload to any VM was run. Open a new terminal or `source ~/.zshrc` to load the new aliases.
+Date: 27-11-2026 09:44:00
+
+User Query:
+"update in md file!
+which account will it deduct!! please give details!"
+
+Logic and Explanation:
+Diagnosed the Google Cloud Billing alert received on November 27, 2026 ("50% of ₹100 budget reached (₹50)").
+1. Clarified why a bill occurred despite the e2-micro instance being part of the Always Free tier:
+   - Compute, 30 GB disk, and static external IPv4 address on e2-micro are 100% free (₹0.00).
+   - Google Cloud's Free Tier includes only 1.0 GB per month of internet egress.
+   - Live network inspection on VM interface (ens4) revealed 7.80 GB transmitted over 20 days (ICICI Direct API calls, Google Sheets synchronization, and Mac rsync log downloads).
+   - The excess 6.80 GB is billed at ~$0.085/GB (~₹48.80) plus ~₹1.60 for 728 MB Docker images stored in Mumbai Artifact Registry.
+2. Documented payment deduction mechanics under RBI rules:
+   - Google charges the Credit Card or Debit Card registered under the user's Google Payments profile (pay.google.com) for Billing Account 01D07B-B2ADC9-F672EC.
+   - Google cannot directly auto-debit savings accounts via netbanking/NEFT without an authorized card or e-mandate.
+   - Provided direct console URLs to verify registered cards, payment methods, and transaction receipts.
+
+Final Code/File Changes:
+- /Users/vivek/ICICI_Direct/MAC/billing_and_infrastructure_learnings_july2026.md:
+  Added Section 6 ("November 2026: Why ₹50 Occurred on a 'Free Tier' VM (Network Egress)") and Section 7 ("Google Cloud India Payment & Deduction Mechanics") detailing the line-item egress cost breakdown, payment deduction source, and direct Google console links.
 

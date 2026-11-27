@@ -80,3 +80,45 @@ To prevent another ₹120 spike from going unnoticed for days:
 3. Set the target amount to a low threshold (e.g., **₹50 or ₹100 per month**).
 4. Set the alert to trigger at **50%**, **90%**, and **100%** of that threshold.
 5. Google will instantly email you if your costs suddenly spike due to a runaway script, giving you time to kill the process before it burns through hundreds of rupees.
+
+---
+
+## 6. November 2026: Why ₹50 Occurred on a "Free Tier" VM (Network Egress)
+On November 27, 2026, a billing budget alert was triggered: *"50% of ₹100 budget reached (₹50)"*.
+
+### Root Cause Analysis:
+1. **What is Truly ₹0:**
+   - **Compute (e2-micro):** 100% free under Google's Always Free tier (744 hours/month).
+   - **Storage:** 30 GB standard persistent disk is 100% free.
+   - **Static IPv4:** 1 in-use static IP on e2-micro is 100% free.
+2. **The Billable Component (Network Egress):**
+   - Google's Free Tier includes **only 1.0 GB per month** of outbound internet data transfer from North America.
+   - The Vivek VM (`34.26.75.26`) running 24/7 sends live data (Breeze API heartbeat, Google Sheets sync, and Mac rsync log downloads) from the US to India.
+   - Live `/proc/net/dev` on the VM proved **7.80 GB** was transmitted over 20 days.
+   - Excess egress: `7.80 GB - 1.00 GB = 6.80 GB`.
+   - Billed at Google's Premium Egress rate (~$0.085/GB): `6.80 * $0.085 = $0.578 USD ≈ ₹48.80 INR`.
+   - An additional ~₹1.60 was incurred for 728 MB Docker images stored in Mumbai (`asia-south1`) Artifact Registry.
+
+### Key Lesson:
+A "Free Tier VM" has zero server and zero IP rental charges, but active internet data transfer beyond 1 GB/month is billed at ~₹7 per GB. A live trading bot naturally consumes ~₹1.90/day (~₹50/month) in raw bandwidth.
+
+---
+
+## 7. Google Cloud India Payment & Deduction Mechanics
+
+### How Google Deducts:
+* **Billing Account ID:** `01D07B-B2ADC9-F672EC` (`My Billing Account`)
+* **Account Admin:** `deshpande.vivek@gmail.com`
+* **Merchant:** Google Cloud India Private Limited.
+* **Deduction Source:** Charges the **Credit Card or Debit Card** registered under your Google Payments profile (`pay.google.com`).
+* **Bank Account:** The money is deducted from the bank account or credit line **attached to that specific card**. Google cannot auto-debit savings accounts directly via netbanking or NEFT without a card or mandate.
+* **Timing:** Invoices are billed automatically at month-end (typically the 1st of the next month, e.g., Dec 1) or when a threshold is met. If RBI auto-debit fails, Google prompts for a manual "Make a payment" via card, UPI, or netbanking.
+
+### Direct Verification URLs:
+1. View registered card & payment profile:
+   `https://console.cloud.google.com/billing/01D07B-B2ADC9-F672EC/payment-settings`
+2. View all cards on Google Pay profile:
+   `https://pay.google.com/gp/w/u/0/home/paymentmethods`
+3. View transaction receipts and invoices:
+   `https://console.cloud.google.com/billing/01D07B-B2ADC9-F672EC/history`
+
