@@ -212,9 +212,10 @@ alias o.sell_1.y='bash "$SCRIPT_DIR/remote_oracle.sh" restart selling_1 y'
 alias o.sen.y='bash "$SCRIPT_DIR/remote_oracle.sh" restart sensex y'
 alias o.wk.y='bash "$SCRIPT_DIR/remote_oracle.sh" restart weekly y'
 
-# Oracle Combined Restarts (mod_rsi + Selling_1)
-alias o.r='o.rsi && o.sell_1 && o.sen && o.wk'
-alias o.r.y='o.rsi.y && o.sell_1.y && o.sen.y && o.wk.y'
+# Oracle Combined Restarts (mod_rsi + Selling_1 + Sensex + Weekly + BTC paper)
+# o.btc has no .y form: it always keeps its logs and saved paper position.
+alias o.r='o.rsi && o.sell_1 && o.sen && o.wk && o.btc'
+alias o.r.y='o.rsi.y && o.sell_1.y && o.sen.y && o.wk.y && o.btc'
 
 # --- ORACLE 2 (GCP) ---
 alias o2.st='bash "$SCRIPT_DIR/remote_oracle2.sh" status'

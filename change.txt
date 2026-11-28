@@ -1,3 +1,10 @@
+Date: 28-11-2026 22:21:00
+Query: "Yes, implement" - BTC options PAPER bot on Oracle 1 as a separate bot that restarts with the other Oracle 1 bots.
+Logic:
+- /Users/vivek/ICICI_Direct/MAC/aliases.md: o.r and o.r.y (and so all.r / all.r.y) now end with o.btc. o.btc has no .y form because its script always keeps the logs and the saved paper position.
+Explanation: A restart of all Oracle bots from the Mac now includes the BTC paper bot.
+Verification: aliases sourced in zsh; o.r and o.r.y print with o.btc at the end. o.r / o.r.y were not run.
+
 Date: 27-11-2026 17:20:30
 Query: Add new suresh_weekly bot (/Users/vivek/ICICI_Direct/weekly_suresh/) without touching sensex_suresh; sync code via all.u/s.u without overwriting Suresh credentials; share account book across suresh_rsi and suresh_weekly.
 Logic:
